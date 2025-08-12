@@ -74,6 +74,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/test", testRoutes);
+app.use("/api/admin", adminRoutes);
 
 // 404 handler
 app.use("*", (req, res) => {
