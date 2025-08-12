@@ -141,6 +141,104 @@ router.get(
   }),
 );
 
+// @desc    Get seller's products (alias for main products route)
+// @route   GET /api/products/my-products
+// @access  Private
+router.get(
+  "/my-products",
+  protect,
+  [
+    query("page")
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage("Page must be a positive integer"),
+    query("limit")
+      .optional()
+      .isInt({ min: 1, max: 100 })
+      .withMessage("Limit must be between 1 and 100"),
+    query("sort")
+      .optional()
+      .isIn([
+        "name",
+        "-name",
+        "price",
+        "-price",
+        "createdAt",
+        "-createdAt",
+        "stock",
+        "-stock",
+      ]),
+    query("status")
+      .optional()
+      .isIn(["active", "inactive", "draft", "out_of_stock", "all"]),
+    query("category").optional().trim(),
+    query("search").optional().trim(),
+  ],
+  asyncHandler(async (req, res) => {
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
+    }
+
+    const {
+      page = 1,
+      limit = 10,
+      sort = "-createdAt",
+      status = "active",
+      category,
+      search,
+    } = req.query;
+
+    try {
+      const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        sort,
+        status,
+        category,
+        search,
+      };
+
+      const products = await Product.getBySellerWithStats(
+        req.seller._id,
+        options,
+      );
+
+      // Get total count for pagination
+      const query = { sellerId: req.seller._id };
+      if (status !== "all") query.status = status;
+      if (category) query.category = category;
+      if (search) query.$text = { $search: search };
+
+      const total = await Product.countDocuments(query);
+      const totalPages = Math.ceil(total / limit);
+
+      res.json({
+        success: true,
+        data: products,
+        pagination: {
+          current: parseInt(page),
+          pages: totalPages,
+          total,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      });
+    } catch (error) {
+      console.error("Get my-products error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching products",
+      });
+    }
+  }),
+);
+
 // @desc    Get single product by ID
 // @route   GET /api/products/:id
 // @access  Private
