@@ -82,7 +82,7 @@ router.get('/', protect, [
       search
     };
 
-    const products = await Product.getBySellerWithStats(req.seller.id, options);
+    const products = await Product.getBySellerWithStats(req.seller._id, options);
     
     // Get total count for pagination
     const query = { sellerId: req.seller.id };
@@ -427,7 +427,7 @@ router.delete('/:id', protect, asyncHandler(async (req, res) => {
 // @access  Private
 router.get('/categories', protect, asyncHandler(async (req, res) => {
   try {
-    const categories = await Product.distinct('category', { sellerId: req.seller.id });
+    const categories = await Product.distinct('category', { sellerId: req.seller._id });
     
     res.json({
       success: true,
@@ -461,7 +461,7 @@ router.patch('/:id/status', protect, [
 
   try {
     const product = await Product.findOneAndUpdate(
-      { _id: req.params.id, sellerId: req.seller.id },
+      { _id: req.params.id, sellerId: req.seller._id },
       { status: req.body.status },
       { new: true }
     );
