@@ -238,7 +238,7 @@ router.post('/',
       const product = await Product.create(productData);
 
       // Update seller's product count
-      await Seller.findByIdAndUpdate(req.seller.id, {
+      await Seller.findByIdAndUpdate(req.seller._id, {
         $inc: { totalProducts: 1 }
       });
 
@@ -380,7 +380,7 @@ router.delete('/:id', protect, asyncHandler(async (req, res) => {
   try {
     const product = await Product.findOne({
       _id: req.params.id,
-      sellerId: req.seller.id
+      sellerId: req.seller._id
     });
 
     if (!product) {
@@ -404,7 +404,7 @@ router.delete('/:id', protect, asyncHandler(async (req, res) => {
     await Product.findByIdAndDelete(req.params.id);
 
     // Update seller's product count
-    await Seller.findByIdAndUpdate(req.seller.id, {
+    await Seller.findByIdAndUpdate(req.seller._id, {
       $inc: { totalProducts: -1 }
     });
 
