@@ -38,20 +38,23 @@ export class ProductAPI {
   // Update existing product
   static async updateProduct(productId, updatedData, token) {
     try {
+      // Use _id if id is provided (for MongoDB compatibility)
+      const id = productId._id || productId;
+
       // Handle image updates if present
       if (updatedData.newImages && updatedData.newImages.some(img => img instanceof File)) {
         const newImages = updatedData.newImages.filter(img => img instanceof File);
         const removeImages = updatedData.removeImages || [];
-        
+
         // Remove image-related fields from main data
         const cleanData = { ...updatedData };
         delete cleanData.newImages;
         delete cleanData.removeImages;
-        
-        const response = await productsAPI.updateWithImages(productId, cleanData, newImages, removeImages);
+
+        const response = await productsAPI.updateWithImages(id, cleanData, newImages, removeImages);
         return response.data;
       } else {
-        const response = await productsAPI.update(productId, updatedData);
+        const response = await productsAPI.update(id, updatedData);
         return response.data;
       }
     } catch (error) {
@@ -63,7 +66,9 @@ export class ProductAPI {
   // Delete product
   static async deleteProduct(productId, token) {
     try {
-      await productsAPI.delete(productId);
+      // Use _id if id is provided (for MongoDB compatibility)
+      const id = productId._id || productId;
+      await productsAPI.delete(id);
       return true;
     } catch (error) {
       console.error('Failed to delete product:', error);
