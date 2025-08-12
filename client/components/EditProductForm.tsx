@@ -119,8 +119,8 @@ export default function EditProductForm({ product, isOpen, onClose, onSuccess }:
           enabled: !!product.warranty,
           period: product.warranty?.period || '',
           description: product.warranty?.description || '',
-          type: (product.warranty?.type as 'none' | 'manufacturer' | 'seller') || 'none'
-        },
+          type: product.warranty?.type || 'none'
+        } as const,
         returnPolicy: {
           enabled: !!product.returnPolicy,
           period: product.returnPolicy?.period || '',
