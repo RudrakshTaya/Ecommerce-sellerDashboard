@@ -276,7 +276,7 @@ export default function EditProductForm({ product, isOpen, onClose, onSuccess }:
       };
 
       if (token && product) {
-        const savedProduct = await ProductAPI.updateProduct(product._id, updatedProductData, token);
+        const savedProduct = await ProductAPI.updateProduct(product.id, updatedProductData, token);
         onSuccess(savedProduct);
       } else {
         throw new Error('Authentication required');
