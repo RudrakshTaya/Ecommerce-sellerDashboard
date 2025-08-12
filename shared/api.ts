@@ -19,7 +19,6 @@ export interface Address {
 
 // Comprehensive Product interface
 export interface Product {
-  [x: string]: Key;
   id: number;
   name: string;
   price: number;
