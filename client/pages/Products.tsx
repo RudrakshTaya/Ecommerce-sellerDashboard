@@ -248,7 +248,7 @@ export default function Products() {
     try {
       if (token) {
         await ProductAPI.deleteProduct(productId, token);
-        setProducts(products.filter((p) => p.id !== productId));
+        setProducts((products || []).filter((p) => p.id !== productId));
       }
     } catch (error) {
       console.error("Failed to delete product:", error);
