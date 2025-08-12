@@ -118,7 +118,8 @@ router.post(
         businessAddress,
         gstNumber,
         bankDetails,
-        status: "pending", // Require approval
+        status: process.env.NODE_ENV === "development" ? "active" : "pending", // Auto-activate in development
+        isVerified: process.env.NODE_ENV === "development" ? true : false, // Auto-verify in development
       });
 
       // Update last login
