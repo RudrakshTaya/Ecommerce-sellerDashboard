@@ -131,8 +131,8 @@ export default function EditProductForm({ product, isOpen, onClose, onSuccess }:
           width: product.dimensions?.width?.toString() || '',
           height: product.dimensions?.height?.toString() || '',
           weight: product.dimensions?.weight?.toString() || '',
-          unit: (product.dimensions?.unit as 'cm' | 'inches' | 'kg' | 'lbs') || 'cm'
-        },
+          unit: product.dimensions?.unit || 'cm'
+        } as const,
         careInstructions: product.careInstructions?.join(', ') || '',
         certifications: product.certifications?.join(', ') || '',
         sustainabilityInfo: product.sustainabilityInfo || '',
