@@ -210,7 +210,7 @@ router.get('/me', protect, asyncHandler(async (req, res) => {
   res.json({
     success: true,
     seller: {
-      id: req.seller.id,
+      id: req.seller._id,
       email: req.seller.email,
       storeName: req.seller.storeName,
       contactNumber: req.seller.contactNumber,
@@ -275,7 +275,7 @@ router.put('/profile', protect, [
 
   try {
     const seller = await Seller.findByIdAndUpdate(
-      req.seller.id,
+      req.seller._id,
       updates,
       { new: true, runValidators: true }
     );
@@ -330,7 +330,7 @@ router.put('/change-password', protect, [
 
   try {
     // Get seller with password
-    const seller = await Seller.findById(req.seller.id).select('+password');
+    const seller = await Seller.findById(req.seller._id).select('+password');
 
     // Check current password
     const isCurrentPasswordValid = await seller.comparePassword(currentPassword);
