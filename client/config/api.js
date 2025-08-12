@@ -49,6 +49,12 @@ const API_CONFIG = {
       BASE64: '/api/upload/base64',
       DELETE: (publicId) => `/api/upload/${publicId}`,
       INFO: (publicId) => `/api/upload/info/${publicId}`
+    },
+
+    // Test endpoints
+    TEST: {
+      PUBLIC: '/api/test/public',
+      PROTECTED: '/api/test/protected'
     }
   },
   
