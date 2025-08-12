@@ -252,9 +252,14 @@ orderSchema.index({ createdAt: -1 });
 orderSchema.index({ status: 1, createdAt: -1 });
 orderSchema.index({ 'items.product': 1 });
 
-// Virtual for order ID
-orderSchema.virtual('id').get(function() {
-  return this._id.toHexString();
+// Ensure _id is included in JSON output and transform to id for frontend compatibility
+orderSchema.set('toJSON', {
+  virtuals: true,
+  transform: function(doc, ret) {
+    ret.id = ret._id;
+    delete ret.__v;
+    return ret;
+  }
 });
 
 // Virtual for full customer name

@@ -118,9 +118,14 @@ customerSchema.index({ status: 1 });
 customerSchema.index({ totalSpent: -1 });
 customerSchema.index({ lastOrderDate: -1 });
 
-// Virtual for customer ID
-customerSchema.virtual('id').get(function() {
-  return this._id.toHexString();
+// Ensure _id is included in JSON output and transform to id for frontend compatibility
+customerSchema.set('toJSON', {
+  virtuals: true,
+  transform: function(doc, ret) {
+    ret.id = ret._id;
+    delete ret.__v;
+    return ret;
+  }
 });
 
 // Virtual for full name from first address

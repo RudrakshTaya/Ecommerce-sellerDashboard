@@ -108,9 +108,14 @@ sellerSchema.index({ email: 1 });
 sellerSchema.index({ storeName: 1 });
 sellerSchema.index({ isVerified: 1, status: 1 });
 
-// Virtual for seller ID
-sellerSchema.virtual('id').get(function() {
-  return this._id.toHexString();
+// Ensure _id is included in JSON output and transform to id for frontend compatibility
+sellerSchema.set('toJSON', {
+  virtuals: true,
+  transform: function(doc, ret) {
+    ret.id = ret._id;
+    delete ret.__v;
+    return ret;
+  }
 });
 
 // Hash password before saving
