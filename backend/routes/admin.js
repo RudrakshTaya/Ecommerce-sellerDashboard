@@ -13,11 +13,11 @@ router.put(
     try {
       const seller = await Seller.findByIdAndUpdate(
         req.params.sellerId,
-        { 
+        {
           status: "active",
-          isVerified: true // Also set as verified for product creation
+          isVerified: true, // Also set as verified for product creation
         },
-        { new: true }
+        { new: true },
       ).select("-password");
 
       if (!seller) {
@@ -35,7 +35,7 @@ router.put(
           email: seller.email,
           storeName: seller.storeName,
           status: seller.status,
-          isVerified: seller.isVerified
+          isVerified: seller.isVerified,
         },
       });
     } catch (error) {
@@ -45,7 +45,7 @@ router.put(
         message: "Error activating seller account",
       });
     }
-  })
+  }),
 );
 
 // @desc    Get all sellers (for admin)
@@ -62,7 +62,7 @@ router.get(
       res.json({
         success: true,
         data: sellers,
-        count: sellers.length
+        count: sellers.length,
       });
     } catch (error) {
       console.error("Get sellers error:", error);
@@ -71,7 +71,7 @@ router.get(
         message: "Error fetching sellers",
       });
     }
-  })
+  }),
 );
 
 export default router;
