@@ -14,12 +14,12 @@ export class ProductAPI {
       const mockProduct: Product = {
         ...productData,
         id: Date.now(),
-        rating: 4.5,
+        rating: 0,
         reviews: 0,
-        badges: productData.badges || [],
-        deliveryDays: productData.deliveryDays || 7,
+        badges: [],
+        deliveryDays: productData.deliveryDays,
         inStock: productData.stock > 0,
-        lowStockThreshold: productData.lowStockThreshold || 10
+        lowStockThreshold: productData.lowStockThreshold
       };
       return mockProduct;
     }
