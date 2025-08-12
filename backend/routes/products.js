@@ -85,7 +85,7 @@ router.get('/', protect, [
     const products = await Product.getBySellerWithStats(req.seller._id, options);
     
     // Get total count for pagination
-    const query = { sellerId: req.seller.id };
+    const query = { sellerId: req.seller._id };
     if (status !== 'all') query.status = status;
     if (category) query.category = category;
     if (search) query.$text = { $search: search };
