@@ -147,7 +147,7 @@ export default function EditProductForm({ product, isOpen, onClose, onSuccess }:
       setFormData(prev => ({
         ...prev,
         [parent]: {
-          ...prev[parent as keyof typeof prev],
+          ...(prev[parent as keyof typeof prev] as object),
           [child]: value
         }
       }));
