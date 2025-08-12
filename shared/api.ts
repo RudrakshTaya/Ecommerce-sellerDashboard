@@ -19,7 +19,6 @@ export interface Address {
 
 // Comprehensive Product interface
 export interface Product {
-  [x: string]: Key;
   id: number;
   name: string;
   price: number;
@@ -102,7 +101,13 @@ export interface Order {
   id: string;
   userId: string;
   items: OrderItem[];
-  status: "pending" | "confirmed" | "processing" | "shipped" | "delivered" | "cancelled";
+  status:
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled";
   total: number;
   subtotal: number;
   shipping: number;

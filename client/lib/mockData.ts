@@ -1,4 +1,4 @@
-import { Product } from '@shared/api';
+import { Product } from "@shared/api";
 
 export const mockProducts: Product[] = [
   {
@@ -6,7 +6,8 @@ export const mockProducts: Product[] = [
     name: "Handcrafted Wooden Coffee Table",
     price: 25999,
     originalPrice: 32999,
-    description: "Beautiful handcrafted wooden coffee table made from premium teak wood. Perfect for modern living rooms.",
+    description:
+      "Beautiful handcrafted wooden coffee table made from premium teak wood. Perfect for modern living rooms.",
     image: "/placeholder.svg",
     images: ["/placeholder.svg", "/placeholder.svg", "/placeholder.svg"],
     category: "Furniture",
@@ -30,27 +31,35 @@ export const mockProducts: Product[] = [
     warranty: {
       period: "2 years",
       description: "Comprehensive warranty covering manufacturing defects",
-      type: "manufacturer"
+      type: "manufacturer",
     },
     returnPolicy: {
       returnable: true,
       period: "30 days",
-      conditions: ["Original packaging", "No damage", "Assembly instructions included"]
+      conditions: [
+        "Original packaging",
+        "No damage",
+        "Assembly instructions included",
+      ],
     },
-    careInstructions: ["Dust regularly with soft cloth", "Avoid direct sunlight", "Use coasters for drinks"],
+    careInstructions: [
+      "Dust regularly with soft cloth",
+      "Avoid direct sunlight",
+      "Use coasters for drinks",
+    ],
     dimensions: {
       length: 120,
       width: 60,
       height: 45,
       weight: 25,
-      unit: "cm"
+      unit: "cm",
     },
     sku: "WCT-001",
     brand: "CraftMaster",
     vendor: {
       name: "WoodWorks Studio",
       location: "Bangalore",
-      rating: 4.9
+      rating: 4.9,
     },
     certifications: ["FSC Certified", "VOC Free"],
     sustainabilityInfo: "Made from sustainably sourced wood",
@@ -58,24 +67,27 @@ export const mockProducts: Product[] = [
     inStock: true,
     lowStockThreshold: 5,
     seoTitle: "Premium Handcrafted Wooden Coffee Table - Teak Wood",
-    seoDescription: "Buy premium handcrafted wooden coffee table made from teak wood. Perfect for modern homes.",
+    seoDescription:
+      "Buy premium handcrafted wooden coffee table made from teak wood. Perfect for modern homes.",
     faq: [
       {
         question: "What type of wood is used?",
-        answer: "We use premium grade teak wood sourced sustainably."
+        answer: "We use premium grade teak wood sourced sustainably.",
       },
       {
         question: "Is assembly required?",
-        answer: "Minimal assembly required. All tools and instructions included."
-      }
-    ]
+        answer:
+          "Minimal assembly required. All tools and instructions included.",
+      },
+    ],
   },
   {
     id: 2,
     name: "Organic Cotton Bedsheet Set",
     price: 3499,
     originalPrice: 4999,
-    description: "Luxurious organic cotton bedsheet set with premium thread count. Includes bedsheet, pillowcases, and cushion covers.",
+    description:
+      "Luxurious organic cotton bedsheet set with premium thread count. Includes bedsheet, pillowcases, and cushion covers.",
     image: "/placeholder.svg",
     images: ["/placeholder.svg", "/placeholder.svg"],
     category: "Home & Living",
@@ -99,20 +111,24 @@ export const mockProducts: Product[] = [
     warranty: {
       period: "1 year",
       description: "Quality guarantee against manufacturing defects",
-      type: "seller"
+      type: "seller",
     },
     returnPolicy: {
       returnable: true,
       period: "15 days",
-      conditions: ["Unused", "Original packaging", "No stains"]
+      conditions: ["Unused", "Original packaging", "No stains"],
     },
-    careInstructions: ["Machine wash cold", "Tumble dry low", "Iron on medium heat"],
+    careInstructions: [
+      "Machine wash cold",
+      "Tumble dry low",
+      "Iron on medium heat",
+    ],
     dimensions: {
       length: 220,
       width: 240,
       height: 2,
       weight: 1.5,
-      unit: "cm"
+      unit: "cm",
     },
     sku: "OCB-002",
     brand: "EcoLiving",
@@ -120,19 +136,22 @@ export const mockProducts: Product[] = [
     inStock: true,
     lowStockThreshold: 10,
     seoTitle: "Organic Cotton Bedsheet Set - Premium Quality",
-    seoDescription: "Luxurious organic cotton bedsheet set with high thread count. Perfect for comfortable sleep.",
+    seoDescription:
+      "Luxurious organic cotton bedsheet set with high thread count. Perfect for comfortable sleep.",
     faq: [
       {
         question: "What's the thread count?",
-        answer: "Our bedsheets have a premium 300 thread count for ultimate comfort."
-      }
-    ]
+        answer:
+          "Our bedsheets have a premium 300 thread count for ultimate comfort.",
+      },
+    ],
   },
   {
     id: 3,
     name: "Ceramic Plant Pot with Drainage",
     price: 899,
-    description: "Modern ceramic plant pot with built-in drainage system. Perfect for indoor plants and herbs.",
+    description:
+      "Modern ceramic plant pot with built-in drainage system. Perfect for indoor plants and herbs.",
     image: "/placeholder.svg",
     images: ["/placeholder.svg"],
     category: "Garden & Plants",
@@ -155,7 +174,7 @@ export const mockProducts: Product[] = [
     returnPolicy: {
       returnable: true,
       period: "7 days",
-      conditions: ["No damage", "Original packaging"]
+      conditions: ["No damage", "Original packaging"],
     },
     careInstructions: ["Clean with damp cloth", "Avoid harsh chemicals"],
     dimensions: {
@@ -163,17 +182,14 @@ export const mockProducts: Product[] = [
       width: 15,
       height: 18,
       weight: 0.8,
-      unit: "cm"
+      unit: "cm",
     },
     sku: "CPP-003",
     brand: "GreenSpace",
     origin: "India",
     inStock: true,
     lowStockThreshold: 3,
-    rating: 4.4,
-    reviews: 34,
-    badges: ["Eco-Friendly"]
-  }
+  },
 ];
 
 export const mockSellerStats = {
@@ -183,5 +199,5 @@ export const mockSellerStats = {
   totalOrders: 47,
   pendingOrders: 3,
   completedOrders: 44,
-  lowStockProducts: 1
+  lowStockProducts: 1,
 };
