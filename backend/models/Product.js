@@ -227,9 +227,14 @@ productSchema.index({ sku: 1 });
 productSchema.index({ status: 1, inStock: 1 });
 productSchema.index({ rating: -1, reviews: -1 });
 
-// Virtual for product ID
-productSchema.virtual('id').get(function() {
-  return this._id.toHexString();
+// Ensure _id is included in JSON output and transform to id for frontend compatibility
+productSchema.set('toJSON', {
+  virtuals: true,
+  transform: function(doc, ret) {
+    ret.id = ret._id;
+    delete ret.__v;
+    return ret;
+  }
 });
 
 // Virtual for discount percentage
