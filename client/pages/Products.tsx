@@ -230,7 +230,7 @@ export default function Products() {
   };
 
   const handleUpdateProduct = (updatedProduct: Product) => {
-    setProducts(prev => prev.map(p => p._id === updatedProduct._id ? updatedProduct : p));
+    setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
   };
 
   // Filter products based on search and category
