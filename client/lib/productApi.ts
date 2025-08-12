@@ -36,11 +36,11 @@ export class ProductAPI {
   static async getSellerProducts(token: string): Promise<Product[]> {
     try {
       const products = await getMyProducts(token);
-      return products;
+      return Array.isArray(products) ? products : [];
     } catch (error) {
       console.warn("Real API failed, using mock data:", error);
       // Fallback to mock data
-      return mockProducts;
+      return Array.isArray(mockProducts) ? mockProducts : [];
     }
   }
 
