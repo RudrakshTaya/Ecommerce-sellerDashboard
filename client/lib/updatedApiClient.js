@@ -43,16 +43,23 @@ class ApiClient {
   // Generic request method
   async request(endpoint, options = {}) {
     const url = createApiUrl(endpoint);
+
+    // Ensure we always include auth headers unless explicitly disabled
+    const includeAuth = options.includeAuth !== false;
+    const authHeaders = createAuthHeaders(includeAuth);
+
     const config = {
       timeout: this.timeout,
       ...options,
       headers: {
-        ...createAuthHeaders(),
+        ...authHeaders,
         ...options.headers
       }
     };
 
     try {
+      console.log('API Request:', url, 'Headers:', config.headers); // Debug log
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.timeout);
 
@@ -139,11 +146,13 @@ class ApiClient {
   // Upload file(s) with _id handling
   async upload(endpoint, formData) {
     const url = createApiUrl(endpoint);
-    
+
     try {
+      console.log('Upload Request:', url); // Debug log
+
       const response = await fetch(url, {
         method: 'POST',
-        headers: createFormDataHeaders(),
+        headers: createFormDataHeaders(true), // Ensure auth headers included
         body: formData
       });
 
