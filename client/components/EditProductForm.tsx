@@ -65,7 +65,7 @@ export default function EditProductForm({ product, isOpen, onClose, onSuccess }:
       enabled: false,
       period: '',
       description: '',
-      type: 'none' as const
+      type: 'none' as 'none' | 'manufacturer' | 'seller'
     },
     returnPolicy: {
       enabled: false,
@@ -77,7 +77,7 @@ export default function EditProductForm({ product, isOpen, onClose, onSuccess }:
       width: '',
       height: '',
       weight: '',
-      unit: 'cm' as const
+      unit: 'cm' as 'cm' | 'inches' | 'kg' | 'lbs'
     },
     careInstructions: '',
     certifications: '',
