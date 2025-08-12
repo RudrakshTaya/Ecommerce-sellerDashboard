@@ -140,7 +140,7 @@ router.get('/:id', protect, asyncHandler(async (req, res) => {
   try {
     const order = await Order.findOne({
       _id: req.params.id,
-      sellerId: req.seller.id
+      sellerId: req.seller._id
     })
     .populate('items.product', 'name price image sku category')
     .populate('customerId', 'name email phone segment totalOrders totalSpent')
@@ -350,7 +350,7 @@ router.post('/', protect, requireVerified, [
           image: product.image,
           sku: product.sku
         },
-        sellerId: req.seller.id
+        sellerId: req.seller._id
       };
     });
 
@@ -363,7 +363,7 @@ router.post('/', protect, requireVerified, [
     const orderData = {
       ...req.body,
       items: orderItems,
-      sellerId: req.seller.id,
+      sellerId: req.seller._id,
       customerInfo: {
         name: customer.name,
         email: customer.email,
