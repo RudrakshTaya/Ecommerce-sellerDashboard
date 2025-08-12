@@ -84,7 +84,7 @@ export default function AddProductForm({ isOpen, onClose, onSuccess }: AddProduc
       width: '',
       height: '',
       weight: '',
-      unit: 'cm' as const
+      unit: 'cm' as 'cm' | 'inches' | 'kg' | 'lbs'
     },
     careInstructions: '',
     certifications: '',
