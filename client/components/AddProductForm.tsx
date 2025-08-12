@@ -72,7 +72,7 @@ export default function AddProductForm({ isOpen, onClose, onSuccess }: AddProduc
       enabled: false,
       period: '',
       description: '',
-      type: 'none' as const
+      type: 'none' as 'none' | 'manufacturer' | 'seller'
     },
     returnPolicy: {
       enabled: false,
