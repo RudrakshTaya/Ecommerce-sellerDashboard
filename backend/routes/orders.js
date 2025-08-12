@@ -317,7 +317,7 @@ router.post('/', protect, requireVerified, [
     const productIds = req.body.items.map(item => item.product);
     const products = await Product.find({
       _id: { $in: productIds },
-      sellerId: req.seller.id,
+      sellerId: req.seller._id,
       status: 'active'
     });
 
