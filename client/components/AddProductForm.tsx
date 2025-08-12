@@ -210,7 +210,7 @@ export default function AddProductForm({ isOpen, onClose, onSuccess }: AddProduc
     setErrors({});
 
     try {
-      const productData: Omit<Product, 'id' | 'rating' | 'reviews' | 'badges' | 'vendor'> = {
+      const productData: Omit<Product, 'id'> = {
         name: formData.name,
         price: parseFloat(formData.price),
         originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
@@ -258,11 +258,10 @@ export default function AddProductForm({ isOpen, onClose, onSuccess }: AddProduc
         } : undefined,
         careInstructions: formData.careInstructions ? 
           formData.careInstructions.split(',').map(c => c.trim()).filter(c => c) : undefined,
-        certifications: formData.certifications ? 
+        certifications: formData.certifications ?
           formData.certifications.split(',').map(c => c.trim()).filter(c => c) : undefined,
         sustainabilityInfo: formData.sustainabilityInfo || undefined,
         faq: formData.faq.filter(item => item.question && item.answer),
-        // Mock fields that would be set by the system
         rating: 0,
         reviews: 0,
         badges: []
