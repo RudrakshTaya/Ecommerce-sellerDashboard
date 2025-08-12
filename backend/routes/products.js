@@ -121,7 +121,7 @@ router.get('/:id', protect, asyncHandler(async (req, res) => {
   try {
     const product = await Product.findOne({
       _id: req.params.id,
-      sellerId: req.seller.id
+      sellerId: req.seller._id
     }).populate('sellerId', 'storeName rating reviewCount');
 
     if (!product) {
@@ -192,7 +192,7 @@ router.post('/',
       // Create product data
       const productData = {
         ...req.body,
-        sellerId: req.seller.id,
+        sellerId: req.seller._id,
         image: mainImage,
         images,
         sku: req.body.sku.toUpperCase(),
@@ -283,7 +283,7 @@ router.put('/:id',
       // Find the product
       const product = await Product.findOne({
         _id: req.params.id,
-        sellerId: req.seller.id
+        sellerId: req.seller._id
       });
 
       if (!product) {
