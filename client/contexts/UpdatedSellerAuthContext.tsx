@@ -100,19 +100,27 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       setLoading(true);
       const response = await authAPI.login({ email, password });
-      
-      if (response.success) {
+
+      if (response.success && response.token) {
+        // Token is already stored by authAPI.login, but ensure state is updated
         setSeller(response.seller);
         setToken(response.token);
+
+        // Double-check token is stored in localStorage
+        const storedToken = getAuthToken();
+        if (!storedToken) {
+          setAuthToken(response.token);
+        }
+
         return { success: true };
       } else {
         return { success: false, message: response.message || 'Login failed' };
       }
     } catch (error: any) {
       console.error('Login error:', error);
-      return { 
-        success: false, 
-        message: error.message || 'Login failed. Please try again.' 
+      return {
+        success: false,
+        message: error.message || 'Login failed. Please try again.'
       };
     } finally {
       setLoading(false);
