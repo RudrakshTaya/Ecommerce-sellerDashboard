@@ -242,7 +242,7 @@ router.patch('/:id/status', protect, requireVerified, [
 
     // Update seller statistics
     if (status === 'delivered') {
-      await Seller.findByIdAndUpdate(req.seller.id, {
+      await Seller.findByIdAndUpdate(req.seller._id, {
         $inc: { 
           totalOrders: 1,
           totalRevenue: order.total
