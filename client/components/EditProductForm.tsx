@@ -119,8 +119,8 @@ export default function EditProductForm({ product, isOpen, onClose, onSuccess }:
           enabled: !!product.warranty,
           period: product.warranty?.period || '',
           description: product.warranty?.description || '',
-          type: product.warranty?.type || 'none'
-        } as const,
+          type: (product.warranty?.type || 'none') as 'none' | 'manufacturer' | 'seller'
+        },
         returnPolicy: {
           enabled: !!product.returnPolicy,
           period: product.returnPolicy?.period || '',
@@ -131,8 +131,8 @@ export default function EditProductForm({ product, isOpen, onClose, onSuccess }:
           width: product.dimensions?.width?.toString() || '',
           height: product.dimensions?.height?.toString() || '',
           weight: product.dimensions?.weight?.toString() || '',
-          unit: product.dimensions?.unit || 'cm'
-        } as const,
+          unit: (product.dimensions?.unit || 'cm') as 'cm' | 'inches' | 'kg' | 'lbs'
+        },
         careInstructions: product.careInstructions?.join(', ') || '',
         certifications: product.certifications?.join(', ') || '',
         sustainabilityInfo: product.sustainabilityInfo || '',
