@@ -9,14 +9,15 @@ This guide will help you set up and run the backend server for your ecommerce se
 Before starting, make sure you have:
 
 1. **Node.js** (version 16 or higher)
+
    - Download from: https://nodejs.org/
    - Check version: `node --version`
 
 2. **MongoDB** (local installation or cloud database)
+
    - **Option A - Local MongoDB:**
      - Download from: https://www.mongodb.com/try/download/community
      - Start service: `mongod` or use MongoDB Compass
-   
    - **Option B - MongoDB Atlas (Cloud):**
      - Create free account at: https://www.mongodb.com/atlas
      - Get connection string from your cluster
@@ -28,11 +29,13 @@ Before starting, make sure you have:
 ### Step-by-Step Setup
 
 #### 1. Navigate to Backend Directory
+
 ```bash
 cd backend
 ```
 
 #### 2. Install Dependencies
+
 ```bash
 npm install
 ```
@@ -40,6 +43,7 @@ npm install
 #### 3. Configure Environment Variables
 
 Copy the example environment file:
+
 ```bash
 cp .env.example .env
 ```
@@ -74,11 +78,13 @@ FRONTEND_URL=http://localhost:8080
 #### 4. Start the Backend Server
 
 For development (with auto-reload):
+
 ```bash
 npm run dev
 ```
 
 For production:
+
 ```bash
 npm start
 ```
@@ -86,6 +92,7 @@ npm start
 #### 5. Verify Setup
 
 The server should start on port 5000. You should see:
+
 ```
 🚀 Server running on port 5000 in development mode
 📅 MongoDB Connected: localhost
@@ -95,11 +102,13 @@ The server should start on port 5000. You should see:
 ```
 
 Test the health endpoint:
+
 ```bash
 curl http://localhost:5000/health
 ```
 
 Expected response:
+
 ```json
 {
   "status": "OK",
@@ -114,11 +123,13 @@ Expected response:
 #### MongoDB Setup
 
 **Local MongoDB:**
+
 1. Install MongoDB Community Server
 2. Start MongoDB service
 3. Use connection string: `mongodb://localhost:27017/ecommerce_seller_db`
 
 **MongoDB Atlas (Cloud):**
+
 1. Create cluster at mongodb.com/atlas
 2. Create database user
 3. Whitelist your IP address
@@ -138,6 +149,7 @@ Expected response:
 ### 🧪 Testing the API
 
 #### Test Authentication
+
 ```bash
 # Register a new seller
 curl -X POST http://localhost:5000/api/auth/register \
@@ -164,10 +176,12 @@ curl -X POST http://localhost:5000/api/auth/login \
 To connect your frontend to the backend:
 
 1. **Update API Base URL:**
+
    - Frontend should make requests to `http://localhost:5000`
    - Update any hardcoded API URLs in your frontend code
 
 2. **Update Authentication:**
+
    - Replace the existing auth context with `UpdatedSellerAuthContext.tsx`
    - Update import statements to use the new API client
 
@@ -207,15 +221,18 @@ backend/
 #### Common Issues:
 
 1. **MongoDB Connection Failed:**
+
    - Check if MongoDB is running
    - Verify connection string in `.env`
    - Check network connectivity for Atlas
 
 2. **Port Already in Use:**
+
    - Change PORT in `.env` file
    - Kill existing process: `lsof -ti:5000 | xargs kill -9`
 
 3. **Cloudinary Upload Errors:**
+
    - Verify credentials in `.env`
    - Check file size limits (5MB default)
    - Ensure valid image formats
@@ -251,6 +268,7 @@ npm run dev
 ### 📊 Monitoring
 
 The backend includes:
+
 - Health check endpoint: `/health`
 - Request logging with Morgan
 - Error handling and logging

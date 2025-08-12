@@ -1,71 +1,72 @@
 // API Configuration for Backend Connection
 const API_CONFIG = {
   // Backend API base URL
-  BASE_URL: process.env.NODE_ENV === 'production' 
-    ? 'https://your-backend-domain.com'
-    : 'http://localhost:5000',
-  
+  BASE_URL:
+    process.env.NODE_ENV === "production"
+      ? "https://your-backend-domain.com"
+      : "http://localhost:5000",
+
   // API endpoints
   ENDPOINTS: {
     // Authentication
     AUTH: {
-      LOGIN: '/api/auth/login',
-      REGISTER: '/api/auth/register',
-      ME: '/api/auth/me',
-      PROFILE: '/api/auth/profile',
-      CHANGE_PASSWORD: '/api/auth/change-password',
-      LOGOUT: '/api/auth/logout'
+      LOGIN: "/api/auth/login",
+      REGISTER: "/api/auth/register",
+      ME: "/api/auth/me",
+      PROFILE: "/api/auth/profile",
+      CHANGE_PASSWORD: "/api/auth/change-password",
+      LOGOUT: "/api/auth/logout",
     },
-    
+
     // Products
     PRODUCTS: {
-      BASE: '/api/products',
+      BASE: "/api/products",
       BY_ID: (id) => `/api/products/${id}`,
       STATUS: (id) => `/api/products/${id}/status`,
-      CATEGORIES: '/api/products/categories'
+      CATEGORIES: "/api/products/categories",
     },
-    
+
     // Orders
     ORDERS: {
-      BASE: '/api/orders',
+      BASE: "/api/orders",
       BY_ID: (id) => `/api/orders/${id}`,
       STATUS: (id) => `/api/orders/${id}/status`,
-      ANALYTICS: '/api/orders/analytics'
+      ANALYTICS: "/api/orders/analytics",
     },
-    
+
     // Analytics
     ANALYTICS: {
-      DASHBOARD: '/api/analytics/dashboard',
-      SALES: '/api/analytics/sales',
-      PRODUCTS: '/api/analytics/products',
-      CUSTOMERS: '/api/analytics/customers',
-      INVENTORY: '/api/analytics/inventory'
+      DASHBOARD: "/api/analytics/dashboard",
+      SALES: "/api/analytics/sales",
+      PRODUCTS: "/api/analytics/products",
+      CUSTOMERS: "/api/analytics/customers",
+      INVENTORY: "/api/analytics/inventory",
     },
-    
+
     // Upload
     UPLOAD: {
-      SINGLE: '/api/upload/single',
-      MULTIPLE: '/api/upload/multiple',
-      BASE64: '/api/upload/base64',
+      SINGLE: "/api/upload/single",
+      MULTIPLE: "/api/upload/multiple",
+      BASE64: "/api/upload/base64",
       DELETE: (publicId) => `/api/upload/${publicId}`,
-      INFO: (publicId) => `/api/upload/info/${publicId}`
+      INFO: (publicId) => `/api/upload/info/${publicId}`,
     },
 
     // Test endpoints
     TEST: {
-      PUBLIC: '/api/test/public',
-      PROTECTED: '/api/test/protected'
-    }
+      PUBLIC: "/api/test/public",
+      PROTECTED: "/api/test/protected",
+    },
   },
-  
+
   // Request timeout
   TIMEOUT: 30000,
-  
+
   // Headers
   HEADERS: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  }
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
 };
 
 // Create full URL
@@ -75,44 +76,44 @@ export const createApiUrl = (endpoint) => {
 
 // Get auth token from localStorage
 export const getAuthToken = () => {
-  return localStorage.getItem('authToken');
+  return localStorage.getItem("authToken");
 };
 
 // Set auth token in localStorage
 export const setAuthToken = (token) => {
-  localStorage.setItem('authToken', token);
+  localStorage.setItem("authToken", token);
 };
 
 // Remove auth token from localStorage
 export const removeAuthToken = () => {
-  localStorage.removeItem('authToken');
+  localStorage.removeItem("authToken");
 };
 
 // Create auth headers
 export const createAuthHeaders = (includeAuth = true) => {
   const headers = { ...API_CONFIG.HEADERS };
-  
+
   if (includeAuth) {
     const token = getAuthToken();
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
   }
-  
+
   return headers;
 };
 
 // Create FormData headers for file upload
 export const createFormDataHeaders = (includeAuth = true) => {
   const headers = {};
-  
+
   if (includeAuth) {
     const token = getAuthToken();
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      headers["Authorization"] = `Bearer ${token}`;
     }
   }
-  
+
   // Don't set Content-Type for FormData, let browser set it
   return headers;
 };

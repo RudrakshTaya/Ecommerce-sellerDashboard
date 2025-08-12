@@ -36,6 +36,7 @@ A comprehensive Node.js backend API for an ecommerce seller dashboard with Mongo
 ### Quick Setup
 
 1. **Clone and setup:**
+
    ```bash
    cd backend
    npm install
@@ -44,16 +45,18 @@ A comprehensive Node.js backend API for an ecommerce seller dashboard with Mongo
    ```
 
 2. **Environment Configuration:**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 3. **Start the server:**
+
    ```bash
    # Development
    npm run dev
-   
+
    # Production
    npm start
    ```
@@ -86,6 +89,7 @@ FRONTEND_URL=http://localhost:8080
 ## 🔌 API Endpoints
 
 ### Authentication
+
 ```
 POST   /api/auth/register     - Register new seller
 POST   /api/auth/login        - Login seller
@@ -96,6 +100,7 @@ POST   /api/auth/logout      - Logout seller
 ```
 
 ### Products
+
 ```
 GET    /api/products         - Get all products (with pagination)
 GET    /api/products/:id     - Get single product
@@ -107,6 +112,7 @@ GET    /api/products/categories - Get product categories
 ```
 
 ### Orders
+
 ```
 GET    /api/orders           - Get all orders (with filters)
 GET    /api/orders/:id       - Get single order
@@ -116,6 +122,7 @@ GET    /api/orders/analytics - Get order analytics
 ```
 
 ### Analytics
+
 ```
 GET    /api/analytics/dashboard  - Dashboard overview
 GET    /api/analytics/sales      - Sales analytics
@@ -125,6 +132,7 @@ GET    /api/analytics/inventory  - Inventory analytics
 ```
 
 ### File Upload
+
 ```
 POST   /api/upload/single    - Upload single image
 POST   /api/upload/multiple  - Upload multiple images
@@ -136,23 +144,27 @@ GET    /api/upload/info/:publicId - Get image info
 ## 📊 Data Models
 
 ### Seller
+
 - Basic seller information and store details
 - Authentication credentials
 - Business metrics and statistics
 
 ### Product
+
 - Complete product information
 - Images and media
 - Inventory management
 - SEO and marketing data
 
 ### Order
+
 - Order lifecycle management
 - Customer information
 - Payment and shipping details
 - Status tracking
 
 ### Customer
+
 - Customer profiles and segments
 - Purchase history and analytics
 - Communication preferences
@@ -170,12 +182,14 @@ GET    /api/upload/info/:publicId - Get image info
 ## 📈 Analytics Features
 
 ### Dashboard Analytics
+
 - Sales overview and trends
 - Order statistics
 - Product performance
 - Customer insights
 
 ### Detailed Reports
+
 - Sales analytics with date filtering
 - Product performance metrics
 - Customer segmentation
@@ -192,11 +206,13 @@ GET    /api/upload/info/:publicId - Get image info
 ## 🧪 API Testing
 
 ### Health Check
+
 ```bash
 curl http://localhost:5000/health
 ```
 
 ### Authentication Test
+
 ```bash
 # Register
 curl -X POST http://localhost:5000/api/auth/register \
@@ -221,6 +237,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 ## 🛠️ Development
 
 ### Scripts
+
 ```bash
 npm run dev      # Start development server with nodemon
 npm start        # Start production server
@@ -228,6 +245,7 @@ npm test         # Run tests (when implemented)
 ```
 
 ### Project Structure
+
 ```
 backend/
 ├── config/          # Configuration files

@@ -1,6 +1,6 @@
-import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import multer from 'multer';
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import multer from "multer";
 
 // Configure Cloudinary
 cloudinary.config({
@@ -13,23 +13,23 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'ecommerce-products', // Folder name in Cloudinary
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif', 'webp'],
+    folder: "ecommerce-products", // Folder name in Cloudinary
+    allowed_formats: ["jpg", "jpeg", "png", "gif", "webp"],
     transformation: [
       {
         width: 1200,
         height: 1200,
-        crop: 'limit',
-        quality: 'auto:good',
-        format: 'auto'
-      }
+        crop: "limit",
+        quality: "auto:good",
+        format: "auto",
+      },
     ],
     public_id: (req, file) => {
       // Generate unique filename
       const timestamp = Date.now();
       const random = Math.floor(Math.random() * 1000);
       return `product-${timestamp}-${random}`;
-    }
+    },
   },
 });
 
@@ -41,10 +41,10 @@ const upload = multer({
   },
   fileFilter: (req, file, cb) => {
     // Check file type
-    if (file.mimetype.startsWith('image/')) {
+    if (file.mimetype.startsWith("image/")) {
       cb(null, true);
     } else {
-      cb(new Error('Only image files are allowed!'), false);
+      cb(new Error("Only image files are allowed!"), false);
     }
   },
 });
@@ -55,7 +55,7 @@ const deleteImage = async (publicId) => {
     const result = await cloudinary.uploader.destroy(publicId);
     return result;
   } catch (error) {
-    console.error('Error deleting image from Cloudinary:', error);
+    console.error("Error deleting image from Cloudinary:", error);
     throw error;
   }
 };
@@ -65,22 +65,25 @@ const getOptimizedImageUrl = (publicId, options = {}) => {
   const {
     width = 800,
     height = 800,
-    quality = 'auto:good',
-    format = 'auto'
+    quality = "auto:good",
+    format = "auto",
   } = options;
 
   return cloudinary.url(publicId, {
     width,
     height,
-    crop: 'limit',
+    crop: "limit",
     quality,
     format,
-    secure: true
+    secure: true,
   });
 };
 
 // Helper function to upload base64 image
-const uploadBase64Image = async (base64String, folder = 'ecommerce-products') => {
+const uploadBase64Image = async (
+  base64String,
+  folder = "ecommerce-products",
+) => {
   try {
     const result = await cloudinary.uploader.upload(base64String, {
       folder: folder,
@@ -88,15 +91,15 @@ const uploadBase64Image = async (base64String, folder = 'ecommerce-products') =>
         {
           width: 1200,
           height: 1200,
-          crop: 'limit',
-          quality: 'auto:good',
-          format: 'auto'
-        }
-      ]
+          crop: "limit",
+          quality: "auto:good",
+          format: "auto",
+        },
+      ],
     });
     return result;
   } catch (error) {
-    console.error('Error uploading base64 image:', error);
+    console.error("Error uploading base64 image:", error);
     throw error;
   }
 };
@@ -106,5 +109,5 @@ export {
   upload,
   deleteImage,
   getOptimizedImageUrl,
-  uploadBase64Image
+  uploadBase64Image,
 };

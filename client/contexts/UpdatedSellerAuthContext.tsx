@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authAPI } from '../lib/apiClient.js';
-import { getAuthToken, removeAuthToken } from '../config/api.js';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { authAPI } from "../lib/apiClient.js";
+import { getAuthToken, removeAuthToken } from "../config/api.js";
 
 interface Seller {
   id: string;
@@ -15,7 +15,7 @@ interface Seller {
     bankName: string;
   };
   isVerified: boolean;
-  status: 'active' | 'pending' | 'suspended';
+  status: "active" | "pending" | "suspended";
   totalProducts: number;
   totalOrders: number;
   totalRevenue: number;
@@ -29,10 +29,17 @@ interface SellerAuthContextType {
   token: string | null;
   loading: boolean;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
-  register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
+  login: (
+    email: string,
+    password: string,
+  ) => Promise<{ success: boolean; message?: string }>;
+  register: (
+    userData: RegisterData,
+  ) => Promise<{ success: boolean; message?: string }>;
   logout: () => Promise<void>;
-  updateProfile: (data: Partial<Seller>) => Promise<{ success: boolean; message?: string }>;
+  updateProfile: (
+    data: Partial<Seller>,
+  ) => Promise<{ success: boolean; message?: string }>;
   refreshProfile: () => Promise<void>;
 }
 
@@ -50,9 +57,13 @@ interface RegisterData {
   };
 }
 
-const SellerAuthContext = createContext<SellerAuthContextType | undefined>(undefined);
+const SellerAuthContext = createContext<SellerAuthContextType | undefined>(
+  undefined,
+);
 
-export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [seller, setSeller] = useState<Seller | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,7 +78,7 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
           await fetchSellerProfile();
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        console.error("Auth initialization error:", error);
         removeAuthToken();
       } finally {
         setLoading(false);
@@ -84,10 +95,10 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       if (response.success) {
         setSeller(response.seller);
       } else {
-        throw new Error(response.message || 'Failed to fetch profile');
+        throw new Error(response.message || "Failed to fetch profile");
       }
     } catch (error) {
-      console.error('Profile fetch error:', error);
+      console.error("Profile fetch error:", error);
       removeAuthToken();
       setSeller(null);
       setToken(null);
@@ -114,13 +125,13 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
         return { success: true };
       } else {
-        return { success: false, message: response.message || 'Login failed' };
+        return { success: false, message: response.message || "Login failed" };
       }
     } catch (error: any) {
-      console.error('Login error:', error);
+      console.error("Login error:", error);
       return {
         success: false,
-        message: error.message || 'Login failed. Please try again.'
+        message: error.message || "Login failed. Please try again.",
       };
     } finally {
       setLoading(false);
@@ -132,19 +143,22 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       setLoading(true);
       const response = await authAPI.register(userData);
-      
+
       if (response.success) {
         setSeller(response.seller);
         setToken(response.token);
         return { success: true, message: response.message };
       } else {
-        return { success: false, message: response.message || 'Registration failed' };
+        return {
+          success: false,
+          message: response.message || "Registration failed",
+        };
       }
     } catch (error: any) {
-      console.error('Registration error:', error);
-      return { 
-        success: false, 
-        message: error.message || 'Registration failed. Please try again.' 
+      console.error("Registration error:", error);
+      return {
+        success: false,
+        message: error.message || "Registration failed. Please try again.",
       };
     } finally {
       setLoading(false);
@@ -156,7 +170,7 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       await authAPI.logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     } finally {
       setSeller(null);
       setToken(null);
@@ -168,18 +182,18 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const updateProfile = async (data: Partial<Seller>) => {
     try {
       const response = await authAPI.updateProfile(data);
-      
+
       if (response.success) {
         setSeller(response.seller);
-        return { success: true, message: 'Profile updated successfully' };
+        return { success: true, message: "Profile updated successfully" };
       } else {
-        return { success: false, message: response.message || 'Update failed' };
+        return { success: false, message: response.message || "Update failed" };
       }
     } catch (error: any) {
-      console.error('Profile update error:', error);
-      return { 
-        success: false, 
-        message: error.message || 'Profile update failed. Please try again.' 
+      console.error("Profile update error:", error);
+      return {
+        success: false,
+        message: error.message || "Profile update failed. Please try again.",
       };
     }
   };
@@ -189,7 +203,7 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     try {
       await fetchSellerProfile();
     } catch (error) {
-      console.error('Profile refresh error:', error);
+      console.error("Profile refresh error:", error);
     }
   };
 
@@ -202,7 +216,7 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     register,
     logout,
     updateProfile,
-    refreshProfile
+    refreshProfile,
   };
 
   return (
@@ -215,7 +229,7 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 export const useSellerAuth = () => {
   const context = useContext(SellerAuthContext);
   if (context === undefined) {
-    throw new Error('useSellerAuth must be used within a SellerAuthProvider');
+    throw new Error("useSellerAuth must be used within a SellerAuthProvider");
   }
   return context;
 };
