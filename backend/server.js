@@ -15,6 +15,7 @@ import orderRoutes from "./routes/orders.js";
 import analyticsRoutes from "./routes/analytics.js";
 import uploadRoutes from "./routes/upload.js";
 import testRoutes from "./routes/test.js";
+import adminRoutes from "./routes/admin.js";
 
 // Load environment variables
 dotenv.config();
