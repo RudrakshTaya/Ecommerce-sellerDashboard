@@ -51,10 +51,10 @@ router.get('/', protect, [
       sort
     };
 
-    const orders = await Order.getBySellerWithFilters(req.seller.id, options);
-    
+    const orders = await Order.getBySellerWithFilters(req.seller._id, options);
+
     // Get total count for pagination
-    const query = { sellerId: req.seller.id };
+    const query = { sellerId: req.seller._id };
     if (status !== 'all') query.status = status;
     if (startDate || endDate) {
       query.createdAt = {};
@@ -190,7 +190,7 @@ router.patch('/:id/status', protect, requireVerified, [
   try {
     const order = await Order.findOne({
       _id: req.params.id,
-      sellerId: req.seller.id
+      sellerId: req.seller._id
     });
 
     if (!order) {
