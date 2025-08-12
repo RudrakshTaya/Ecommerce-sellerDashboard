@@ -169,10 +169,7 @@ export const mockProducts: Product[] = [
     brand: "GreenSpace",
     origin: "India",
     inStock: true,
-    lowStockThreshold: 3,
-    rating: 4.4,
-    reviews: 34,
-    badges: ["Eco-Friendly"]
+    lowStockThreshold: 3
   }
 ];
 
