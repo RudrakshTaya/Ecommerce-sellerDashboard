@@ -160,7 +160,7 @@ const ProductCard = ({
             <Button
               size="sm"
               variant="outline"
-              onClick={() => onDelete(product._id)}
+              onClick={() => onDelete(product.id)}
               className="text-red-600 hover:text-red-700 h-8 sm:h-9 px-2 sm:px-3"
             >
               <Trash2 className="w-3 h-3 sm:w-4 sm:h-4" />
