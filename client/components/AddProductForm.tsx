@@ -134,7 +134,7 @@ export default function AddProductForm({ isOpen, onClose, onSuccess }: AddProduc
       setFormData(prev => ({
         ...prev,
         [parent]: {
-          ...prev[parent as keyof typeof prev],
+          ...(prev[parent as keyof typeof prev] as object),
           [child]: value
         }
       }));
