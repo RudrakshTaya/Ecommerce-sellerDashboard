@@ -295,7 +295,7 @@ export default function Profile() {
               Cancel
             </Button>
             <Button onClick={handleSave} disabled={loading}>
-              <Save className="w-4 h-4 mr-2" />
+              {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
               {loading ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
