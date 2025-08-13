@@ -1,5 +1,6 @@
 import express from "express";
 import { query, validationResult } from "express-validator";
+import mongoose from "mongoose";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import Customer from "../models/Customer.js";
