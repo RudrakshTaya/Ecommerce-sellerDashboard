@@ -252,7 +252,9 @@ export default function EditProductForm({
           : undefined,
         description: formData.description,
         // Include new image files if they exist
-        ...(formData.imageFiles.length > 0 && { newImages: formData.imageFiles }),
+        ...(formData.imageFiles.length > 0 && {
+          newImages: formData.imageFiles,
+        }),
         category: formData.category,
         subcategory: formData.subcategory || undefined,
         materials: formData.materials
@@ -331,8 +333,11 @@ export default function EditProductForm({
         // Keep existing images if no new files were uploaded
         ...(formData.imageFiles.length === 0 && {
           image: formData.image || product?.image || "/placeholder.svg",
-          images: formData.images.length > 0 ? formData.images : product?.images || ["/placeholder.svg"]
-        })
+          images:
+            formData.images.length > 0
+              ? formData.images
+              : product?.images || ["/placeholder.svg"],
+        }),
       };
 
       if (token && product) {

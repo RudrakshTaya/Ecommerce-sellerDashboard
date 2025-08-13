@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { useSellerAuth } from '../contexts/SellerAuthContext';
-import DashboardLayout from '../components/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
-import { Button } from '../components/ui/button';
-import { analyticsAPI } from '../lib/updatedApiClient';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
+import React, { useState, useEffect } from "react";
+import { useSellerAuth } from "../contexts/SellerAuthContext";
+import DashboardLayout from "../components/DashboardLayout";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { analyticsAPI } from "../lib/updatedApiClient";
+import {
+  BarChart3,
+  TrendingUp,
+  Users,
   ShoppingCart,
   DollarSign,
   Calendar,
@@ -16,8 +21,8 @@ import {
   Filter,
   RefreshCw,
   Loader2,
-  AlertCircle
-} from 'lucide-react';
+  AlertCircle,
+} from "lucide-react";
 
 interface AnalyticsData {
   dashboard?: {
@@ -41,42 +46,45 @@ export default function Analytics() {
   useEffect(() => {
     const loadAnalytics = async () => {
       if (!seller || !token) return;
-      
+
       try {
         setLoading(true);
         setError(null);
-        
+
         // Try to load analytics data from backend
-        const [dashboard, sales, products, customers, inventory] = await Promise.allSettled([
-          analyticsAPI.getDashboard(),
-          analyticsAPI.getSales(),
-          analyticsAPI.getProducts(),
-          analyticsAPI.getCustomers(),
-          analyticsAPI.getInventory()
-        ]);
+        const [dashboard, sales, products, customers, inventory] =
+          await Promise.allSettled([
+            analyticsAPI.getDashboard(),
+            analyticsAPI.getSales(),
+            analyticsAPI.getProducts(),
+            analyticsAPI.getCustomers(),
+            analyticsAPI.getInventory(),
+          ]);
 
         const data: AnalyticsData = {};
-        
-        if (dashboard.status === 'fulfilled') {
+
+        if (dashboard.status === "fulfilled") {
           data.dashboard = dashboard.value.data;
         }
-        if (sales.status === 'fulfilled') {
+        if (sales.status === "fulfilled") {
           data.sales = sales.value.data;
         }
-        if (products.status === 'fulfilled') {
+        if (products.status === "fulfilled") {
           data.products = products.value.data;
         }
-        if (customers.status === 'fulfilled') {
+        if (customers.status === "fulfilled") {
           data.customers = customers.value.data;
         }
-        if (inventory.status === 'fulfilled') {
+        if (inventory.status === "fulfilled") {
           data.inventory = inventory.value.data;
         }
 
         setAnalyticsData(data);
       } catch (error) {
-        console.error('Failed to load analytics:', error);
-        setError('Failed to load analytics data. The analytics service may not be available yet.');
+        console.error("Failed to load analytics:", error);
+        setError(
+          "Failed to load analytics data. The analytics service may not be available yet.",
+        );
       } finally {
         setLoading(false);
       }
@@ -111,23 +119,33 @@ export default function Analytics() {
         <div className="border-b border-slate-200 pb-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">Analytics Dashboard</h1>
+              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+                Analytics Dashboard
+              </h1>
               <p className="text-slate-600">
                 Comprehensive insights and performance metrics for your business
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm" className="text-slate-700 border-slate-300">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-slate-700 border-slate-300"
+              >
                 <Filter className="w-4 h-4 mr-2" />
                 Filter
               </Button>
-              <Button variant="outline" size="sm" className="text-slate-700 border-slate-300">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-slate-700 border-slate-300"
+              >
                 <Download className="w-4 h-4 mr-2" />
                 Export
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="text-slate-700 border-slate-300"
                 onClick={handleRefresh}
               >
@@ -144,7 +162,9 @@ export default function Analytics() {
               <div className="flex items-center space-x-3">
                 <AlertCircle className="h-6 w-6 text-orange-600" />
                 <div>
-                  <h3 className="font-semibold text-orange-800">Analytics Service Unavailable</h3>
+                  <h3 className="font-semibold text-orange-800">
+                    Analytics Service Unavailable
+                  </h3>
                   <p className="text-sm text-orange-700 mt-1">{error}</p>
                 </div>
               </div>
@@ -162,9 +182,13 @@ export default function Analytics() {
                     <DollarSign className="h-8 w-8 text-green-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-semibold text-gray-600">Total Revenue</p>
+                    <p className="text-sm font-semibold text-gray-600">
+                      Total Revenue
+                    </p>
                     <p className="text-3xl font-bold text-green-600">
-                      ₹{analyticsData.dashboard.totalRevenue?.toLocaleString() || '0'}
+                      ₹
+                      {analyticsData.dashboard.totalRevenue?.toLocaleString() ||
+                        "0"}
                     </p>
                   </div>
                 </div>
@@ -178,9 +202,12 @@ export default function Analytics() {
                     <ShoppingCart className="h-8 w-8 text-blue-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-semibold text-gray-600">Total Orders</p>
+                    <p className="text-sm font-semibold text-gray-600">
+                      Total Orders
+                    </p>
                     <p className="text-3xl font-bold text-blue-600">
-                      {analyticsData.dashboard.totalOrders?.toLocaleString() || '0'}
+                      {analyticsData.dashboard.totalOrders?.toLocaleString() ||
+                        "0"}
                     </p>
                   </div>
                 </div>
@@ -194,9 +221,12 @@ export default function Analytics() {
                     <Users className="h-8 w-8 text-purple-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-semibold text-gray-600">Total Customers</p>
+                    <p className="text-sm font-semibold text-gray-600">
+                      Total Customers
+                    </p>
                     <p className="text-3xl font-bold text-purple-600">
-                      {analyticsData.dashboard.totalCustomers?.toLocaleString() || '0'}
+                      {analyticsData.dashboard.totalCustomers?.toLocaleString() ||
+                        "0"}
                     </p>
                   </div>
                 </div>
@@ -210,9 +240,13 @@ export default function Analytics() {
                     <TrendingUp className="h-8 w-8 text-orange-600" />
                   </div>
                   <div className="ml-4">
-                    <p className="text-sm font-semibold text-gray-600">Avg Order Value</p>
+                    <p className="text-sm font-semibold text-gray-600">
+                      Avg Order Value
+                    </p>
                     <p className="text-3xl font-bold text-orange-600">
-                      ₹{analyticsData.dashboard.averageOrderValue?.toLocaleString() || '0'}
+                      ₹
+                      {analyticsData.dashboard.averageOrderValue?.toLocaleString() ||
+                        "0"}
                     </p>
                   </div>
                 </div>
@@ -226,10 +260,13 @@ export default function Analytics() {
               <div className="w-20 h-20 bg-gradient-to-r from-slate-700 to-zinc-700 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
                 <BarChart3 className="h-10 w-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-4">Advanced Analytics Coming Soon</h2>
+              <h2 className="text-2xl font-bold text-slate-900 mb-4">
+                Advanced Analytics Coming Soon
+              </h2>
               <p className="text-slate-600 mb-6">
-                We're building comprehensive analytics including sales trends, customer insights, 
-                performance metrics, and detailed reporting tools.
+                We're building comprehensive analytics including sales trends,
+                customer insights, performance metrics, and detailed reporting
+                tools.
               </p>
               <Badge className="bg-slate-100 text-slate-700 border-slate-300">
                 Professional Feature
@@ -248,7 +285,9 @@ export default function Analytics() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600">Sales data and trends will be displayed here.</p>
+              <p className="text-slate-600">
+                Sales data and trends will be displayed here.
+              </p>
             </CardContent>
           </Card>
         )}
@@ -262,7 +301,9 @@ export default function Analytics() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600">Product performance metrics will be displayed here.</p>
+              <p className="text-slate-600">
+                Product performance metrics will be displayed here.
+              </p>
             </CardContent>
           </Card>
         )}
@@ -276,7 +317,9 @@ export default function Analytics() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600">Customer behavior and insights will be displayed here.</p>
+              <p className="text-slate-600">
+                Customer behavior and insights will be displayed here.
+              </p>
             </CardContent>
           </Card>
         )}

@@ -1,5 +1,5 @@
 // src/api/product.js
-import { productsAPI } from '../lib/updatedApiClient.js';
+import { productsAPI } from "../lib/updatedApiClient.js";
 
 export async function addProduct(productData, token) {
   try {
@@ -10,24 +10,21 @@ export async function addProduct(productData, token) {
   }
 }
 
-
-
 export async function getMyProducts(token) {
   try {
     const response = await productsAPI.getAll();
     return response.data || [];
   } catch (error) {
-    throw new Error(error.message || 'Failed to fetch products');
+    throw new Error(error.message || "Failed to fetch products");
   }
 }
-
 
 export async function deleteProduct(productId, token) {
   try {
     const response = await productsAPI.delete(productId);
     return response;
   } catch (error) {
-    throw new Error(error.message || 'Failed to delete product');
+    throw new Error(error.message || "Failed to delete product");
   }
 }
 
@@ -36,6 +33,6 @@ export async function updateProduct(productId, updatedData, token) {
     const response = await productsAPI.update(productId, updatedData);
     return response.data;
   } catch (error) {
-    throw new Error(error.message || 'Failed to update product');
+    throw new Error(error.message || "Failed to update product");
   }
 }
