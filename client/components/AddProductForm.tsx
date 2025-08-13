@@ -332,11 +332,14 @@ export default function AddProductForm({
       };
 
       if (token) {
-        // Set default values for required image fields
-        if (!productData.image) {
+        // Set image data from uploaded files or use placeholders
+        if (formData.imageFiles.length > 0) {
+          // If files were uploaded, include them for processing
+          productData.images = formData.imageFiles;
+          productData.image = formData.images[0]; // Use first preview as main image
+        } else {
+          // Use placeholders only if no images were uploaded
           productData.image = "/placeholder.svg";
-        }
-        if (!productData.images || productData.images.length === 0) {
           productData.images = ["/placeholder.svg"];
         }
 
