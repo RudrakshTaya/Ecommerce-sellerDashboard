@@ -347,6 +347,14 @@ export default function EditProductForm({
         }),
       };
 
+      // Debug logging
+      console.log('Edit product data before submission:', {
+        warranty: updatedProductData.warranty,
+        returnPolicy: updatedProductData.returnPolicy,
+        formDataWarranty: formData.warranty,
+        formDataReturnPolicy: formData.returnPolicy
+      });
+
       if (token && product) {
         const savedProduct = await ProductAPI.updateProduct(
           product.id,
