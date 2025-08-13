@@ -34,14 +34,30 @@ export interface Product {
 // Customer types
 export interface Customer {
   _id: string;
+  id: string;
+  name: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  avatar?: string;
-  phone?: string;
+  phone: string;
+  dateOfBirth?: string;
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
   addresses: Address[];
+  totalOrders: number;
+  totalSpent: number;
+  lastOrderDate?: string;
+  averageOrderValue: number;
+  segment: 'new' | 'regular' | 'vip' | 'inactive';
+  preferences?: {
+    communication?: {
+      email?: boolean;
+      sms?: boolean;
+      push?: boolean;
+    };
+    categories?: string[];
+    brands?: string[];
+  };
+  status: 'active' | 'inactive' | 'blocked';
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 }
 
 export interface Address {
