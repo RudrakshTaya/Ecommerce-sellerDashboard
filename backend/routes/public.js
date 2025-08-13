@@ -82,7 +82,7 @@ router.get(
       if (isHandmade === "true") query.isHandmade = true;
       if (isCustomizable === "true") query.isCustomizable = true;
       if (isTrending === "true") query.isTrending = true;
-      if (isNew === "true") query.isNew = true;
+      if (isNewProduct === "true") query.isNewProduct = true;
 
       // Get products
       const products = await Product.find(query)
