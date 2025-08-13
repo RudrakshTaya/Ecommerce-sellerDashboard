@@ -101,6 +101,22 @@ const sellerSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    totalSales: {
+      type: Number,
+      default: 0,
+    },
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    profileImage: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

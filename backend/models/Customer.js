@@ -18,6 +18,12 @@ const customerSchema = new mongoose.Schema(
         "Please enter a valid email",
       ],
     },
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+      minlength: [6, "Password must be at least 6 characters"],
+      select: false, // Don't include in queries by default
+    },
     phone: {
       type: String,
       required: [true, "Phone number is required"],
@@ -129,6 +135,7 @@ customerSchema.set("toJSON", {
   transform: function (doc, ret) {
     ret.id = ret._id;
     delete ret.__v;
+    delete ret.password; // Never return password
     return ret;
   },
 });

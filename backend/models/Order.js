@@ -12,6 +12,7 @@ const orderItemSchema = new mongoose.Schema({
     price: Number,
     image: String,
     sku: String,
+    category: String,
   },
   quantity: {
     type: Number,
@@ -23,6 +24,8 @@ const orderItemSchema = new mongoose.Schema({
     required: true,
     min: [0, "Price cannot be negative"],
   },
+  selectedColor: String,
+  selectedSize: String,
   customization: {
     text: String,
     color: String,
@@ -33,6 +36,10 @@ const orderItemSchema = new mongoose.Schema({
       default: 0,
     },
   },
+  deliveryDays: {
+    type: Number,
+    default: 7,
+  },
   sellerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Seller",
@@ -41,11 +48,6 @@ const orderItemSchema = new mongoose.Schema({
 });
 
 const addressSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    enum: ["home", "work", "other"],
-    default: "home",
-  },
   firstName: {
     type: String,
     required: true,
@@ -81,15 +83,11 @@ const addressSchema = new mongoose.Schema({
     required: true,
     match: [/^[0-9]{10,15}$/, "Please enter a valid phone number"],
   },
-  isDefault: {
-    type: Boolean,
-    default: false,
-  },
 });
 
 const orderSchema = new mongoose.Schema(
   {
-    orderId: {
+    orderNumber: {
       type: String,
       unique: true,
       required: true,
@@ -154,12 +152,12 @@ const orderSchema = new mongoose.Schema(
       required: true,
       min: [0, "Subtotal cannot be negative"],
     },
-    taxAmount: {
+    tax: {
       type: Number,
       default: 0,
       min: [0, "Tax amount cannot be negative"],
     },
-    shippingCost: {
+    shipping: {
       type: Number,
       default: 0,
       min: [0, "Shipping cost cannot be negative"],
@@ -196,11 +194,6 @@ const orderSchema = new mongoose.Schema(
     paymentId: String,
 
     // Delivery
-    deliveryMethod: {
-      type: String,
-      enum: ["standard", "express", "same_day"],
-      default: "standard",
-    },
     estimatedDelivery: Date,
     actualDelivery: Date,
 
@@ -208,38 +201,32 @@ const orderSchema = new mongoose.Schema(
     trackingNumber: String,
     shippingPartner: String,
 
-    // Cancellation/Return
+    // Return/Cancellation
+    returnRequest: {
+      reason: String,
+      requestedAt: Date,
+      itemIds: [String],
+      status: {
+        type: String,
+        enum: ["pending", "approved", "rejected", "processed"],
+        default: "pending"
+      }
+    },
     cancellationReason: String,
-    returnReason: String,
     refundAmount: {
       type: Number,
       default: 0,
     },
 
     // Special instructions
-    specialInstructions: String,
+    notes: String,
     giftMessage: String,
-
-    // Ratings and reviews
-    customerRating: {
-      type: Number,
-      min: 1,
-      max: 5,
-    },
-    customerReview: String,
 
     // Analytics
     source: {
       type: String,
       enum: ["web", "mobile", "api", "admin"],
       default: "web",
-    },
-
-    // Metadata
-    metadata: {
-      userAgent: String,
-      ipAddress: String,
-      referrer: String,
     },
   },
   {
@@ -250,7 +237,7 @@ const orderSchema = new mongoose.Schema(
 );
 
 // Create indexes
-orderSchema.index({ orderId: 1 });
+orderSchema.index({ orderNumber: 1 });
 orderSchema.index({ sellerId: 1, status: 1 });
 orderSchema.index({ customerId: 1 });
 orderSchema.index({ createdAt: -1 });
@@ -283,25 +270,13 @@ orderSchema.virtual("daysSinceOrder").get(function () {
   return Math.floor((Date.now() - this.createdAt) / (1000 * 60 * 60 * 24));
 });
 
-// Pre-save middleware to generate order ID
+// Pre-save middleware to generate order number
 orderSchema.pre("save", function (next) {
-  if (!this.orderId) {
-    // Generate order ID: ORD + timestamp + random 4 digits
-    const timestamp = Date.now().toString();
+  if (!this.orderNumber) {
+    // Generate order number: ORD + timestamp + random 4 digits
+    const timestamp = Date.now().toString().slice(-8);
     const random = Math.floor(1000 + Math.random() * 9000);
-    this.orderId = `ORD${timestamp}${random}`;
-  }
-  next();
-});
-
-// Pre-save middleware to update status history
-orderSchema.pre("save", function (next) {
-  if (this.isModified("status") && !this.isNew) {
-    this.statusHistory.push({
-      status: this.status,
-      timestamp: new Date(),
-      note: `Status changed to ${this.status}`,
-    });
+    this.orderNumber = `ORD${timestamp}${random}`;
   }
   next();
 });
@@ -332,7 +307,7 @@ orderSchema.statics.getBySellerWithFilters = function (sellerId, options = {}) {
 
   if (search) {
     query.$or = [
-      { orderId: { $regex: search, $options: "i" } },
+      { orderNumber: { $regex: search, $options: "i" } },
       { "customerInfo.name": { $regex: search, $options: "i" } },
       { "customerInfo.email": { $regex: search, $options: "i" } },
     ];
@@ -342,8 +317,9 @@ orderSchema.statics.getBySellerWithFilters = function (sellerId, options = {}) {
     .sort(sort)
     .limit(limit * 1)
     .skip((page - 1) * limit)
-    .populate("items.product", "name price image sku")
-    .populate("sellerId", "storeName email")
+    .populate("items.product", "name price image sku category")
+    .populate("customerId", "name email phone segment totalOrders totalSpent")
+    .populate("sellerId", "storeName email contactNumber")
     .exec();
 };
 

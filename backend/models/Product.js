@@ -96,11 +96,15 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isNew: {
+    isNewProduct: {
       type: Boolean,
       default: true,
     },
     isTrending: {
+      type: Boolean,
+      default: false,
+    },
+    isFeatured: {
       type: Boolean,
       default: false,
     },
