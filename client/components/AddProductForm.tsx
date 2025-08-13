@@ -332,13 +332,13 @@ export default function AddProductForm({
       };
 
       // Debug logging
-      console.log('Product data before submission:', {
+      console.log("Product data before submission:", {
         warranty: productData.warranty,
         returnPolicy: productData.returnPolicy,
         warrantyEnabled: formData.warranty.enabled,
         returnPolicyEnabled: formData.returnPolicy.enabled,
         formDataWarranty: formData.warranty,
-        formDataReturnPolicy: formData.returnPolicy
+        formDataReturnPolicy: formData.returnPolicy,
       });
 
       if (token) {

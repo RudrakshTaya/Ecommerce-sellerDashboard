@@ -383,31 +383,31 @@ router.post(
 
         // Process warranty and return policy (handle both JSON objects and FormData)
         warranty:
-          req.body.warranty && typeof req.body.warranty === 'object'
+          req.body.warranty && typeof req.body.warranty === "object"
             ? req.body.warranty // JSON object format
             : req.body.warrantyEnabled === "true"
-            ? {
-                period: req.body.warrantyPeriod,
-                description: req.body.warrantyDescription,
-                type: req.body.warrantyType || "none",
-              }
-            : undefined,
+              ? {
+                  period: req.body.warrantyPeriod,
+                  description: req.body.warrantyDescription,
+                  type: req.body.warrantyType || "none",
+                }
+              : undefined,
 
         returnPolicy:
-          req.body.returnPolicy && typeof req.body.returnPolicy === 'object'
+          req.body.returnPolicy && typeof req.body.returnPolicy === "object"
             ? req.body.returnPolicy // JSON object format
             : req.body.returnPolicyEnabled === "true"
-            ? {
-                returnable: true,
-                period: req.body.returnPeriod,
-                conditions: req.body.returnConditions
-                  ? req.body.returnConditions
-                      .split(",")
-                      .map((c) => c.trim())
-                      .filter((c) => c)
-                  : [],
-              }
-            : undefined,
+              ? {
+                  returnable: true,
+                  period: req.body.returnPeriod,
+                  conditions: req.body.returnConditions
+                    ? req.body.returnConditions
+                        .split(",")
+                        .map((c) => c.trim())
+                        .filter((c) => c)
+                    : [],
+                }
+              : undefined,
 
         // Process dimensions
         dimensions: req.body.dimensionsLength
@@ -587,13 +587,15 @@ router.put(
           : product.certifications,
 
         // Handle warranty and return policy updates
-        warranty: req.body.warranty !== undefined
-          ? req.body.warranty
-          : product.warranty,
+        warranty:
+          req.body.warranty !== undefined
+            ? req.body.warranty
+            : product.warranty,
 
-        returnPolicy: req.body.returnPolicy !== undefined
-          ? req.body.returnPolicy
-          : product.returnPolicy,
+        returnPolicy:
+          req.body.returnPolicy !== undefined
+            ? req.body.returnPolicy
+            : product.returnPolicy,
       };
 
       // Clean up undefined values

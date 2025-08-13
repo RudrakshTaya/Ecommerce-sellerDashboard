@@ -314,15 +314,19 @@ export default function EditProductForm({
                 .filter((c) => c),
             }
           : undefined,
-        dimensions: (formData.dimensions.length || formData.dimensions.width || formData.dimensions.height || formData.dimensions.weight)
-          ? {
-              length: parseFloat(formData.dimensions.length) || undefined,
-              width: parseFloat(formData.dimensions.width) || undefined,
-              height: parseFloat(formData.dimensions.height) || undefined,
-              weight: parseFloat(formData.dimensions.weight) || undefined,
-              unit: formData.dimensions.unit,
-            }
-          : undefined,
+        dimensions:
+          formData.dimensions.length ||
+          formData.dimensions.width ||
+          formData.dimensions.height ||
+          formData.dimensions.weight
+            ? {
+                length: parseFloat(formData.dimensions.length) || undefined,
+                width: parseFloat(formData.dimensions.width) || undefined,
+                height: parseFloat(formData.dimensions.height) || undefined,
+                weight: parseFloat(formData.dimensions.weight) || undefined,
+                unit: formData.dimensions.unit,
+              }
+            : undefined,
         careInstructions: formData.careInstructions
           ? formData.careInstructions
               .split(",")
@@ -348,11 +352,11 @@ export default function EditProductForm({
       };
 
       // Debug logging
-      console.log('Edit product data before submission:', {
+      console.log("Edit product data before submission:", {
         warranty: updatedProductData.warranty,
         returnPolicy: updatedProductData.returnPolicy,
         formDataWarranty: formData.warranty,
-        formDataReturnPolicy: formData.returnPolicy
+        formDataReturnPolicy: formData.returnPolicy,
       });
 
       if (token && product) {

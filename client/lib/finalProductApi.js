@@ -19,13 +19,17 @@ export class ProductAPI {
       const cleanProductData = { ...productData };
 
       // Handle images - convert File objects to data URLs for temporary storage
-      console.log('Processing images:', productData.images?.length, 'items');
-      if (productData.images && Array.isArray(productData.images) && productData.images.some(img => img instanceof File)) {
+      console.log("Processing images:", productData.images?.length, "items");
+      if (
+        productData.images &&
+        Array.isArray(productData.images) &&
+        productData.images.some((img) => img instanceof File)
+      ) {
         // Convert File objects to base64 for temporary storage
         const imagePromises = productData.images
-          .filter(img => img instanceof File)
+          .filter((img) => img instanceof File)
           .slice(0, 3) // Limit to first 3 images
-          .map(file => {
+          .map((file) => {
             return new Promise((resolve) => {
               const reader = new FileReader();
               reader.onload = () => resolve(reader.result);
@@ -39,10 +43,14 @@ export class ProductAPI {
           cleanProductData.images = base64Images.map((base64, index) => ({
             url: base64,
             public_id: `temp_${Date.now()}_${index}`,
-            alt: cleanProductData.name || 'Product image'
+            alt: cleanProductData.name || "Product image",
           }));
           cleanProductData.image = base64Images[0];
-          console.log('Processed images:', cleanProductData.images.length, 'items');
+          console.log(
+            "Processed images:",
+            cleanProductData.images.length,
+            "items",
+          );
         } else {
           cleanProductData.image = "/placeholder.svg";
           cleanProductData.images = ["/placeholder.svg"];

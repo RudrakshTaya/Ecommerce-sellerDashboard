@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
-import { useSellerAuth } from '../contexts/SellerAuthContext';
-import DashboardLayout from '../components/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { Textarea } from '../components/ui/textarea';
-import { Badge } from '../components/ui/badge';
+import React, { useState } from "react";
+import { useSellerAuth } from "../contexts/SellerAuthContext";
+import DashboardLayout from "../components/DashboardLayout";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
+import { Textarea } from "../components/ui/textarea";
+import { Badge } from "../components/ui/badge";
 import {
   User,
   Store,
@@ -18,21 +23,21 @@ import {
   CheckCircle,
   AlertCircle,
   Save,
-  Loader2
-} from 'lucide-react';
+  Loader2,
+} from "lucide-react";
 
 export default function Profile() {
   const { seller, updateProfile } = useSellerAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    storeName: seller?.storeName || '',
-    contactNumber: seller?.contactNumber || '',
-    businessAddress: seller?.businessAddress || '',
-    gstNumber: seller?.gstNumber || '',
-    bankAccountNumber: seller?.bankDetails?.accountNumber || '',
-    bankIfscCode: seller?.bankDetails?.ifscCode || '',
-    bankName: seller?.bankDetails?.bankName || ''
+    storeName: seller?.storeName || "",
+    contactNumber: seller?.contactNumber || "",
+    businessAddress: seller?.businessAddress || "",
+    gstNumber: seller?.gstNumber || "",
+    bankAccountNumber: seller?.bankDetails?.accountNumber || "",
+    bankIfscCode: seller?.bankDetails?.ifscCode || "",
+    bankName: seller?.bankDetails?.bankName || "",
   });
 
   const handleSave = async () => {
@@ -47,8 +52,8 @@ export default function Profile() {
         bankDetails: {
           accountNumber: formData.bankAccountNumber,
           ifscCode: formData.bankIfscCode,
-          bankName: formData.bankName
-        }
+          bankName: formData.bankName,
+        },
       };
 
       const success = await updateProfile(updateData);
@@ -56,20 +61,20 @@ export default function Profile() {
       if (success) {
         setIsEditing(false);
         // Show success message (you could add a toast notification here)
-        console.log('Profile updated successfully');
+        console.log("Profile updated successfully");
       } else {
-        console.error('Failed to update profile');
+        console.error("Failed to update profile");
         // Show error message
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error("Error updating profile:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -84,18 +89,22 @@ export default function Profile() {
             </p>
           </div>
           <Button
-            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+            onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
             className="mt-4 sm:mt-0"
             variant={isEditing ? "default" : "outline"}
             disabled={loading}
           >
             {isEditing ? (
               <>
-                {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-                {loading ? 'Saving...' : 'Save Changes'}
+                {loading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4 mr-2" />
+                )}
+                {loading ? "Saving..." : "Save Changes"}
               </>
             ) : (
-              'Edit Profile'
+              "Edit Profile"
             )}
           </Button>
         </div>
@@ -115,14 +124,21 @@ export default function Profile() {
                   <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Store className="w-10 h-10 text-white" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900">{seller?.storeName}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    {seller?.storeName}
+                  </h3>
                   <p className="text-sm text-gray-600">{seller?.email}</p>
                 </div>
-                
+
                 <div className="space-y-3 pt-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Verification Status</span>
-                    <Badge variant={seller?.isVerified ? "default" : "secondary"} className="flex items-center">
+                    <span className="text-sm text-gray-600">
+                      Verification Status
+                    </span>
+                    <Badge
+                      variant={seller?.isVerified ? "default" : "secondary"}
+                      className="flex items-center"
+                    >
                       {seller?.isVerified ? (
                         <CheckCircle className="w-3 h-3 mr-1" />
                       ) : (
@@ -131,17 +147,21 @@ export default function Profile() {
                       {seller?.isVerified ? "Verified" : "Pending"}
                     </Badge>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Member Since</span>
                     <span className="text-sm font-medium text-gray-900">
-                      {seller?.joinedDate ? new Date(seller.joinedDate).toLocaleDateString() : 'N/A'}
+                      {seller?.joinedDate
+                        ? new Date(seller.joinedDate).toLocaleDateString()
+                        : "N/A"}
                     </span>
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Seller ID</span>
-                    <span className="text-sm font-mono text-gray-900">{seller?.id}</span>
+                    <span className="text-sm font-mono text-gray-900">
+                      {seller?.id}
+                    </span>
                   </div>
                 </div>
               </CardContent>
@@ -164,42 +184,50 @@ export default function Profile() {
                     <Input
                       id="storeName"
                       value={formData.storeName}
-                      onChange={(e) => handleInputChange('storeName', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("storeName", e.target.value)
+                      }
                       disabled={!isEditing}
                       className="mt-1"
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="contactNumber">Contact Number</Label>
                     <Input
                       id="contactNumber"
                       value={formData.contactNumber}
-                      onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("contactNumber", e.target.value)
+                      }
                       disabled={!isEditing}
                       className="mt-1"
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="businessAddress">Business Address</Label>
                   <Textarea
                     id="businessAddress"
                     value={formData.businessAddress}
-                    onChange={(e) => handleInputChange('businessAddress', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("businessAddress", e.target.value)
+                    }
                     disabled={!isEditing}
                     className="mt-1"
                     rows={3}
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="gstNumber">GST Number</Label>
                   <Input
                     id="gstNumber"
                     value={formData.gstNumber}
-                    onChange={(e) => handleInputChange('gstNumber', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("gstNumber", e.target.value)
+                    }
                     disabled={!isEditing}
                     className="mt-1"
                     placeholder="Enter your GST number"
@@ -223,31 +251,37 @@ export default function Profile() {
                     <Input
                       id="bankName"
                       value={formData.bankName}
-                      onChange={(e) => handleInputChange('bankName', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("bankName", e.target.value)
+                      }
                       disabled={!isEditing}
                       className="mt-1"
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="bankAccountNumber">Account Number</Label>
                     <Input
                       id="bankAccountNumber"
                       value={formData.bankAccountNumber}
-                      onChange={(e) => handleInputChange('bankAccountNumber', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("bankAccountNumber", e.target.value)
+                      }
                       disabled={!isEditing}
                       className="mt-1"
                       type="password"
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="bankIfscCode">IFSC Code</Label>
                   <Input
                     id="bankIfscCode"
                     value={formData.bankIfscCode}
-                    onChange={(e) => handleInputChange('bankIfscCode', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("bankIfscCode", e.target.value)
+                    }
                     disabled={!isEditing}
                     className="mt-1"
                   />
@@ -268,17 +302,23 @@ export default function Profile() {
                   <div>
                     <Label>Email Address</Label>
                     <Input
-                      value={seller?.email || ''}
+                      value={seller?.email || ""}
                       disabled
                       className="mt-1 bg-gray-50"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Email cannot be changed
+                    </p>
                   </div>
-                  
+
                   <div>
                     <Label>Member Since</Label>
                     <Input
-                      value={seller?.joinedDate ? new Date(seller.joinedDate).toLocaleDateString() : ''}
+                      value={
+                        seller?.joinedDate
+                          ? new Date(seller.joinedDate).toLocaleDateString()
+                          : ""
+                      }
                       disabled
                       className="mt-1 bg-gray-50"
                     />
@@ -295,8 +335,12 @@ export default function Profile() {
               Cancel
             </Button>
             <Button onClick={handleSave} disabled={loading}>
-              {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-              {loading ? 'Saving...' : 'Save Changes'}
+              {loading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4 mr-2" />
+              )}
+              {loading ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         )}

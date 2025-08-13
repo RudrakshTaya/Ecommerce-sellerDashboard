@@ -81,7 +81,9 @@ export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({
     return false;
   };
 
-  const updateProfile = async (profileData: Partial<Seller>): Promise<boolean> => {
+  const updateProfile = async (
+    profileData: Partial<Seller>,
+  ): Promise<boolean> => {
     if (!token || !seller) {
       return false;
     }

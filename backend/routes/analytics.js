@@ -28,10 +28,12 @@ router.get(
 
       // Test direct query to products
       const testProductCount = await Product.countDocuments({ sellerId });
-      const testProducts = await Product.find({ sellerId }).limit(2).select('name sellerId');
+      const testProducts = await Product.find({ sellerId })
+        .limit(2)
+        .select("name sellerId");
       console.log("Direct product query test:", {
         count: testProductCount,
-        sampleProducts: testProducts
+        sampleProducts: testProducts,
       });
 
       // Get overall statistics
@@ -95,7 +97,7 @@ router.get(
         activeProducts,
         lowStockProducts,
         totalOrders,
-        sellerId
+        sellerId,
       });
 
       // Get recent orders with details
@@ -775,8 +777,8 @@ router.get(
         { $match: { sellerId } },
         {
           $addFields: {
-            totalValue: { $multiply: ["$stock", "$price"] }
-          }
+            totalValue: { $multiply: ["$stock", "$price"] },
+          },
         },
         { $sort: { totalValue: -1 } },
         { $limit: 10 },
@@ -787,9 +789,9 @@ router.get(
             category: 1,
             stock: 1,
             price: 1,
-            totalValue: 1
-          }
-        }
+            totalValue: 1,
+          },
+        },
       ]);
 
       // Calculate inventory turnover (simplified)
@@ -877,14 +879,16 @@ router.get(
       const sellerId = req.seller._id;
 
       // Get all products for this seller
-      const products = await Product.find({ sellerId }).select('name sku status sellerId');
+      const products = await Product.find({ sellerId }).select(
+        "name sku status sellerId",
+      );
       const productCount = await Product.countDocuments({ sellerId });
 
       console.log("Debug products endpoint:", {
         sellerId,
         productCount,
         products: products.length,
-        sampleProducts: products.slice(0, 3)
+        sampleProducts: products.slice(0, 3),
       });
 
       res.json({
@@ -893,17 +897,17 @@ router.get(
           sellerId,
           productCount,
           totalFound: products.length,
-          products: products.slice(0, 5) // Return first 5 products
-        }
+          products: products.slice(0, 5), // Return first 5 products
+        },
       });
     } catch (error) {
       console.error("Debug products error:", error);
       res.status(500).json({
         success: false,
-        message: "Error in debug endpoint"
+        message: "Error in debug endpoint",
       });
     }
-  })
+  }),
 );
 
 export default router;

@@ -268,14 +268,14 @@ export const productsAPI = {
     // Add basic product data (excluding complex objects)
     Object.keys(productData).forEach((key) => {
       if (productData[key] !== undefined && productData[key] !== null) {
-        if (['warranty', 'returnPolicy', 'dimensions', 'faq'].includes(key)) {
+        if (["warranty", "returnPolicy", "dimensions", "faq"].includes(key)) {
           // Skip complex objects, handle them separately
           return;
         }
 
         if (Array.isArray(productData[key])) {
           // For arrays, join with commas (backend will split them)
-          formData.append(key, productData[key].join(', '));
+          formData.append(key, productData[key].join(", "));
         } else if (typeof productData[key] === "object") {
           // Convert object to JSON string
           formData.append(key, JSON.stringify(productData[key]));
@@ -287,38 +287,48 @@ export const productsAPI = {
 
     // Handle warranty separately
     if (productData.warranty) {
-      formData.append('warrantyEnabled', 'true');
-      formData.append('warrantyPeriod', productData.warranty.period || '');
-      formData.append('warrantyDescription', productData.warranty.description || '');
-      formData.append('warrantyType', productData.warranty.type || 'none');
+      formData.append("warrantyEnabled", "true");
+      formData.append("warrantyPeriod", productData.warranty.period || "");
+      formData.append(
+        "warrantyDescription",
+        productData.warranty.description || "",
+      );
+      formData.append("warrantyType", productData.warranty.type || "none");
     } else {
-      formData.append('warrantyEnabled', 'false');
+      formData.append("warrantyEnabled", "false");
     }
 
     // Handle return policy separately
     if (productData.returnPolicy) {
-      formData.append('returnPolicyEnabled', 'true');
-      formData.append('returnPeriod', productData.returnPolicy.period || '');
-      formData.append('returnConditions', Array.isArray(productData.returnPolicy.conditions)
-        ? productData.returnPolicy.conditions.join(', ')
-        : productData.returnPolicy.conditions || '');
+      formData.append("returnPolicyEnabled", "true");
+      formData.append("returnPeriod", productData.returnPolicy.period || "");
+      formData.append(
+        "returnConditions",
+        Array.isArray(productData.returnPolicy.conditions)
+          ? productData.returnPolicy.conditions.join(", ")
+          : productData.returnPolicy.conditions || "",
+      );
     } else {
-      formData.append('returnPolicyEnabled', 'false');
+      formData.append("returnPolicyEnabled", "false");
     }
 
     // Handle dimensions separately
     if (productData.dimensions) {
-      formData.append('dimensionsLength', productData.dimensions.length || '');
-      formData.append('dimensionsWidth', productData.dimensions.width || '');
-      formData.append('dimensionsHeight', productData.dimensions.height || '');
-      formData.append('dimensionsWeight', productData.dimensions.weight || '');
-      formData.append('dimensionsUnit', productData.dimensions.unit || 'cm');
+      formData.append("dimensionsLength", productData.dimensions.length || "");
+      formData.append("dimensionsWidth", productData.dimensions.width || "");
+      formData.append("dimensionsHeight", productData.dimensions.height || "");
+      formData.append("dimensionsWeight", productData.dimensions.weight || "");
+      formData.append("dimensionsUnit", productData.dimensions.unit || "cm");
     }
 
     // Handle FAQ separately
     if (productData.faq && Array.isArray(productData.faq)) {
-      const questions = productData.faq.map(item => item.question).filter(q => q);
-      const answers = productData.faq.map(item => item.answer).filter(a => a);
+      const questions = productData.faq
+        .map((item) => item.question)
+        .filter((q) => q);
+      const answers = productData.faq
+        .map((item) => item.answer)
+        .filter((a) => a);
       if (questions.length > 0 && answers.length > 0) {
         questions.forEach((question, index) => {
           formData.append(`faqQuestions[${index}]`, question);
