@@ -19,6 +19,7 @@ export class ProductAPI {
       const cleanProductData = { ...productData };
 
       // Handle images - convert File objects to data URLs for temporary storage
+      console.log('Processing images:', productData.images?.length, 'items');
       if (productData.images && Array.isArray(productData.images) && productData.images.some(img => img instanceof File)) {
         // Convert File objects to base64 for temporary storage
         const imagePromises = productData.images
