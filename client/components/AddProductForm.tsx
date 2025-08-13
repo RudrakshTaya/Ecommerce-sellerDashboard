@@ -331,6 +331,12 @@ export default function AddProductForm({
         badges: [],
       };
 
+      // Debug logging
+      console.log('Product data before submission:', {
+        warranty: productData.warranty,
+        returnPolicy: productData.returnPolicy
+      });
+
       if (token) {
         // Set image data from uploaded files or use placeholders
         if (formData.imageFiles.length > 0) {
