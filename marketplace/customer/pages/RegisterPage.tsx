@@ -118,6 +118,27 @@ const RegisterPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Phone */}
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-earth-900 mb-2">
+                Phone Number
+              </label>
+              <div className="relative">
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="input pl-10"
+                  placeholder="Enter your phone number (digits only)"
+                  pattern="[0-9]{10,15}"
+                />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-earth-400 w-4 h-4" />
+              </div>
+            </div>
+
             {/* Password */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-earth-900 mb-2">
