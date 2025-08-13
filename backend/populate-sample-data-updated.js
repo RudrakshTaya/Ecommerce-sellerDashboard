@@ -391,7 +391,7 @@ async function populateDatabase() {
       const customer = new Customer(customerData);
       await customer.save();
       createdCustomers.push(customer);
-      console.log(`Created customer: ${customer.firstName} ${customer.lastName}`);
+      console.log(`Created customer: ${customer.name}`);
     }
 
     // Create products and assign to sellers
