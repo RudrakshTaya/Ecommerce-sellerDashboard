@@ -143,7 +143,8 @@ router.get(
     const { limit = 10 } = req.query;
 
     try {
-      const products = await Product.find({
+      // First try to get featured products
+      let products = await Product.find({
         status: "active",
         inStock: true,
         isFeatured: true,
@@ -152,6 +153,18 @@ router.get(
         .sort("-views")
         .limit(parseInt(limit))
         .exec();
+
+      // If no featured products, get any active products
+      if (products.length === 0) {
+        products = await Product.find({
+          status: "active",
+          inStock: true,
+        })
+          .populate("sellerId", "storeName rating reviewCount")
+          .sort("-createdAt")
+          .limit(parseInt(limit))
+          .exec();
+      }
 
       res.json({
         success: true,
