@@ -206,11 +206,13 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
+  dateOfBirth?: string;
+  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
 }
 
 export interface AuthResponse {
