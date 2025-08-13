@@ -39,7 +39,7 @@ apiClient.interceptors.response.use(
 )
 
 export class ProductsApi {
-  // Get all public products for marketplace (we'll need to add this endpoint to backend)
+  // Get all public products for marketplace
   static async getPublicProducts(params?: {
     page?: number
     limit?: number
@@ -49,7 +49,7 @@ export class ProductsApi {
     filters?: SearchFilters
   }): Promise<SearchResponse> {
     try {
-      const response = await apiClient.get('/products/public', { params })
+      const response = await apiClient.get('/public/products', { params })
       return response.data
     } catch (error) {
       console.error('Error fetching public products:', error)
@@ -60,7 +60,7 @@ export class ProductsApi {
   // Get single product by ID
   static async getProduct(id: string): Promise<ApiResponse<Product>> {
     try {
-      const response = await apiClient.get(`/products/public/${id}`)
+      const response = await apiClient.get(`/public/products/${id}`)
       return response.data
     } catch (error) {
       console.error('Error fetching product:', error)
@@ -75,7 +75,7 @@ export class ProductsApi {
     sort?: string
   }): Promise<SearchResponse> {
     try {
-      const response = await apiClient.get(`/products/public/category/${category}`, { params })
+      const response = await apiClient.get(`/public/category/${category}`, { params })
       return response.data
     } catch (error) {
       console.error('Error fetching products by category:', error)
@@ -86,7 +86,7 @@ export class ProductsApi {
   // Search products
   static async searchProducts(query: string, filters?: SearchFilters): Promise<SearchResponse> {
     try {
-      const response = await apiClient.get('/products/public/search', {
+      const response = await apiClient.get('/public/search', {
         params: { q: query, ...filters }
       })
       return response.data
@@ -99,7 +99,7 @@ export class ProductsApi {
   // Get trending products
   static async getTrendingProducts(limit = 10): Promise<ApiResponse<Product[]>> {
     try {
-      const response = await apiClient.get('/products/public/trending', {
+      const response = await apiClient.get('/public/trending', {
         params: { limit }
       })
       return response.data
@@ -112,7 +112,7 @@ export class ProductsApi {
   // Get new products
   static async getNewProducts(limit = 10): Promise<ApiResponse<Product[]>> {
     try {
-      const response = await apiClient.get('/products/public/new', {
+      const response = await apiClient.get('/public/new', {
         params: { limit }
       })
       return response.data
@@ -128,7 +128,7 @@ export class ProductsApi {
     limit?: number
   }): Promise<SearchResponse> {
     try {
-      const response = await apiClient.get('/products/public/customizable', { params })
+      const response = await apiClient.get('/public/customizable', { params })
       return response.data
     } catch (error) {
       console.error('Error fetching customizable products:', error)
@@ -136,26 +136,184 @@ export class ProductsApi {
     }
   }
 
-  // Get Instagram pick products
-  static async getInstagramPicks(limit = 10): Promise<ApiResponse<Product[]>> {
+  // Get all categories
+  static async getCategories(): Promise<ApiResponse<string[]>> {
     try {
-      const response = await apiClient.get('/products/public/instagram-picks', {
-        params: { limit }
-      })
+      const response = await apiClient.get('/public/categories')
       return response.data
     } catch (error) {
-      console.error('Error fetching Instagram picks:', error)
+      console.error('Error fetching categories:', error)
+      throw error
+    }
+  }
+}
+
+export class CustomersApi {
+  // Customer registration
+  static async register(data: {
+    name: string
+    email: string
+    phone: string
+    password: string
+    dateOfBirth?: string
+    gender?: string
+  }): Promise<ApiResponse<{ token: string; customer: any }>> {
+    try {
+      const response = await apiClient.post('/customer-auth/register', data)
+      return response.data
+    } catch (error) {
+      console.error('Error registering customer:', error)
       throw error
     }
   }
 
-  // Get all categories
-  static async getCategories(): Promise<ApiResponse<string[]>> {
+  // Customer login
+  static async login(data: {
+    email: string
+    password: string
+  }): Promise<ApiResponse<{ token: string; customer: any }>> {
     try {
-      const response = await apiClient.get('/products/public/categories')
+      const response = await apiClient.post('/customer-auth/login', data)
       return response.data
     } catch (error) {
-      console.error('Error fetching categories:', error)
+      console.error('Error logging in:', error)
+      throw error
+    }
+  }
+
+  // Get current customer profile
+  static async getProfile(): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.get('/customer-auth/me')
+      return response.data
+    } catch (error) {
+      console.error('Error fetching profile:', error)
+      throw error
+    }
+  }
+
+  // Update customer profile
+  static async updateProfile(data: any): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.put('/customer-auth/profile', data)
+      return response.data
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      throw error
+    }
+  }
+
+  // Add customer address
+  static async addAddress(data: {
+    firstName: string
+    lastName: string
+    address: string
+    city: string
+    state: string
+    pincode: string
+    phone: string
+    type?: 'home' | 'work' | 'other'
+    isDefault?: boolean
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.post('/customer-auth/addresses', data)
+      return response.data
+    } catch (error) {
+      console.error('Error adding address:', error)
+      throw error
+    }
+  }
+
+  // Logout
+  static async logout(): Promise<void> {
+    try {
+      await apiClient.post('/customer-auth/logout')
+      localStorage.removeItem('auth-token')
+    } catch (error) {
+      console.error('Error logging out:', error)
+      localStorage.removeItem('auth-token')
+    }
+  }
+}
+
+export class OrdersApi {
+  // Create new order
+  static async createOrder(data: {
+    items: Array<{
+      productId: string
+      quantity: number
+      selectedColor?: string
+      selectedSize?: string
+      customization?: any
+    }>
+    shippingAddress: {
+      firstName: string
+      lastName: string
+      address: string
+      city: string
+      state: string
+      pincode: string
+      phone: string
+    }
+    paymentMethod: string
+    notes?: string
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.post('/customer-orders', data)
+      return response.data
+    } catch (error) {
+      console.error('Error creating order:', error)
+      throw error
+    }
+  }
+
+  // Get customer orders
+  static async getOrders(params?: {
+    page?: number
+    limit?: number
+    status?: string
+  }): Promise<ApiResponse<any[]>> {
+    try {
+      const response = await apiClient.get('/customer-orders', { params })
+      return response.data
+    } catch (error) {
+      console.error('Error fetching orders:', error)
+      throw error
+    }
+  }
+
+  // Get single order
+  static async getOrder(id: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.get(`/customer-orders/${id}`)
+      return response.data
+    } catch (error) {
+      console.error('Error fetching order:', error)
+      throw error
+    }
+  }
+
+  // Cancel order
+  static async cancelOrder(id: string, reason?: string): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.patch(`/customer-orders/${id}/cancel`, { reason })
+      return response.data
+    } catch (error) {
+      console.error('Error cancelling order:', error)
+      throw error
+    }
+  }
+
+  // Request return
+  static async requestReturn(id: string, data: {
+    reason: string
+    itemIds?: string[]
+  }): Promise<ApiResponse<any>> {
+    try {
+      const response = await apiClient.patch(`/customer-orders/${id}/return`, data)
+      return response.data
+    } catch (error) {
+      console.error('Error requesting return:', error)
       throw error
     }
   }
@@ -198,72 +356,6 @@ export class SellersApi {
     } catch (error) {
       console.error('Error fetching featured sellers:', error)
       throw error
-    }
-  }
-}
-
-export class AuthApi {
-  // Customer registration
-  static async register(data: {
-    email: string
-    password: string
-    firstName: string
-    lastName: string
-    phone?: string
-  }): Promise<ApiResponse<{ token: string; customer: any }>> {
-    try {
-      const response = await apiClient.post('/auth/customer/register', data)
-      return response.data
-    } catch (error) {
-      console.error('Error registering customer:', error)
-      throw error
-    }
-  }
-
-  // Customer login
-  static async login(data: {
-    email: string
-    password: string
-  }): Promise<ApiResponse<{ token: string; customer: any }>> {
-    try {
-      const response = await apiClient.post('/auth/customer/login', data)
-      return response.data
-    } catch (error) {
-      console.error('Error logging in:', error)
-      throw error
-    }
-  }
-
-  // Get current customer profile
-  static async getProfile(): Promise<ApiResponse<any>> {
-    try {
-      const response = await apiClient.get('/auth/customer/me')
-      return response.data
-    } catch (error) {
-      console.error('Error fetching profile:', error)
-      throw error
-    }
-  }
-
-  // Update customer profile
-  static async updateProfile(data: any): Promise<ApiResponse<any>> {
-    try {
-      const response = await apiClient.put('/auth/customer/profile', data)
-      return response.data
-    } catch (error) {
-      console.error('Error updating profile:', error)
-      throw error
-    }
-  }
-
-  // Logout
-  static async logout(): Promise<void> {
-    try {
-      await apiClient.post('/auth/customer/logout')
-      localStorage.removeItem('auth-token')
-    } catch (error) {
-      console.error('Error logging out:', error)
-      localStorage.removeItem('auth-token')
     }
   }
 }
