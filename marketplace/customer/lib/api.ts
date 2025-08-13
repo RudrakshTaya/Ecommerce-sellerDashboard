@@ -97,12 +97,12 @@ export const productsAPI = {
   },
 
   getFeaturedProducts: async (): Promise<Product[]> => {
-    const response: AxiosResponse<ApiResponse<Product[]>> = await api.get('/public/products/featured');
+    const response: AxiosResponse<ApiResponse<Product[]>> = await api.get('/mock/products/featured');
     return response.data.data!;
   },
 
   getTrendingProducts: async (): Promise<Product[]> => {
-    const response: AxiosResponse<ApiResponse<Product[]>> = await api.get('/public/products/trending');
+    const response: AxiosResponse<ApiResponse<Product[]>> = await api.get('/mock/products/trending');
     return response.data.data!;
   },
 
