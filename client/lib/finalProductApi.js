@@ -41,6 +41,7 @@ export class ProductAPI {
             alt: cleanProductData.name || 'Product image'
           }));
           cleanProductData.image = base64Images[0];
+          console.log('Processed images:', cleanProductData.images.length, 'items');
         } else {
           cleanProductData.image = "/placeholder.svg";
           cleanProductData.images = ["/placeholder.svg"];
