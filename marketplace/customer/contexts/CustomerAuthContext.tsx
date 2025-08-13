@@ -48,10 +48,15 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       if (storedToken && storedCustomer) {
         try {
+          // Parse stored customer and set initial auth state
+          const parsedCustomer = JSON.parse(storedCustomer);
+          setAuthData(parsedCustomer, storedToken);
+
           // Verify token is still valid by fetching current customer
           const currentCustomer = await authAPI.getCurrentCustomer();
           setAuthData(currentCustomer, storedToken);
         } catch (error) {
+          console.error('Auth initialization error:', error);
           // Token is invalid, clear stored data
           localStorage.removeItem('customerToken');
           localStorage.removeItem('customer');
