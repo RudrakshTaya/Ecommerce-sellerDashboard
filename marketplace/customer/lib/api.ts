@@ -72,13 +72,13 @@ export const authAPI = {
   },
 
   getCurrentCustomer: async (): Promise<Customer> => {
-    const response: AxiosResponse<ApiResponse<Customer>> = await api.get('/customer-auth/profile');
-    return response.data.data!;
+    const response: AxiosResponse<{success: boolean, customer: Customer}> = await api.get('/customer-auth/me');
+    return response.data.customer;
   },
 
   updateProfile: async (data: Partial<Customer>): Promise<Customer> => {
-    const response: AxiosResponse<ApiResponse<Customer>> = await api.put('/customer-auth/profile', data);
-    return response.data.data!;
+    const response: AxiosResponse<{success: boolean, customer: Customer}> = await api.put('/customer-auth/profile', data);
+    return response.data.customer;
   },
 };
 
