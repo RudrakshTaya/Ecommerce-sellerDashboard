@@ -858,4 +858,42 @@ router.get(
   }),
 );
 
+// Debug endpoint to test product counting
+router.get(
+  "/debug/products",
+  protect,
+  asyncHandler(async (req, res) => {
+    try {
+      const sellerId = req.seller._id;
+
+      // Get all products for this seller
+      const products = await Product.find({ sellerId }).select('name sku status sellerId');
+      const productCount = await Product.countDocuments({ sellerId });
+
+      console.log("Debug products endpoint:", {
+        sellerId,
+        productCount,
+        products: products.length,
+        sampleProducts: products.slice(0, 3)
+      });
+
+      res.json({
+        success: true,
+        data: {
+          sellerId,
+          productCount,
+          totalFound: products.length,
+          products: products.slice(0, 5) // Return first 5 products
+        }
+      });
+    } catch (error) {
+      console.error("Debug products error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error in debug endpoint"
+      });
+    }
+  })
+);
+
 export default router;
