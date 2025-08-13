@@ -54,7 +54,6 @@ export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({ children
 
     try {
       // Try real API first
-      const { loginSeller } = await import('../api/auth.js');
       const response = await loginSeller(email, password);
 
       if (response.success && response.seller && response.token) {
@@ -67,9 +66,6 @@ export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({ children
       }
     } catch (error) {
       console.warn('Real API failed, falling back to mock authentication:', error);
-
-      
-     
     }
 
     setLoading(false);
