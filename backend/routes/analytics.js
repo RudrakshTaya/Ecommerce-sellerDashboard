@@ -23,6 +23,15 @@ router.get(
 
       // Debug logging
       console.log("Analytics dashboard request for sellerId:", sellerId);
+      console.log("sellerId type:", typeof sellerId);
+
+      // Test direct query to products
+      const testProductCount = await Product.countDocuments({ sellerId });
+      const testProducts = await Product.find({ sellerId }).limit(2).select('name sellerId');
+      console.log("Direct product query test:", {
+        count: testProductCount,
+        sampleProducts: testProducts
+      });
 
       // Get overall statistics
       const [
