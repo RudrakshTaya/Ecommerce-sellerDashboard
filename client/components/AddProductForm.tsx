@@ -292,7 +292,7 @@ export default function AddProductForm({
               description: formData.warranty.description,
               type: formData.warranty.type,
             }
-          : undefined,
+          : { enabled: false },
         returnPolicy: formData.returnPolicy.enabled
           ? {
               returnable: true,
@@ -302,7 +302,7 @@ export default function AddProductForm({
                 .map((c) => c.trim())
                 .filter((c) => c),
             }
-          : undefined,
+          : { enabled: false, returnable: false },
         dimensions: formData.dimensions.length
           ? {
               length: parseFloat(formData.dimensions.length) || undefined,
@@ -334,7 +334,11 @@ export default function AddProductForm({
       // Debug logging
       console.log('Product data before submission:', {
         warranty: productData.warranty,
-        returnPolicy: productData.returnPolicy
+        returnPolicy: productData.returnPolicy,
+        warrantyEnabled: formData.warranty.enabled,
+        returnPolicyEnabled: formData.returnPolicy.enabled,
+        formDataWarranty: formData.warranty,
+        formDataReturnPolicy: formData.returnPolicy
       });
 
       if (token) {
