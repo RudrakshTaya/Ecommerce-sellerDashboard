@@ -368,10 +368,33 @@ export const productsAPI = {
       formData.append("removeImages", JSON.stringify(removeImages));
     }
 
-    return apiClient.upload(
-      API_CONFIG.ENDPOINTS.PRODUCTS.BY_ID(productId),
-      formData,
-    );
+    // Use custom upload with PUT method for updates
+    const url = createApiUrl(API_CONFIG.ENDPOINTS.PRODUCTS.BY_ID(productId));
+
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: createFormDataHeaders(true), // Auth headers only, no Content-Type for FormData
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || `HTTP error! status: ${response.status}`,
+        );
+      }
+
+      // Transform _id to id for frontend compatibility
+      if (data && data.data) {
+        data.data = transformData(data.data);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   delete: (id) => {
