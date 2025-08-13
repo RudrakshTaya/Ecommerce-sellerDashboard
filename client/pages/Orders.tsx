@@ -21,7 +21,7 @@ import {
 } from '../components/ui/select';
 import { Separator } from '../components/ui/separator';
 import { ScrollArea } from '../components/ui/scroll-area';
-import { mockApi } from '../lib/mockApi';
+import { ordersAPI } from '../lib/updatedApiClient';
 import { Order } from '@shared/api';
 import { 
   ShoppingCart, 
@@ -463,7 +463,7 @@ const OrderCard = ({
 };
 
 export default function Orders() {
-  const { seller } = useSellerAuth();
+  const { seller, token } = useSellerAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -473,21 +473,23 @@ export default function Orders() {
 
   useEffect(() => {
     const loadOrders = async () => {
-      if (!seller) return;
+      if (!seller || !token) return;
       
       try {
         setLoading(true);
-        const response = await mockApi.getSellerOrders(seller.id);
-        setOrders(response.orders);
+        const response = await ordersAPI.getAll();
+        setOrders(response.data || []);
       } catch (error) {
         console.error('Failed to load orders:', error);
+        // If orders API fails, show empty state instead of breaking
+        setOrders([]);
       } finally {
         setLoading(false);
       }
     };
 
     loadOrders();
-  }, [seller]);
+  }, [seller, token]);
 
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
@@ -496,7 +498,7 @@ export default function Orders() {
 
   const handleStatusUpdate = async (orderId: string, newStatus: Order['status']) => {
     try {
-      await mockApi.updateOrderStatus(orderId, newStatus);
+      await ordersAPI.updateStatus(orderId, newStatus);
       setOrders(prev => prev.map(order => 
         order.id === orderId ? { ...order, status: newStatus } : order
       ));
