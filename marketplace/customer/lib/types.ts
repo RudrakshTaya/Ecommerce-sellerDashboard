@@ -61,16 +61,15 @@ export interface Customer {
 }
 
 export interface Address {
-  _id: string;
+  _id?: string;
   type: 'home' | 'work' | 'other';
   firstName: string;
   lastName: string;
   phone: string;
-  street: string;
+  address: string;
   city: string;
   state: string;
-  zipCode: string;
-  country: string;
+  pincode: string;
   isDefault: boolean;
 }
 
