@@ -72,8 +72,8 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
           </div>
         </DialogHeader>
 
-        <ScrollArea className="flex-1 max-h-[calc(95vh-200px)]">
-          <div className="space-y-6 pr-4">
+        <div className="flex-1 overflow-y-auto max-h-[calc(95vh-150px)] px-1">
+          <div className="space-y-6 pr-3">
             {/* Image Gallery & Basic Info */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Image Gallery */}
@@ -503,7 +503,7 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
               </Card>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
