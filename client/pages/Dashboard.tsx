@@ -170,14 +170,15 @@ export default function Dashboard() {
 
         if (dashboardData.success && dashboardData.data) {
           // Transform backend data to match SellerStats interface
+          const overview = dashboardData.data.overview || {};
           const transformedStats: SellerStats = {
-            totalProducts: dashboardData.data.totalProducts || 0,
-            totalOrders: dashboardData.data.totalOrders || 0,
-            lowStockProducts: dashboardData.data.lowStockProducts || 0,
-            totalRevenue: dashboardData.data.totalRevenue || 0,
-            monthlyRevenue: dashboardData.data.monthlyRevenue || 0,
-            pendingOrders: dashboardData.data.pendingOrders || 0,
-            completedOrders: dashboardData.data.completedOrders || 0,
+            totalProducts: overview.totalProducts || 0,
+            totalOrders: overview.totalOrders || 0,
+            lowStockProducts: overview.lowStockProducts || 0,
+            totalRevenue: overview.totalRevenue || 0,
+            monthlyRevenue: overview.monthlyRevenue || 0,
+            pendingOrders: overview.pendingOrders || 0,
+            completedOrders: overview.processingOrders || 0,
           };
           setStats(transformedStats);
         } else {
