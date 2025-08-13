@@ -243,7 +243,7 @@ export default function EditProductForm({
 
     setLoading(true);
     try {
-      const updatedProductData: Product = {
+      const updatedProductData: any = {
         ...product,
         name: formData.name,
         price: parseFloat(formData.price),
@@ -251,11 +251,8 @@ export default function EditProductForm({
           ? parseFloat(formData.originalPrice)
           : undefined,
         description: formData.description,
-        image: formData.image || product?.image || "/placeholder.svg",
-        images:
-          formData.images.length > 0
-            ? formData.images
-            : product?.images || ["/placeholder.svg"],
+        // Include new image files if they exist
+        ...(formData.imageFiles.length > 0 && { newImages: formData.imageFiles }),
         category: formData.category,
         subcategory: formData.subcategory || undefined,
         materials: formData.materials
@@ -331,6 +328,11 @@ export default function EditProductForm({
           : undefined,
         sustainabilityInfo: formData.sustainabilityInfo || undefined,
         faq: formData.faq.filter((item) => item.question && item.answer),
+        // Keep existing images if no new files were uploaded
+        ...(formData.imageFiles.length === 0 && {
+          image: formData.image || product?.image || "/placeholder.svg",
+          images: formData.images.length > 0 ? formData.images : product?.images || ["/placeholder.svg"]
+        })
       };
 
       if (token && product) {
