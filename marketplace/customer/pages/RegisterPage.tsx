@@ -29,7 +29,7 @@ const RegisterPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       showNotification('Passwords do not match', 'error');
       return;
@@ -37,6 +37,13 @@ const RegisterPage: React.FC = () => {
 
     if (formData.password.length < 6) {
       showNotification('Password must be at least 6 characters long', 'error');
+      return;
+    }
+
+    // Validate phone number format (digits only, 10-15 characters)
+    const phoneRegex = /^[0-9]{10,15}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      showNotification('Phone number must be 10-15 digits only (no spaces or symbols)', 'error');
       return;
     }
 
