@@ -528,7 +528,8 @@ router.get(
     const { limit = 6 } = req.query;
 
     try {
-      const sellers = await Seller.find({
+      // First try to get featured sellers
+      let sellers = await Seller.find({
         isActive: true,
         isVerified: true,
         isFeatured: true,
@@ -537,6 +538,17 @@ router.get(
         .sort("-totalSales")
         .limit(parseInt(limit))
         .exec();
+
+      // If no featured sellers, get any verified sellers
+      if (sellers.length === 0) {
+        sellers = await Seller.find({
+          isVerified: true,
+        })
+          .select("storeName email rating reviewCount totalSales isVerified businessAddress profileImage")
+          .sort("-totalSales -createdAt")
+          .limit(parseInt(limit))
+          .exec();
+      }
 
       res.json({
         success: true,
