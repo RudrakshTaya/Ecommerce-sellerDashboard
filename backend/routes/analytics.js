@@ -748,10 +748,27 @@ router.get(
         .sort({ stock: 1 });
 
       // Get top valuable inventory
-      const topValueProducts = await Product.find({ sellerId })
-        .select("name sku category stock price")
-        .sort({ $multiply: ["$stock", "$price"] })
-        .limit(10);
+      // Get top value products using aggregation for calculated sort
+      const topValueProducts = await Product.aggregate([
+        { $match: { sellerId } },
+        {
+          $addFields: {
+            totalValue: { $multiply: ["$stock", "$price"] }
+          }
+        },
+        { $sort: { totalValue: -1 } },
+        { $limit: 10 },
+        {
+          $project: {
+            name: 1,
+            sku: 1,
+            category: 1,
+            stock: 1,
+            price: 1,
+            totalValue: 1
+          }
+        }
+      ]);
 
       // Calculate inventory turnover (simplified)
       const last90Days = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
