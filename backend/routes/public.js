@@ -446,4 +446,205 @@ router.get(
   }),
 );
 
+// @desc    Get all public sellers
+// @route   GET /api/public/sellers
+// @access  Public
+router.get(
+  "/sellers",
+  asyncHandler(async (req, res) => {
+    const { page = 1, limit = 12, sort = "-createdAt" } = req.query;
+
+    try {
+      const sellers = await Seller.find({
+        isActive: true,
+        isVerified: true,
+      })
+        .select("storeName email rating reviewCount totalSales isVerified businessAddress profileImage")
+        .sort(sort)
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .exec();
+
+      const total = await Seller.countDocuments({
+        isActive: true,
+        isVerified: true,
+      });
+
+      const totalPages = Math.ceil(total / limit);
+
+      res.json({
+        success: true,
+        data: sellers,
+        pagination: {
+          current: parseInt(page),
+          pages: totalPages,
+          total,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      });
+    } catch (error) {
+      console.error("Get public sellers error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching sellers",
+      });
+    }
+  }),
+);
+
+// @desc    Get featured sellers
+// @route   GET /api/public/sellers/featured
+// @access  Public
+router.get(
+  "/sellers/featured",
+  asyncHandler(async (req, res) => {
+    const { limit = 6 } = req.query;
+
+    try {
+      const sellers = await Seller.find({
+        isActive: true,
+        isVerified: true,
+        isFeatured: true,
+      })
+        .select("storeName email rating reviewCount totalSales isVerified businessAddress profileImage")
+        .sort("-totalSales")
+        .limit(parseInt(limit))
+        .exec();
+
+      res.json({
+        success: true,
+        data: sellers,
+      });
+    } catch (error) {
+      console.error("Get featured sellers error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching featured sellers",
+      });
+    }
+  }),
+);
+
+// @desc    Get single seller by ID (public)
+// @route   GET /api/public/sellers/:id
+// @access  Public
+router.get(
+  "/sellers/:id",
+  asyncHandler(async (req, res) => {
+    try {
+      const seller = await Seller.findOne({
+        _id: req.params.id,
+        isActive: true,
+      }).select("-password -refreshToken");
+
+      if (!seller) {
+        return res.status(404).json({
+          success: false,
+          message: "Seller not found",
+        });
+      }
+
+      res.json({
+        success: true,
+        data: seller,
+      });
+    } catch (error) {
+      console.error("Get public seller error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching seller",
+      });
+    }
+  }),
+);
+
+// @desc    Get products by seller
+// @route   GET /api/public/sellers/:id/products
+// @access  Public
+router.get(
+  "/sellers/:id/products",
+  asyncHandler(async (req, res) => {
+    const { page = 1, limit = 12, sort = "-createdAt" } = req.query;
+    const { id: sellerId } = req.params;
+
+    try {
+      const products = await Product.find({
+        sellerId: sellerId,
+        status: "active",
+        inStock: true,
+      })
+        .populate("sellerId", "storeName rating reviewCount")
+        .sort(sort)
+        .limit(limit * 1)
+        .skip((page - 1) * limit)
+        .exec();
+
+      const total = await Product.countDocuments({
+        sellerId: sellerId,
+        status: "active",
+        inStock: true,
+      });
+
+      const totalPages = Math.ceil(total / limit);
+
+      res.json({
+        success: true,
+        data: products,
+        pagination: {
+          current: parseInt(page),
+          pages: totalPages,
+          total,
+          hasNext: page < totalPages,
+          hasPrev: page > 1,
+        },
+      });
+    } catch (error) {
+      console.error("Get products by seller error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching products by seller",
+      });
+    }
+  }),
+);
+
+// @desc    Get single product by ID (public) - MUST BE LAST
+// @route   GET /api/public/products/:id
+// @access  Public
+router.get(
+  "/products/:id",
+  asyncHandler(async (req, res) => {
+    try {
+      const product = await Product.findOne({
+        _id: req.params.id,
+        status: "active",
+      }).populate("sellerId", "storeName rating reviewCount isVerified businessAddress");
+
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Product not found",
+        });
+      }
+
+      // Increment view count
+      await Product.findByIdAndUpdate(req.params.id, {
+        $inc: { views: 1 },
+      });
+
+      res.json({
+        success: true,
+        data: product,
+      });
+    } catch (error) {
+      console.error("Get public product error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching product",
+      });
+    }
+  }),
+);
+
 export default router;
