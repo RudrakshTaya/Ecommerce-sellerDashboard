@@ -88,6 +88,7 @@ app.use("/api/upload", uploadRoutes);                // File uploads
 app.use("/api/test", testRoutes);                    // Testing endpoints
 app.use("/api/admin", adminRoutes);                  // Admin endpoints
 app.use("/api/public", publicRoutes);                // Public marketplace endpoints
+app.use("/api/mock", mockDataRoutes);                 // Mock data for testing
 app.use("/api/customer-auth", customerAuthRoutes);   // Customer authentication
 app.use("/api/customer-orders", customerOrderRoutes); // Customer orders
 
