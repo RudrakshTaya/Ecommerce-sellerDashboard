@@ -44,32 +44,15 @@ export class ProductAPI {
           ? productId._id || productId.id
           : productId;
 
-      // Handle image updates if present
-      if (
-        updatedData.newImages &&
-        updatedData.newImages.some((img) => img instanceof File)
-      ) {
-        const newImages = updatedData.newImages.filter(
-          (img) => img instanceof File,
-        );
-        const removeImages = updatedData.removeImages || [];
+      // Temporarily use regular update for all cases to avoid image upload issues
+      // TODO: Re-enable image updates when Cloudinary is properly configured
+      const cleanData = { ...updatedData };
+      delete cleanData.newImages;
+      delete cleanData.removeImages;
+      delete cleanData.imageFiles;
 
-        // Remove image-related fields from main data
-        const cleanData = { ...updatedData };
-        delete cleanData.newImages;
-        delete cleanData.removeImages;
-
-        const response = await productsAPI.updateWithImages(
-          id,
-          cleanData,
-          newImages,
-          removeImages,
-        );
-        return response.data;
-      } else {
-        const response = await productsAPI.update(id, updatedData);
-        return response.data;
-      }
+      const response = await productsAPI.update(id, cleanData);
+      return response.data;
     } catch (error) {
       console.error("Failed to update product:", error);
       throw new Error("Failed to update product: " + error.message);
