@@ -14,16 +14,31 @@ const HomePage: React.FC = () => {
   const { data: featuredProducts, isLoading: loadingProducts } = useQuery({
     queryKey: ['featuredProducts'],
     queryFn: productsAPI.getFeaturedProducts,
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+    onError: (error) => {
+      console.log('Featured products error:', error);
+    },
   });
 
   const { data: trendingProducts, isLoading: loadingTrending } = useQuery({
     queryKey: ['trendingProducts'],
     queryFn: productsAPI.getTrendingProducts,
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+    onError: (error) => {
+      console.log('Trending products error:', error);
+    },
   });
 
   const { data: featuredSellers, isLoading: loadingSellers } = useQuery({
     queryKey: ['featuredSellers'],
     queryFn: sellersAPI.getFeaturedSellers,
+    retry: 1,
+    staleTime: 5 * 60 * 1000,
+    onError: (error) => {
+      console.log('Featured sellers error:', error);
+    },
   });
 
   const categories = [
