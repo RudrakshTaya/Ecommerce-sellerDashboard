@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Seller } from '@shared/api';
-import { loginSeller } from '../api/auth.js';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { Seller } from "@shared/api";
+import { loginSeller } from "../api/auth.js";
 
 interface SellerAuthContextType {
   seller: Seller | null;
@@ -11,12 +11,14 @@ interface SellerAuthContextType {
   token: string | null;
 }
 
-const SellerAuthContext = createContext<SellerAuthContextType | undefined>(undefined);
+const SellerAuthContext = createContext<SellerAuthContextType | undefined>(
+  undefined,
+);
 
 export const useSellerAuth = () => {
   const context = useContext(SellerAuthContext);
   if (context === undefined) {
-    throw new Error('useSellerAuth must be used within a SellerAuthProvider');
+    throw new Error("useSellerAuth must be used within a SellerAuthProvider");
   }
   return context;
 };
@@ -25,7 +27,9 @@ interface SellerAuthProviderProps {
   children: React.ReactNode;
 }
 
-export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({ children }) => {
+export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({
+  children,
+}) => {
   const [seller, setSeller] = useState<Seller | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,17 +37,17 @@ export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({ children
   // Check for stored seller data and token on mount
   useEffect(() => {
     try {
-      const storedSeller = localStorage.getItem('seller');
-      const storedToken = localStorage.getItem('authToken');
+      const storedSeller = localStorage.getItem("seller");
+      const storedToken = localStorage.getItem("authToken");
 
       if (storedSeller && storedToken) {
         setSeller(JSON.parse(storedSeller));
         setToken(storedToken);
       }
     } catch (error) {
-      console.error('Error loading stored auth data:', error);
-      localStorage.removeItem('seller');
-      localStorage.removeItem('authToken');
+      console.error("Error loading stored auth data:", error);
+      localStorage.removeItem("seller");
+      localStorage.removeItem("authToken");
     } finally {
       setLoading(false);
     }
@@ -59,13 +63,16 @@ export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({ children
       if (response.success && response.seller && response.token) {
         setSeller(response.seller);
         setToken(response.token);
-        localStorage.setItem('seller', JSON.stringify(response.seller));
-        localStorage.setItem('authToken', response.token);
+        localStorage.setItem("seller", JSON.stringify(response.seller));
+        localStorage.setItem("authToken", response.token);
         setLoading(false);
         return true;
       }
     } catch (error) {
-      console.warn('Real API failed, falling back to mock authentication:', error);
+      console.warn(
+        "Real API failed, falling back to mock authentication:",
+        error,
+      );
     }
 
     setLoading(false);
@@ -75,8 +82,8 @@ export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({ children
   const logout = () => {
     setSeller(null);
     setToken(null);
-    localStorage.removeItem('seller');
-    localStorage.removeItem('authToken');
+    localStorage.removeItem("seller");
+    localStorage.removeItem("authToken");
   };
 
   const value: SellerAuthContextType = {
@@ -85,7 +92,7 @@ export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({ children
     login,
     logout,
     loading,
-    token
+    token,
   };
 
   return (
