@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { authAPI } from "../lib/apiClient.js";
+import { authAPI } from "../lib/updatedApiClient.js";
 import { getAuthToken, removeAuthToken } from "../config/api.js";
 
 interface Seller {
@@ -120,7 +120,7 @@ export const SellerAuthProvider: React.FC<{ children: React.ReactNode }> = ({
         // Double-check token is stored in localStorage
         const storedToken = getAuthToken();
         if (!storedToken) {
-          setAuthToken(response.token);
+          setToken(response.token);
         }
 
         return { success: true };
