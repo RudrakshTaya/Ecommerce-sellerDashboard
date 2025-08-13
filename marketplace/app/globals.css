@@ -1,26 +1,240 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Dancing+Script:wght@400;500;600;700&display=swap');
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-sans antialiased;
+    background: linear-gradient(135deg, #fdf8f3 0%, #faf0e4 100%);
+    min-height: 100vh;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-craft-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-craft-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-craft-400;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  /* Button variants */
+  .btn-primary {
+    @apply bg-craft-500 hover:bg-craft-600 text-white font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-warm hover:shadow-lg transform hover:scale-105;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-craft-50 text-craft-700 font-medium px-6 py-3 rounded-xl border border-craft-200 transition-all duration-200 shadow-soft hover:shadow-warm;
+  }
+
+  .btn-ghost {
+    @apply text-craft-700 hover:text-craft-800 font-medium px-4 py-2 rounded-lg hover:bg-craft-50 transition-all duration-200;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-2xl shadow-soft hover:shadow-warm transition-all duration-300 border border-craft-100;
+  }
+
+  .card-elevated {
+    @apply bg-white rounded-2xl shadow-warm border border-craft-200;
+  }
+
+  /* Product card */
+  .product-card {
+    @apply card group cursor-pointer overflow-hidden;
+  }
+
+  .product-card:hover {
+    @apply transform -translate-y-1 shadow-craft;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-new {
+    @apply badge bg-emerald-100 text-emerald-800;
+  }
+
+  .badge-trending {
+    @apply badge bg-orange-100 text-orange-800;
+  }
+
+  .badge-handmade {
+    @apply badge bg-craft-100 text-craft-800;
+  }
+
+  .badge-custom {
+    @apply badge bg-sage-100 text-sage-800;
+  }
+
+  /* Input styles */
+  .input {
+    @apply w-full px-4 py-3 border border-craft-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-craft-300 focus:border-transparent bg-white placeholder-craft-400 transition-all duration-200;
+  }
+
+  /* Typography */
+  .text-gradient {
+    @apply bg-gradient-to-r from-craft-600 to-warm-600 bg-clip-text text-transparent;
+  }
+
+  .heading-serif {
+    @apply font-serif font-semibold;
+  }
+
+  /* Navigation */
+  .nav-link {
+    @apply text-craft-700 hover:text-craft-800 font-medium transition-colors duration-200 relative;
+  }
+
+  .nav-link:hover::after {
+    @apply absolute -bottom-1 left-0 w-full h-0.5 bg-craft-500 transform scale-x-100;
+    content: '';
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .nav-link::after {
+    @apply absolute -bottom-1 left-0 w-full h-0.5 bg-craft-500 transform scale-x-0;
+    content: '';
+    transition: transform 0.2s ease-in-out;
+  }
+
+  /* Section dividers */
+  .section-divider {
+    @apply relative;
+  }
+
+  .section-divider::before {
+    content: '';
+    @apply absolute top-0 left-1/2 w-24 h-1 bg-gradient-to-r from-craft-400 to-warm-400 rounded-full transform -translate-x-1/2;
+  }
+
+  /* Image overlays */
+  .image-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300;
+  }
+
+  /* Search bar */
+  .search-bar {
+    @apply relative flex items-center bg-white rounded-2xl shadow-soft border border-craft-200 overflow-hidden;
+  }
+
+  /* Star rating */
+  .star-rating {
+    @apply flex items-center gap-1;
+  }
+
+  .star {
+    @apply text-yellow-400;
+  }
+
+  /* Price display */
+  .price-current {
+    @apply text-2xl font-bold text-craft-800;
+  }
+
+  .price-original {
+    @apply text-lg text-craft-400 line-through;
+  }
+
+  .price-discount {
+    @apply text-sm font-semibold text-emerald-600 bg-emerald-100 px-2 py-1 rounded-lg;
+  }
+
+  /* Trust badges */
+  .trust-badge {
+    @apply inline-flex items-center gap-2 px-3 py-2 bg-craft-50 border border-craft-200 rounded-lg text-sm text-craft-700;
+  }
+
+  /* Mobile-specific styles */
+  @media (max-width: 768px) {
+    .mobile-padding {
+      @apply px-4;
+    }
+    
+    .mobile-card {
+      @apply rounded-xl shadow-soft;
+    }
+  }
+
+  /* Loading states */
+  .shimmer {
+    @apply animate-pulse bg-gradient-to-r from-craft-100 via-craft-200 to-craft-100 bg-[length:200%_100%];
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  /* Focus states for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-craft-300 focus:ring-offset-2;
+  }
+}
+
+@layer utilities {
+  /* Custom utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-mesh {
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(221, 150, 88, 0.15) 1px, transparent 0);
+    background-size: 20px 20px;
+  }
+
+  .backdrop-blur-xs {
+    backdrop-filter: blur(2px);
+  }
+
+  /* Responsive text sizes */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl;
+  }
+
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl;
+  }
+
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl;
+  }
+
+  .text-responsive-3xl {
+    @apply text-3xl sm:text-4xl;
+  }
 }
