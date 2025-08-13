@@ -165,12 +165,45 @@ export default function Dashboard() {
 
       try {
         setLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        setStats(mockSellerStats as SellerStats);
+        // Load real dashboard data from backend
+        const dashboardData = await analyticsAPI.getDashboard();
+
+        if (dashboardData.success && dashboardData.data) {
+          // Transform backend data to match SellerStats interface
+          const transformedStats: SellerStats = {
+            totalProducts: dashboardData.data.totalProducts || 0,
+            totalOrders: dashboardData.data.totalOrders || 0,
+            lowStockProducts: dashboardData.data.lowStockProducts || 0,
+            totalRevenue: dashboardData.data.totalRevenue || 0,
+            monthlyRevenue: dashboardData.data.monthlyRevenue || 0,
+            pendingOrders: dashboardData.data.pendingOrders || 0,
+            completedOrders: dashboardData.data.completedOrders || 0,
+          };
+          setStats(transformedStats);
+        } else {
+          // Fallback to default values if no data
+          setStats({
+            totalProducts: 0,
+            totalOrders: 0,
+            lowStockProducts: 0,
+            totalRevenue: 0,
+            monthlyRevenue: 0,
+            pendingOrders: 0,
+            completedOrders: 0,
+          });
+        }
       } catch (error) {
         console.error('Failed to load stats:', error);
-        setStats(mockSellerStats as SellerStats);
+        // Fallback to default values on error
+        setStats({
+          totalProducts: 0,
+          totalOrders: 0,
+          lowStockProducts: 0,
+          totalRevenue: 0,
+          monthlyRevenue: 0,
+          pendingOrders: 0,
+          completedOrders: 0,
+        });
       } finally {
         setLoading(false);
       }
