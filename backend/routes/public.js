@@ -134,39 +134,34 @@ router.get(
   }),
 );
 
-// @desc    Get single product by ID (public)
-// @route   GET /api/public/products/:id
+// @desc    Get featured products
+// @route   GET /api/public/products/featured
 // @access  Public
 router.get(
-  "/products/:id",
+  "/products/featured",
   asyncHandler(async (req, res) => {
+    const { limit = 10 } = req.query;
+
     try {
-      const product = await Product.findOne({
-        _id: req.params.id,
+      const products = await Product.find({
         status: "active",
-      }).populate("sellerId", "storeName rating reviewCount isVerified businessAddress");
-
-      if (!product) {
-        return res.status(404).json({
-          success: false,
-          message: "Product not found",
-        });
-      }
-
-      // Increment view count
-      await Product.findByIdAndUpdate(req.params.id, {
-        $inc: { views: 1 },
-      });
+        inStock: true,
+        isFeatured: true,
+      })
+        .populate("sellerId", "storeName rating reviewCount")
+        .sort("-views")
+        .limit(parseInt(limit))
+        .exec();
 
       res.json({
         success: true,
-        data: product,
+        data: products,
       });
     } catch (error) {
-      console.error("Get public product error:", error);
+      console.error("Get featured products error:", error);
       res.status(500).json({
         success: false,
-        message: "Error fetching product",
+        message: "Error fetching featured products",
       });
     }
   }),
@@ -176,7 +171,7 @@ router.get(
 // @route   GET /api/public/products/trending
 // @access  Public
 router.get(
-  "/trending",
+  "/products/trending",
   asyncHandler(async (req, res) => {
     const { limit = 10 } = req.query;
 
