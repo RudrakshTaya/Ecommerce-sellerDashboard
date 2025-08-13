@@ -238,7 +238,7 @@ router.get(
       const products = await Product.find({
         status: "active",
         inStock: true,
-        isNew: true,
+        isNewProduct: true,
       })
         .populate("sellerId", "storeName rating reviewCount")
         .sort("-createdAt")
