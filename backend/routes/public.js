@@ -189,7 +189,8 @@ router.get(
     const { limit = 10 } = req.query;
 
     try {
-      const products = await Product.find({
+      // First try to get trending products
+      let products = await Product.find({
         status: "active",
         inStock: true,
         isTrending: true,
@@ -198,6 +199,18 @@ router.get(
         .sort("-views")
         .limit(parseInt(limit))
         .exec();
+
+      // If no trending products, get recent products sorted by views
+      if (products.length === 0) {
+        products = await Product.find({
+          status: "active",
+          inStock: true,
+        })
+          .populate("sellerId", "storeName rating reviewCount")
+          .sort("-views -createdAt")
+          .limit(parseInt(limit))
+          .exec();
+      }
 
       res.json({
         success: true,
