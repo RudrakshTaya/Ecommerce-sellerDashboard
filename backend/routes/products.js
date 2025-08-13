@@ -329,42 +329,54 @@ router.post(
         sku: req.body.sku.toUpperCase(),
         inStock: parseInt(req.body.stock) > 0,
 
-        // Process arrays from comma-separated strings
+        // Process arrays (handle both string and array inputs)
         materials: req.body.materials
-          ? req.body.materials
-              .split(",")
-              .map((m) => m.trim())
-              .filter((m) => m)
+          ? Array.isArray(req.body.materials)
+            ? req.body.materials
+            : req.body.materials
+                .split(",")
+                .map((m) => m.trim())
+                .filter((m) => m)
           : [],
         colors: req.body.colors
-          ? req.body.colors
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.colors)
+            ? req.body.colors
+            : req.body.colors
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : [],
         sizes: req.body.sizes
-          ? req.body.sizes
-              .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s)
+          ? Array.isArray(req.body.sizes)
+            ? req.body.sizes
+            : req.body.sizes
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s)
           : [],
         tags: req.body.tags
-          ? req.body.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter((t) => t)
+          ? Array.isArray(req.body.tags)
+            ? req.body.tags
+            : req.body.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter((t) => t)
           : [],
         careInstructions: req.body.careInstructions
-          ? req.body.careInstructions
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.careInstructions)
+            ? req.body.careInstructions
+            : req.body.careInstructions
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : [],
         certifications: req.body.certifications
-          ? req.body.certifications
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.certifications)
+            ? req.body.certifications
+            : req.body.certifications
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : [],
 
         // Process warranty and return policy
