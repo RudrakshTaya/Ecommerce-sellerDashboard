@@ -80,6 +80,10 @@ export interface Product {
     question: string;
     answer: string;
   }>;
+  _id?: string;
+  status?: "active" | "inactive" | "draft" | "out_of_stock";
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Order item interface
