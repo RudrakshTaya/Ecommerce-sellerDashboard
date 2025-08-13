@@ -10,9 +10,9 @@ const RegisterPage: React.FC = () => {
   const { showNotification } = useUIStore();
   
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   });
