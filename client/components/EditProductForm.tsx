@@ -6,7 +6,7 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Switch } from "./ui/switch";
-import { ProductAPI } from "../lib/productApi";
+import { ProductAPI } from "../lib/finalProductApi";
 import { Product } from "@shared/api";
 import {
   Dialog,

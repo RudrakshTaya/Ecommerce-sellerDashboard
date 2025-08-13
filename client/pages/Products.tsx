@@ -13,7 +13,7 @@ import {
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
-import { ProductAPI } from "../lib/productApi";
+import { ProductAPI } from "../lib/finalProductApi";
 import { Product } from "@shared/api";
 import {
   Package,

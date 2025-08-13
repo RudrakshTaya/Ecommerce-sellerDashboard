@@ -7,8 +7,8 @@ import { Textarea } from "./ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
-import { Separator } from "./ui/separator";
-import { ProductAPI } from "../lib/productApi";
+
+import { ProductAPI } from "../lib/finalProductApi";
 import { Product } from "@shared/api";
 import {
   X,
