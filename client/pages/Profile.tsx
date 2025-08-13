@@ -82,15 +82,16 @@ export default function Profile() {
               Manage your store information and settings
             </p>
           </div>
-          <Button 
+          <Button
             onClick={() => isEditing ? handleSave() : setIsEditing(true)}
             className="mt-4 sm:mt-0"
             variant={isEditing ? "default" : "outline"}
+            disabled={loading}
           >
             {isEditing ? (
               <>
                 <Save className="w-4 h-4 mr-2" />
-                Save Changes
+                {loading ? 'Saving...' : 'Save Changes'}
               </>
             ) : (
               'Edit Profile'
