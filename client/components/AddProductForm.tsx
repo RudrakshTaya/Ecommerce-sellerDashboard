@@ -66,6 +66,7 @@ export default function AddProductForm({
     seoDescription: "",
     image: "",
     images: [] as string[],
+    imageFiles: [] as File[],
     isCustomizable: false,
     isDIY: false,
     isInstagramPick: false,
@@ -102,6 +103,12 @@ export default function AddProductForm({
       const fileArray = Array.from(files);
       const imageUrls: string[] = [];
 
+      // Store the original files for API upload
+      setFormData((prev) => ({
+        ...prev,
+        imageFiles: [...prev.imageFiles, ...fileArray],
+      }));
+
       fileArray.forEach((file) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -111,8 +118,8 @@ export default function AddProductForm({
           if (imageUrls.length === fileArray.length) {
             setFormData((prev) => ({
               ...prev,
-              image: imageUrls[0] || "",
-              images: imageUrls,
+              image: prev.images.length === 0 ? imageUrls[0] : prev.image,
+              images: [...prev.images, ...imageUrls],
             }));
           }
         };
@@ -124,9 +131,11 @@ export default function AddProductForm({
   const removeImage = (index: number) => {
     setFormData((prev) => {
       const newImages = prev.images.filter((_, i) => i !== index);
+      const newImageFiles = prev.imageFiles.filter((_, i) => i !== index);
       return {
         ...prev,
         images: newImages,
+        imageFiles: newImageFiles,
         image: newImages[0] || "",
       };
     });
@@ -228,16 +237,15 @@ export default function AddProductForm({
     setErrors({});
 
     try {
-      const productData: Omit<Product, "id"> = {
+      const productData: any = {
         name: formData.name,
         price: parseFloat(formData.price),
         originalPrice: formData.originalPrice
           ? parseFloat(formData.originalPrice)
           : undefined,
         description: formData.description,
-        image: formData.image || "/placeholder.svg",
-        images:
-          formData.images.length > 0 ? formData.images : ["/placeholder.svg"],
+        // Only include images if we have files to upload
+        ...(formData.imageFiles.length > 0 && { images: formData.imageFiles }),
         category: formData.category,
         subcategory: formData.subcategory || undefined,
         materials: formData.materials

@@ -8,8 +8,8 @@ export class ProductAPI {
       const response = await productsAPI.getAll();
       return response.data || [];
     } catch (error) {
-      console.warn("API call failed, check if backend is running:", error);
-      return [];
+      console.error("Failed to fetch seller products:", error);
+      throw new Error("Failed to fetch products: " + error.message);
     }
   }
 
@@ -22,10 +22,11 @@ export class ProductAPI {
         productData.images.some((img) => img instanceof File)
       ) {
         const images = productData.images.filter((img) => img instanceof File);
-        delete productData.images; // Remove images from productData
+        const cleanProductData = { ...productData };
+        delete cleanProductData.images; // Remove images from productData
 
         const response = await productsAPI.createWithImages(
-          productData,
+          cleanProductData,
           images,
         );
         return response.data;

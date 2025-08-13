@@ -11,7 +11,7 @@ const API_CONFIG = {
     // Authentication
     AUTH: {
       LOGIN: "/api/auth/login",
-      REGISTER: "/api/auth/register",
+      REGISTER: "/api/auth/signup",
       ME: "/api/auth/me",
       PROFILE: "/api/auth/profile",
       CHANGE_PASSWORD: "/api/auth/change-password",
