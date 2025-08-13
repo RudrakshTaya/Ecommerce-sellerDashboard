@@ -17,6 +17,8 @@ import uploadRoutes from "./routes/upload.js";
 import testRoutes from "./routes/test.js";
 import adminRoutes from "./routes/admin.js";
 import publicRoutes from "./routes/public.js";
+import customerAuthRoutes from "./routes/customer-auth.js";
+import customerOrderRoutes from "./routes/customer-orders.js";
 
 // Load environment variables
 dotenv.config();
@@ -65,21 +67,28 @@ if (process.env.NODE_ENV === "development") {
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
-    message: "Ecommerce Seller Backend API is running",
+    message: "Ecommerce Multi-Platform Backend API is running",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
+    services: {
+      seller_dashboard: process.env.FRONTEND_URL || "http://localhost:8080",
+      marketplace: "http://localhost:3001",
+      backend: `http://localhost:${process.env.PORT || 5000}`,
+    },
   });
 });
 
 // API routes
-app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/analytics", analyticsRoutes);
-app.use("/api/upload", uploadRoutes);
-app.use("/api/test", testRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/public", publicRoutes); // Public routes for marketplace
+app.use("/api/auth", authRoutes);                    // Seller authentication
+app.use("/api/products", productRoutes);             // Seller products management
+app.use("/api/orders", orderRoutes);                 // Seller orders management
+app.use("/api/analytics", analyticsRoutes);          // Seller analytics
+app.use("/api/upload", uploadRoutes);                // File uploads
+app.use("/api/test", testRoutes);                    // Testing endpoints
+app.use("/api/admin", adminRoutes);                  // Admin endpoints
+app.use("/api/public", publicRoutes);                // Public marketplace endpoints
+app.use("/api/customer-auth", customerAuthRoutes);   // Customer authentication
+app.use("/api/customer-orders", customerOrderRoutes); // Customer orders
 
 // 404 handler
 app.use("*", (req, res) => {
@@ -99,8 +108,15 @@ app.listen(PORT, () => {
     `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`,
   );
   console.log(`📊 API Health Check: http://localhost:${PORT}/health`);
-  console.log(`🔗 Seller Dashboard: ${process.env.FRONTEND_URL}`);
-  console.log(`🛍️ Marketplace: http://localhost:3001`);
+  console.log(`🔗 Seller Dashboard: ${process.env.FRONTEND_URL || "http://localhost:8080"}`);
+  console.log(`🛍️ Customer Marketplace: http://localhost:3001`);
+  console.log(`\n📋 Available API Endpoints:`);
+  console.log(`   • Seller Auth: /api/auth/*`);
+  console.log(`   • Seller Products: /api/products/*`);
+  console.log(`   • Seller Orders: /api/orders/*`);
+  console.log(`   • Customer Auth: /api/customer-auth/*`);
+  console.log(`   • Customer Orders: /api/customer-orders/*`);
+  console.log(`   • Public Products: /api/public/*`);
 });
 
 // Handle unhandled promise rejections
