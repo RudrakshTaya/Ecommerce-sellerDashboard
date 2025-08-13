@@ -65,7 +65,7 @@ router.get(
       isHandmade,
       isCustomizable,
       isTrending,
-      isNew,
+      isNewProduct,
     } = req.query;
 
     try {
