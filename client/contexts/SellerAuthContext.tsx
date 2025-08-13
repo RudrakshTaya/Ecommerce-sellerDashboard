@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Seller } from '@shared/api';
+import { loginSeller } from '../api/auth.js';
 
 interface SellerAuthContextType {
   seller: Seller | null;
