@@ -72,7 +72,7 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(95vh-120px)]">
+        <ScrollArea className="flex-1 max-h-[calc(95vh-200px)]">
           <div className="space-y-6 pr-4">
             {/* Image Gallery & Basic Info */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
