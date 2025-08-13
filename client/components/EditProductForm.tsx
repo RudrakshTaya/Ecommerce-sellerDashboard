@@ -303,7 +303,7 @@ export default function EditProductForm({
               description: formData.warranty.description,
               type: formData.warranty.type,
             }
-          : undefined,
+          : { enabled: false },
         returnPolicy: formData.returnPolicy.enabled
           ? {
               returnable: true,
@@ -313,7 +313,7 @@ export default function EditProductForm({
                 .map((c) => c.trim())
                 .filter((c) => c),
             }
-          : undefined,
+          : { enabled: false, returnable: false },
         dimensions: (formData.dimensions.length || formData.dimensions.width || formData.dimensions.height || formData.dimensions.weight)
           ? {
               length: parseFloat(formData.dimensions.length) || undefined,
