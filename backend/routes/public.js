@@ -204,7 +204,7 @@ router.get(
 // @route   GET /api/public/products/new
 // @access  Public
 router.get(
-  "/new",
+  "/products/new",
   asyncHandler(async (req, res) => {
     const { limit = 10 } = req.query;
 
