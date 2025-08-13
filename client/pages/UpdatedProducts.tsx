@@ -365,6 +365,7 @@ export default function UpdatedProducts() {
             setShowViewModal(false);
             setSelectedProduct(null);
           }}
+          onEdit={handleEditProduct}
         />
       </div>
     </DashboardLayout>
