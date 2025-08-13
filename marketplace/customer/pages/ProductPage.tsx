@@ -235,22 +235,24 @@ const ProductPage: React.FC = () => {
               </div>
 
               {/* Seller Info */}
-              <div className="flex items-center space-x-3 mb-4">
-                <img
-                  src={product.seller.avatar || '/placeholder.svg'}
-                  alt={product.seller.name}
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-                <Link
-                  to={`/sellers/${product.seller._id}`}
-                  className="font-medium text-craft-600 hover:text-craft-700"
-                >
-                  {product.seller.businessName || product.seller.name}
-                </Link>
-                {product.seller.isVerified && (
-                  <Badge className="w-4 h-4 text-green-500" />
-                )}
-              </div>
+              {product.seller && (
+                <div className="flex items-center space-x-3 mb-4">
+                  <img
+                    src={product.seller.avatar || '/placeholder.svg'}
+                    alt={product.seller.name || 'Seller'}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <Link
+                    to={`/sellers/${product.seller._id}`}
+                    className="font-medium text-craft-600 hover:text-craft-700"
+                  >
+                    {product.seller.businessName || product.seller.name || 'Unknown Seller'}
+                  </Link>
+                  {product.seller.isVerified && (
+                    <Badge className="w-4 h-4 text-green-500" />
+                  )}
+                </div>
+              )}
 
               {/* Rating */}
               <div className="flex items-center space-x-2 mb-4">
