@@ -326,6 +326,14 @@ export default function AddProductForm({
       };
 
       if (token) {
+        // Set default values for required image fields
+        if (!productData.image) {
+          productData.image = "/placeholder.svg";
+        }
+        if (!productData.images || productData.images.length === 0) {
+          productData.images = ["/placeholder.svg"];
+        }
+
         const savedProduct = await ProductAPI.addProduct(productData, token);
         onSuccess(savedProduct);
         onClose();
