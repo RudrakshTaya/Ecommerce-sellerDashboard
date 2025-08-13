@@ -237,16 +237,15 @@ export default function AddProductForm({
     setErrors({});
 
     try {
-      const productData: Omit<Product, "id"> = {
+      const productData: any = {
         name: formData.name,
         price: parseFloat(formData.price),
         originalPrice: formData.originalPrice
           ? parseFloat(formData.originalPrice)
           : undefined,
         description: formData.description,
-        image: formData.image || "/placeholder.svg",
-        images:
-          formData.images.length > 0 ? formData.images : ["/placeholder.svg"],
+        // Only include images if we have files to upload
+        ...(formData.imageFiles.length > 0 && { images: formData.imageFiles }),
         category: formData.category,
         subcategory: formData.subcategory || undefined,
         materials: formData.materials
