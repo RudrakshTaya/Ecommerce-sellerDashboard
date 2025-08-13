@@ -37,7 +37,7 @@ const ProductCard = ({
   product: Product;
   onView: (product: Product) => void;
   onEdit: (product: Product) => void;
-  onDelete: (productId: number) => void;
+  onDelete: (productId: string) => void;
 }) => {
   const isLowStock = product.stock <= product.lowStockThreshold;
 
