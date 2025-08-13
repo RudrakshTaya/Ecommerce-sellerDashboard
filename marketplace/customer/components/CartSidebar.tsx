@@ -1,17 +1,17 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { X, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
-import { useCartStore } from '../lib/store';
+import React from "react";
+import { Link } from "react-router-dom";
+import { X, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
+import { useCartStore } from "../lib/store";
 
 const CartSidebar: React.FC = () => {
-  const { 
-    items, 
-    isOpen, 
-    closeCart, 
-    updateQuantity, 
-    removeItem, 
-    getCartTotal, 
-    getCartCount 
+  const {
+    items,
+    isOpen,
+    closeCart,
+    updateQuantity,
+    removeItem,
+    getCartTotal,
+    getCartCount,
   } = useCartStore();
 
   const total = getCartTotal();
@@ -22,7 +22,7 @@ const CartSidebar: React.FC = () => {
   return (
     <>
       {/* Overlay */}
-      <div 
+      <div
         className="fixed inset-0 bg-black bg-opacity-50 z-50"
         onClick={closeCart}
       />
@@ -49,8 +49,12 @@ const CartSidebar: React.FC = () => {
             {items.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                 <ShoppingBag className="w-16 h-16 text-earth-300 mb-4" />
-                <h3 className="text-lg font-medium text-earth-600 mb-2">Your cart is empty</h3>
-                <p className="text-earth-400 mb-6">Discover amazing handmade crafts to fill it up!</p>
+                <h3 className="text-lg font-medium text-earth-600 mb-2">
+                  Your cart is empty
+                </h3>
+                <p className="text-earth-400 mb-6">
+                  Discover amazing handmade crafts to fill it up!
+                </p>
                 <Link
                   to="/products"
                   onClick={closeCart}
@@ -62,11 +66,14 @@ const CartSidebar: React.FC = () => {
             ) : (
               <div className="p-4 space-y-4">
                 {items.map((item) => (
-                  <div key={item.productId} className="flex space-x-3 p-3 bg-warm-50 rounded-lg">
+                  <div
+                    key={item.productId}
+                    className="flex space-x-3 p-3 bg-warm-50 rounded-lg"
+                  >
                     {/* Product Image */}
                     <div className="flex-shrink-0">
                       <img
-                        src={item.product.images[0] || '/placeholder.svg'}
+                        src={item.product.images[0] || "/placeholder.svg"}
                         alt={item.product.name}
                         className="w-16 h-16 object-cover rounded-lg"
                       />
@@ -78,7 +85,10 @@ const CartSidebar: React.FC = () => {
                         {item.product.name}
                       </h3>
                       <p className="text-sm text-earth-600 mt-1">
-                        by {item.product.seller?.businessName || item.product.seller?.name || 'Unknown Seller'}
+                        by{" "}
+                        {item.product.seller?.businessName ||
+                          item.product.seller?.name ||
+                          "Unknown Seller"}
                       </p>
                       <div className="flex items-center justify-between mt-2">
                         <span className="text-sm font-semibold text-craft-600">
@@ -88,7 +98,9 @@ const CartSidebar: React.FC = () => {
                         {/* Quantity Controls */}
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                            onClick={() =>
+                              updateQuantity(item.productId, item.quantity - 1)
+                            }
                             className="p-1 hover:bg-warm-200 rounded-md transition-colors"
                           >
                             <Minus className="w-3 h-3 text-earth-600" />
@@ -97,7 +109,9 @@ const CartSidebar: React.FC = () => {
                             {item.quantity}
                           </span>
                           <button
-                            onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                            onClick={() =>
+                              updateQuantity(item.productId, item.quantity + 1)
+                            }
                             className="p-1 hover:bg-warm-200 rounded-md transition-colors"
                           >
                             <Plus className="w-3 h-3 text-earth-600" />
@@ -122,7 +136,9 @@ const CartSidebar: React.FC = () => {
             <div className="border-t border-warm-200 p-4 space-y-4">
               {/* Total */}
               <div className="flex justify-between items-center">
-                <span className="text-lg font-medium text-earth-800">Total:</span>
+                <span className="text-lg font-medium text-earth-800">
+                  Total:
+                </span>
                 <span className="text-xl font-bold text-craft-600">
                   ${total.toFixed(2)}
                 </span>

@@ -1,8 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Heart, ShoppingCart, Star } from 'lucide-react';
-import { Product } from '../lib/types';
-import { useCartStore, useWishlistStore } from '../lib/store';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Heart, ShoppingCart, Star } from "lucide-react";
+import { Product } from "../lib/types";
+import { useCartStore, useWishlistStore } from "../lib/store";
 
 interface ProductCardProps {
   product: Product;
@@ -10,7 +10,11 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCartStore();
-  const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+  const {
+    addItem: addToWishlist,
+    removeItem: removeFromWishlist,
+    isInWishlist,
+  } = useWishlistStore();
 
   const isWishlisted = isInWishlist(product._id);
 
@@ -30,12 +34,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     }
   };
 
-  const discountPercentage = product.originalPrice 
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const discountPercentage = product.originalPrice
+    ? Math.round(
+        ((product.originalPrice - product.price) / product.originalPrice) * 100,
+      )
     : 0;
 
   return (
-    <Link 
+    <Link
       to={`/products/${product._id}`}
       className="group bg-white rounded-xl shadow-sm border border-warm-100 hover:shadow-lg transition-all duration-200 hover-lift block"
     >
@@ -43,11 +49,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Product Image */}
         <div className="relative overflow-hidden rounded-t-xl">
           <img
-            src={product.images[0] || '/placeholder.svg'}
+            src={product.images[0] || "/placeholder.svg"}
             alt={product.name}
             className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
           />
-          
+
           {/* Discount Badge */}
           {discountPercentage > 0 && (
             <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
@@ -66,14 +72,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           <button
             onClick={handleToggleWishlist}
             className={`absolute top-2 right-2 p-2 rounded-full transition-all duration-200 ${
-              product.isHandmade ? 'top-10' : ''
+              product.isHandmade ? "top-10" : ""
             } ${
-              isWishlisted 
-                ? 'bg-red-500 text-white' 
-                : 'bg-white/80 text-earth-600 hover:bg-white hover:text-red-500'
+              isWishlisted
+                ? "bg-red-500 text-white"
+                : "bg-white/80 text-earth-600 hover:bg-white hover:text-red-500"
             }`}
           >
-            <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
+            <Heart
+              className={`w-4 h-4 ${isWishlisted ? "fill-current" : ""}`}
+            />
           </button>
 
           {/* Quick Add to Cart Button */}
@@ -94,12 +102,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           {product.seller && (
             <div className="flex items-center space-x-2 mb-2">
               <img
-                src={product.seller.avatar || '/placeholder.svg'}
-                alt={product.seller.name || 'Seller'}
+                src={product.seller.avatar || "/placeholder.svg"}
+                alt={product.seller.name || "Seller"}
                 className="w-6 h-6 rounded-full object-cover"
               />
               <span className="text-xs text-earth-600">
-                {product.seller.businessName || product.seller.name || 'Unknown Seller'}
+                {product.seller.businessName ||
+                  product.seller.name ||
+                  "Unknown Seller"}
               </span>
             </div>
           )}
@@ -117,8 +127,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   key={i}
                   className={`w-3 h-3 ${
                     i < Math.floor(product.rating)
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-earth-300'
+                      ? "text-yellow-400 fill-current"
+                      : "text-earth-300"
                   }`}
                 />
               ))}
@@ -140,7 +150,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 </span>
               )}
             </div>
-            
+
             {/* Stock Status */}
             <div className="text-xs">
               {product.stock > 0 ? (

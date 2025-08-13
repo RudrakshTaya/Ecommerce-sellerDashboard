@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, User } from 'lucide-react';
-import { useCustomerAuth } from '../contexts/CustomerAuthContext';
-import { useUIStore } from '../lib/store';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
+import { useCustomerAuth } from "../contexts/CustomerAuthContext";
+import { useUIStore } from "../lib/store";
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
   const { register } = useCustomerAuth();
   const { showNotification } = useUIStore();
-  
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -31,19 +31,22 @@ const RegisterPage: React.FC = () => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      showNotification('Passwords do not match', 'error');
+      showNotification("Passwords do not match", "error");
       return;
     }
 
     if (formData.password.length < 6) {
-      showNotification('Password must be at least 6 characters long', 'error');
+      showNotification("Password must be at least 6 characters long", "error");
       return;
     }
 
     // Validate phone number format (digits only, 10-15 characters)
     const phoneRegex = /^[0-9]{10,15}$/;
     if (!phoneRegex.test(formData.phone)) {
-      showNotification('Phone number must be 10-15 digits only (no spaces or symbols)', 'error');
+      showNotification(
+        "Phone number must be 10-15 digits only (no spaces or symbols)",
+        "error",
+      );
       return;
     }
 
@@ -51,10 +54,10 @@ const RegisterPage: React.FC = () => {
 
     try {
       await register(formData);
-      showNotification('Welcome! Account created successfully.', 'success');
-      navigate('/');
+      showNotification("Welcome! Account created successfully.", "success");
+      navigate("/");
     } catch (error: any) {
-      showNotification(error.message || 'Registration failed', 'error');
+      showNotification(error.message || "Registration failed", "error");
     } finally {
       setLoading(false);
     }
@@ -65,7 +68,10 @@ const RegisterPage: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <Link to="/" className="flex items-center justify-center space-x-2 mb-8">
+          <Link
+            to="/"
+            className="flex items-center justify-center space-x-2 mb-8"
+          >
             <div className="w-10 h-10 bg-gradient-to-br from-craft-500 to-earth-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold">HC</span>
             </div>
@@ -73,7 +79,7 @@ const RegisterPage: React.FC = () => {
               Handmade Crafts
             </span>
           </Link>
-          
+
           <h2 className="text-3xl font-bold text-earth-900">
             Create your account
           </h2>
@@ -87,7 +93,10 @@ const RegisterPage: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name Field */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-earth-900 mb-2">
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-earth-900 mb-2"
+              >
                 Full Name
               </label>
               <div className="relative">
@@ -107,7 +116,10 @@ const RegisterPage: React.FC = () => {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-earth-900 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-earth-900 mb-2"
+              >
                 Email Address
               </label>
               <div className="relative">
@@ -127,7 +139,10 @@ const RegisterPage: React.FC = () => {
 
             {/* Phone */}
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-earth-900 mb-2">
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-earth-900 mb-2"
+              >
                 Phone Number
               </label>
               <div className="relative">
@@ -148,14 +163,17 @@ const RegisterPage: React.FC = () => {
 
             {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-earth-900 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-earth-900 mb-2"
+              >
                 Password
               </label>
               <div className="relative">
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
                   onChange={handleChange}
@@ -169,21 +187,28 @@ const RegisterPage: React.FC = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-earth-400 hover:text-earth-600"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
 
             {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-earth-900 mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-earth-900 mb-2"
+              >
                 Confirm Password
               </label>
               <div className="relative">
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type={showConfirmPassword ? 'text' : 'password'}
+                  type={showConfirmPassword ? "text" : "password"}
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
@@ -197,7 +222,11 @@ const RegisterPage: React.FC = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-earth-400 hover:text-earth-600"
                 >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -211,13 +240,22 @@ const RegisterPage: React.FC = () => {
                 required
                 className="mt-1 h-4 w-4 text-craft-600 focus:ring-craft-500 border-warm-300 rounded"
               />
-              <label htmlFor="terms" className="ml-2 block text-sm text-earth-700">
-                I agree to the{' '}
-                <Link to="/terms" className="text-craft-600 hover:text-craft-700 font-medium">
+              <label
+                htmlFor="terms"
+                className="ml-2 block text-sm text-earth-700"
+              >
+                I agree to the{" "}
+                <Link
+                  to="/terms"
+                  className="text-craft-600 hover:text-craft-700 font-medium"
+                >
                   Terms of Service
-                </Link>{' '}
-                and{' '}
-                <Link to="/privacy" className="text-craft-600 hover:text-craft-700 font-medium">
+                </Link>{" "}
+                and{" "}
+                <Link
+                  to="/privacy"
+                  className="text-craft-600 hover:text-craft-700 font-medium"
+                >
                   Privacy Policy
                 </Link>
               </label>
@@ -229,7 +267,7 @@ const RegisterPage: React.FC = () => {
               disabled={loading}
               className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating Account...' : 'Create Account'}
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
@@ -240,7 +278,9 @@ const RegisterPage: React.FC = () => {
                 <div className="w-full border-t border-warm-200" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-earth-500">Already have an account?</span>
+                <span className="px-2 bg-white text-earth-500">
+                  Already have an account?
+                </span>
               </div>
             </div>
 

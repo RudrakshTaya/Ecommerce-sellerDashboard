@@ -39,13 +39,13 @@ export interface Customer {
   email: string;
   phone: string;
   dateOfBirth?: string;
-  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
+  gender?: "male" | "female" | "other" | "prefer_not_to_say";
   addresses: Address[];
   totalOrders: number;
   totalSpent: number;
   lastOrderDate?: string;
   averageOrderValue: number;
-  segment: 'new' | 'regular' | 'vip' | 'inactive';
+  segment: "new" | "regular" | "vip" | "inactive";
   preferences?: {
     communication?: {
       email?: boolean;
@@ -55,14 +55,14 @@ export interface Customer {
     categories?: string[];
     brands?: string[];
   };
-  status: 'active' | 'inactive' | 'blocked';
+  status: "active" | "inactive" | "blocked";
   createdAt: string;
   updatedAt?: string;
 }
 
 export interface Address {
   _id?: string;
-  type: 'home' | 'work' | 'other';
+  type: "home" | "work" | "other";
   firstName: string;
   lastName: string;
   phone: string;
@@ -88,8 +88,14 @@ export interface Order {
   shipping: number;
   tax: number;
   total: number;
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  status:
+    | "pending"
+    | "confirmed"
+    | "processing"
+    | "shipped"
+    | "delivered"
+    | "cancelled";
+  paymentStatus: "pending" | "paid" | "failed" | "refunded";
   shippingAddress: Address;
   billingAddress?: Address;
   tracking?: {
@@ -212,7 +218,7 @@ export interface RegisterRequest {
   password: string;
   confirmPassword: string;
   dateOfBirth?: string;
-  gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say';
+  gender?: "male" | "female" | "other" | "prefer_not_to_say";
 }
 
 export interface AuthResponse {
@@ -252,8 +258,8 @@ export interface ProductFilters {
   materials?: string[];
   seller?: string;
   inStock?: boolean;
-  sortBy?: 'price' | 'rating' | 'newest' | 'popular' | 'name';
-  sortOrder?: 'asc' | 'desc';
+  sortBy?: "price" | "rating" | "newest" | "popular" | "name";
+  sortOrder?: "asc" | "desc";
 }
 
 export interface SearchParams {

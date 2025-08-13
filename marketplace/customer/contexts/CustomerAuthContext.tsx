@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Customer } from '../lib/types';
-import { authAPI } from '../lib/api';
-import { useAuthStore } from '../lib/store';
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { Customer } from "../lib/types";
+import { authAPI } from "../lib/api";
+import { useAuthStore } from "../lib/store";
 
 interface CustomerAuthContextType {
   customer: Customer | null;
@@ -19,32 +19,38 @@ interface CustomerAuthContextType {
   updateProfile: (data: Partial<Customer>) => Promise<void>;
 }
 
-const CustomerAuthContext = createContext<CustomerAuthContextType | undefined>(undefined);
+const CustomerAuthContext = createContext<CustomerAuthContextType | undefined>(
+  undefined,
+);
 
 export const useCustomerAuth = () => {
   const context = useContext(CustomerAuthContext);
   if (context === undefined) {
-    throw new Error('useCustomerAuth must be used within a CustomerAuthProvider');
+    throw new Error(
+      "useCustomerAuth must be used within a CustomerAuthProvider",
+    );
   }
   return context;
 };
 
-export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [loading, setLoading] = useState(true);
-  const { 
-    customer, 
-    isAuthenticated, 
+  const {
+    customer,
+    isAuthenticated,
     token,
-    login: setAuthData, 
-    logout: clearAuthData, 
-    updateCustomer 
+    login: setAuthData,
+    logout: clearAuthData,
+    updateCustomer,
   } = useAuthStore();
 
   // Initialize auth state from localStorage
   useEffect(() => {
     const initializeAuth = async () => {
-      const storedToken = localStorage.getItem('customerToken');
-      const storedCustomer = localStorage.getItem('customer');
+      const storedToken = localStorage.getItem("customerToken");
+      const storedCustomer = localStorage.getItem("customer");
 
       if (storedToken && storedCustomer) {
         try {
@@ -56,16 +62,16 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
           const currentCustomer = await authAPI.getCurrentCustomer();
           setAuthData(currentCustomer, storedToken);
         } catch (error) {
-          console.error('Auth initialization error:', error);
+          console.error("Auth initialization error:", error);
           // Token is invalid, clear stored data
-          localStorage.removeItem('customerToken');
-          localStorage.removeItem('customer');
+          localStorage.removeItem("customerToken");
+          localStorage.removeItem("customer");
           clearAuthData();
         }
       } else {
         clearAuthData();
       }
-      
+
       setLoading(false);
     };
 
@@ -76,14 +82,16 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setLoading(true);
     try {
       const response = await authAPI.login({ email, password });
-      
+
       if (response.success && response.token && response.customer) {
         setAuthData(response.customer, response.token);
       } else {
-        throw new Error(response.message || 'Login failed');
+        throw new Error(response.message || "Login failed");
       }
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || error.message || 'Login failed');
+      throw new Error(
+        error.response?.data?.message || error.message || "Login failed",
+      );
     } finally {
       setLoading(false);
     }
@@ -99,14 +107,16 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setLoading(true);
     try {
       const response = await authAPI.register(data);
-      
+
       if (response.success && response.token && response.customer) {
         setAuthData(response.customer, response.token);
       } else {
-        throw new Error(response.message || 'Registration failed');
+        throw new Error(response.message || "Registration failed");
       }
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || error.message || 'Registration failed');
+      throw new Error(
+        error.response?.data?.message || error.message || "Registration failed",
+      );
     } finally {
       setLoading(false);
     }
@@ -118,7 +128,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       await authAPI.logout();
     } catch (error) {
       // Continue with logout even if API call fails
-      console.error('Logout API error:', error);
+      console.error("Logout API error:", error);
     } finally {
       clearAuthData();
       setLoading(false);
@@ -130,7 +140,11 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const updatedCustomer = await authAPI.updateProfile(data);
       updateCustomer(updatedCustomer);
     } catch (error: any) {
-      throw new Error(error.response?.data?.message || error.message || 'Profile update failed');
+      throw new Error(
+        error.response?.data?.message ||
+          error.message ||
+          "Profile update failed",
+      );
     }
   };
 

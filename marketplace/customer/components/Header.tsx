@@ -1,8 +1,21 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Search, ShoppingCart, Heart, User, Menu, X, LogOut } from 'lucide-react';
-import { useCartStore, useUIStore, useSearchStore, useAuthStore } from '../lib/store';
-import { useCustomerAuth } from '../contexts/CustomerAuthContext';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Search,
+  ShoppingCart,
+  Heart,
+  User,
+  Menu,
+  X,
+  LogOut,
+} from "lucide-react";
+import {
+  useCartStore,
+  useUIStore,
+  useSearchStore,
+  useAuthStore,
+} from "../lib/store";
+import { useCustomerAuth } from "../contexts/CustomerAuthContext";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -11,7 +24,7 @@ const Header: React.FC = () => {
   const { query, setQuery } = useSearchStore();
   const { isAuthenticated, customer } = useAuthStore();
   const { logout } = useCustomerAuth();
-  
+
   const [searchInput, setSearchInput] = useState(query);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
@@ -30,17 +43,17 @@ const Header: React.FC = () => {
     try {
       await logout();
       setShowUserMenu(false);
-      navigate('/');
+      navigate("/");
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'Products', href: '/products' },
-    { name: 'Categories', href: '/categories' },
-    { name: 'Sellers', href: '/sellers' },
+    { name: "Home", href: "/" },
+    { name: "Products", href: "/products" },
+    { name: "Categories", href: "/categories" },
+    { name: "Sellers", href: "/sellers" },
   ];
 
   return (
@@ -125,7 +138,7 @@ const Header: React.FC = () => {
                 >
                   <User className="w-5 h-5" />
                   <span className="hidden sm:block text-sm font-medium">
-                    {customer?.name?.split(' ')[0] || 'User'}
+                    {customer?.name?.split(" ")[0] || "User"}
                   </span>
                 </button>
 
