@@ -49,7 +49,7 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden">
+      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto flex flex-col">
         <DialogHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
