@@ -16,6 +16,7 @@ import analyticsRoutes from "./routes/analytics.js";
 import uploadRoutes from "./routes/upload.js";
 import testRoutes from "./routes/test.js";
 import adminRoutes from "./routes/admin.js";
+import publicRoutes from "./routes/public.js";
 
 // Load environment variables
 dotenv.config();
@@ -36,9 +37,12 @@ const limiter = rateLimit({
 });
 app.use("/api/", limiter);
 
-// CORS configuration
+// CORS configuration - Updated to allow marketplace frontend
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "http://localhost:8080",
+  origin: [
+    process.env.FRONTEND_URL || "http://localhost:8080",
+    "http://localhost:3001", // Marketplace frontend
+  ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -75,6 +79,7 @@ app.use("/api/analytics", analyticsRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/public", publicRoutes); // Public routes for marketplace
 
 // 404 handler
 app.use("*", (req, res) => {
@@ -94,7 +99,8 @@ app.listen(PORT, () => {
     `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`,
   );
   console.log(`📊 API Health Check: http://localhost:${PORT}/health`);
-  console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL}`);
+  console.log(`🔗 Seller Dashboard: ${process.env.FRONTEND_URL}`);
+  console.log(`🛍️ Marketplace: http://localhost:3001`);
 });
 
 // Handle unhandled promise rejections
