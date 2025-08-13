@@ -109,6 +109,7 @@ export default function EditProductForm({
         seoDescription: product.seoDescription || "",
         image: product.image || "",
         images: product.images || [],
+        imageFiles: [] as File[],
         isCustomizable: product.isCustomizable || false,
         isDIY: product.isDIY || false,
         isInstagramPick: product.isInstagramPick || false,
@@ -258,13 +259,17 @@ export default function EditProductForm({
         category: formData.category,
         subcategory: formData.subcategory || undefined,
         materials: formData.materials
-          .split(",")
-          .map((m) => m.trim())
-          .filter((m) => m),
+          ? formData.materials
+              .split(",")
+              .map((m) => m.trim())
+              .filter((m) => m)
+          : [],
         colors: formData.colors
-          .split(",")
-          .map((c) => c.trim())
-          .filter((c) => c),
+          ? formData.colors
+              .split(",")
+              .map((c) => c.trim())
+              .filter((c) => c)
+          : [],
         sizes: formData.sizes
           ? formData.sizes
               .split(",")
@@ -272,9 +277,11 @@ export default function EditProductForm({
               .filter((s) => s)
           : undefined,
         tags: formData.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter((t) => t),
+          ? formData.tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter((t) => t)
+          : [],
         stock: parseInt(formData.stock),
         deliveryDays: parseInt(formData.deliveryDays),
         sku: formData.sku,
@@ -307,15 +314,19 @@ export default function EditProductForm({
                 .filter((c) => c),
             }
           : undefined,
-        dimensions: formData.dimensions.length
-          ? {
-              length: parseFloat(formData.dimensions.length) || undefined,
-              width: parseFloat(formData.dimensions.width) || undefined,
-              height: parseFloat(formData.dimensions.height) || undefined,
-              weight: parseFloat(formData.dimensions.weight) || undefined,
-              unit: formData.dimensions.unit,
-            }
-          : undefined,
+        dimensions:
+          formData.dimensions.length ||
+          formData.dimensions.width ||
+          formData.dimensions.height ||
+          formData.dimensions.weight
+            ? {
+                length: parseFloat(formData.dimensions.length) || undefined,
+                width: parseFloat(formData.dimensions.width) || undefined,
+                height: parseFloat(formData.dimensions.height) || undefined,
+                weight: parseFloat(formData.dimensions.weight) || undefined,
+                unit: formData.dimensions.unit,
+              }
+            : undefined,
         careInstructions: formData.careInstructions
           ? formData.careInstructions
               .split(",")
@@ -339,6 +350,14 @@ export default function EditProductForm({
               : product?.images || ["/placeholder.svg"],
         }),
       };
+
+      // Debug logging
+      console.log("Edit product data before submission:", {
+        warranty: updatedProductData.warranty,
+        returnPolicy: updatedProductData.returnPolicy,
+        formDataWarranty: formData.warranty,
+        formDataReturnPolicy: formData.returnPolicy,
+      });
 
       if (token && product) {
         const savedProduct = await ProductAPI.updateProduct(

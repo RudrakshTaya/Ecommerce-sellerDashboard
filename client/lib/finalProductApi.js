@@ -16,25 +16,57 @@ export class ProductAPI {
   // Add new product with images
   static async addProduct(productData, token) {
     try {
-      // If productData has file objects, use the form upload method
+      const cleanProductData = { ...productData };
+
+      // Handle images - convert File objects to data URLs for temporary storage
+      console.log("Processing images:", productData.images?.length, "items");
       if (
         productData.images &&
+        Array.isArray(productData.images) &&
         productData.images.some((img) => img instanceof File)
       ) {
-        const images = productData.images.filter((img) => img instanceof File);
-        const cleanProductData = { ...productData };
-        delete cleanProductData.images; // Remove images from productData
+        // Convert File objects to base64 for temporary storage
+        const imagePromises = productData.images
+          .filter((img) => img instanceof File)
+          .slice(0, 3) // Limit to first 3 images
+          .map((file) => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.readAsDataURL(file);
+            });
+          });
 
-        const response = await productsAPI.createWithImages(
-          cleanProductData,
-          images,
-        );
-        return response.data;
+        if (imagePromises.length > 0) {
+          const base64Images = await Promise.all(imagePromises);
+          // Format images to match backend schema
+          cleanProductData.images = base64Images.map((base64, index) => ({
+            url: base64,
+            public_id: `temp_${Date.now()}_${index}`,
+            alt: cleanProductData.name || "Product image",
+          }));
+          cleanProductData.image = base64Images[0];
+          console.log(
+            "Processed images:",
+            cleanProductData.images.length,
+            "items",
+          );
+        } else {
+          cleanProductData.image = "/placeholder.svg";
+          cleanProductData.images = ["/placeholder.svg"];
+        }
       } else {
-        // Regular product creation without file uploads
-        const response = await productsAPI.create(productData);
-        return response.data;
+        // No file uploads, use existing image data or placeholders
+        if (!cleanProductData.image) {
+          cleanProductData.image = "/placeholder.svg";
+        }
+        if (!cleanProductData.images || cleanProductData.images.length === 0) {
+          cleanProductData.images = ["/placeholder.svg"];
+        }
       }
+
+      const response = await productsAPI.create(cleanProductData);
+      return response.data;
     } catch (error) {
       console.error("Failed to create product:", error);
       throw new Error("Failed to create product: " + error.message);
@@ -50,32 +82,15 @@ export class ProductAPI {
           ? productId._id || productId.id
           : productId;
 
-      // Handle image updates if present
-      if (
-        updatedData.newImages &&
-        updatedData.newImages.some((img) => img instanceof File)
-      ) {
-        const newImages = updatedData.newImages.filter(
-          (img) => img instanceof File,
-        );
-        const removeImages = updatedData.removeImages || [];
+      // Temporarily use regular update for all cases to avoid image upload issues
+      // TODO: Re-enable image updates when Cloudinary is properly configured
+      const cleanData = { ...updatedData };
+      delete cleanData.newImages;
+      delete cleanData.removeImages;
+      delete cleanData.imageFiles;
 
-        // Remove image-related fields from main data
-        const cleanData = { ...updatedData };
-        delete cleanData.newImages;
-        delete cleanData.removeImages;
-
-        const response = await productsAPI.updateWithImages(
-          id,
-          cleanData,
-          newImages,
-          removeImages,
-        );
-        return response.data;
-      } else {
-        const response = await productsAPI.update(id, updatedData);
-        return response.data;
-      }
+      const response = await productsAPI.update(id, cleanData);
+      return response.data;
     } catch (error) {
       console.error("Failed to update product:", error);
       throw new Error("Failed to update product: " + error.message);

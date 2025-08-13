@@ -244,18 +244,20 @@ export default function AddProductForm({
           ? parseFloat(formData.originalPrice)
           : undefined,
         description: formData.description,
-        // Only include images if we have files to upload
-        ...(formData.imageFiles.length > 0 && { images: formData.imageFiles }),
         category: formData.category,
         subcategory: formData.subcategory || undefined,
         materials: formData.materials
-          .split(",")
-          .map((m) => m.trim())
-          .filter((m) => m),
+          ? formData.materials
+              .split(",")
+              .map((m) => m.trim())
+              .filter((m) => m)
+          : [],
         colors: formData.colors
-          .split(",")
-          .map((c) => c.trim())
-          .filter((c) => c),
+          ? formData.colors
+              .split(",")
+              .map((c) => c.trim())
+              .filter((c) => c)
+          : [],
         sizes: formData.sizes
           ? formData.sizes
               .split(",")
@@ -263,9 +265,11 @@ export default function AddProductForm({
               .filter((s) => s)
           : undefined,
         tags: formData.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter((t) => t),
+          ? formData.tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter((t) => t)
+          : [],
         stock: parseInt(formData.stock),
         deliveryDays: parseInt(formData.deliveryDays),
         sku: formData.sku,
@@ -327,7 +331,28 @@ export default function AddProductForm({
         badges: [],
       };
 
+      // Debug logging
+      console.log("Product data before submission:", {
+        warranty: productData.warranty,
+        returnPolicy: productData.returnPolicy,
+        warrantyEnabled: formData.warranty.enabled,
+        returnPolicyEnabled: formData.returnPolicy.enabled,
+        formDataWarranty: formData.warranty,
+        formDataReturnPolicy: formData.returnPolicy,
+      });
+
       if (token) {
+        // Set image data from uploaded files or use placeholders
+        if (formData.imageFiles.length > 0) {
+          // If files were uploaded, include them for processing
+          productData.images = formData.imageFiles; // Pass File objects for conversion to base64
+          productData.image = formData.images[0]; // Use first base64 preview as main image
+        } else {
+          // Use placeholders only if no images were uploaded
+          productData.image = "/placeholder.svg";
+          productData.images = ["/placeholder.svg"];
+        }
+
         const savedProduct = await ProductAPI.addProduct(productData, token);
         onSuccess(savedProduct);
         onClose();

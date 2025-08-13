@@ -24,43 +24,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { productsAPI } from "../lib/updatedApiClient.js";
-
-interface Product {
-  _id: string;
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  description: string;
-  image: string;
-  images: string[];
-  category: string;
-  subcategory?: string;
-  rating: number;
-  reviews: number;
-  badges: string[];
-  isCustomizable: boolean;
-  isDIY: boolean;
-  isInstagramPick: boolean;
-  isHandmade: boolean;
-  isNew: boolean;
-  isTrending: boolean;
-  materials: string[];
-  colors: string[];
-  sizes?: string[];
-  tags: string[];
-  stock: number;
-  deliveryDays: number;
-  sellerId: string;
-  sku: string;
-  brand?: string;
-  origin: string;
-  inStock: boolean;
-  lowStockThreshold: number;
-  status: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import { Product } from "@shared/api";
 
 interface ProductCardProps {
   product: Product;
@@ -401,6 +365,7 @@ export default function UpdatedProducts() {
             setShowViewModal(false);
             setSelectedProduct(null);
           }}
+          onEdit={handleEditProduct}
         />
       </div>
     </DashboardLayout>

@@ -19,7 +19,7 @@ export interface Address {
 
 // Comprehensive Product interface
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   originalPrice?: number;
@@ -80,6 +80,10 @@ export interface Product {
     question: string;
     answer: string;
   }>;
+  _id?: string;
+  status?: "active" | "inactive" | "draft" | "out_of_stock";
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // Order item interface

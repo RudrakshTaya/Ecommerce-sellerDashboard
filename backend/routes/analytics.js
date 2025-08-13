@@ -1,5 +1,6 @@
 import express from "express";
 import { query, validationResult } from "express-validator";
+import mongoose from "mongoose";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import Customer from "../models/Customer.js";
@@ -20,6 +21,20 @@ router.get(
       const now = new Date();
       const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      // Debug logging
+      console.log("Analytics dashboard request for sellerId:", sellerId);
+      console.log("sellerId type:", typeof sellerId);
+
+      // Test direct query to products
+      const testProductCount = await Product.countDocuments({ sellerId });
+      const testProducts = await Product.find({ sellerId })
+        .limit(2)
+        .select("name sellerId");
+      console.log("Direct product query test:", {
+        count: testProductCount,
+        sampleProducts: testProducts,
+      });
 
       // Get overall statistics
       const [
@@ -75,6 +90,15 @@ router.get(
         }),
         Order.distinct("customerId", { sellerId }).then((ids) => ids.length),
       ]);
+
+      // Debug logging
+      console.log("Analytics results:", {
+        totalProducts,
+        activeProducts,
+        lowStockProducts,
+        totalOrders,
+        sellerId,
+      });
 
       // Get recent orders with details
       const recentOrdersDetails = await Order.find({
@@ -748,10 +772,27 @@ router.get(
         .sort({ stock: 1 });
 
       // Get top valuable inventory
-      const topValueProducts = await Product.find({ sellerId })
-        .select("name sku category stock price")
-        .sort({ $multiply: ["$stock", "$price"] })
-        .limit(10);
+      // Get top value products using aggregation for calculated sort
+      const topValueProducts = await Product.aggregate([
+        { $match: { sellerId } },
+        {
+          $addFields: {
+            totalValue: { $multiply: ["$stock", "$price"] },
+          },
+        },
+        { $sort: { totalValue: -1 } },
+        { $limit: 10 },
+        {
+          $project: {
+            name: 1,
+            sku: 1,
+            category: 1,
+            stock: 1,
+            price: 1,
+            totalValue: 1,
+          },
+        },
+      ]);
 
       // Calculate inventory turnover (simplified)
       const last90Days = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
@@ -824,6 +865,46 @@ router.get(
       res.status(500).json({
         success: false,
         message: "Error fetching inventory analytics",
+      });
+    }
+  }),
+);
+
+// Debug endpoint to test product counting
+router.get(
+  "/debug/products",
+  protect,
+  asyncHandler(async (req, res) => {
+    try {
+      const sellerId = req.seller._id;
+
+      // Get all products for this seller
+      const products = await Product.find({ sellerId }).select(
+        "name sku status sellerId",
+      );
+      const productCount = await Product.countDocuments({ sellerId });
+
+      console.log("Debug products endpoint:", {
+        sellerId,
+        productCount,
+        products: products.length,
+        sampleProducts: products.slice(0, 3),
+      });
+
+      res.json({
+        success: true,
+        data: {
+          sellerId,
+          productCount,
+          totalFound: products.length,
+          products: products.slice(0, 5), // Return first 5 products
+        },
+      });
+    } catch (error) {
+      console.error("Debug products error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error in debug endpoint",
       });
     }
   }),

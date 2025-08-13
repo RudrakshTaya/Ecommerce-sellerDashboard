@@ -22,6 +22,7 @@ import {
   RefreshCw,
   Loader2,
   AlertCircle,
+  Package,
 } from "lucide-react";
 
 interface AnalyticsData {

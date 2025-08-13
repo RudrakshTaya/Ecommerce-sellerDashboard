@@ -288,6 +288,8 @@ router.post(
     // Check for validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.error("Create product validation errors:", errors.array());
+      console.error("Request body:", req.body);
       return res.status(400).json({
         success: false,
         message: "Validation failed",
@@ -329,67 +331,83 @@ router.post(
         sku: req.body.sku.toUpperCase(),
         inStock: parseInt(req.body.stock) > 0,
 
-        // Process arrays from comma-separated strings
+        // Process arrays (handle both string and array inputs)
         materials: req.body.materials
-          ? req.body.materials
-              .split(",")
-              .map((m) => m.trim())
-              .filter((m) => m)
+          ? Array.isArray(req.body.materials)
+            ? req.body.materials
+            : req.body.materials
+                .split(",")
+                .map((m) => m.trim())
+                .filter((m) => m)
           : [],
         colors: req.body.colors
-          ? req.body.colors
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.colors)
+            ? req.body.colors
+            : req.body.colors
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : [],
         sizes: req.body.sizes
-          ? req.body.sizes
-              .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s)
+          ? Array.isArray(req.body.sizes)
+            ? req.body.sizes
+            : req.body.sizes
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s)
           : [],
         tags: req.body.tags
-          ? req.body.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter((t) => t)
+          ? Array.isArray(req.body.tags)
+            ? req.body.tags
+            : req.body.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter((t) => t)
           : [],
         careInstructions: req.body.careInstructions
-          ? req.body.careInstructions
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.careInstructions)
+            ? req.body.careInstructions
+            : req.body.careInstructions
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : [],
         certifications: req.body.certifications
-          ? req.body.certifications
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.certifications)
+            ? req.body.certifications
+            : req.body.certifications
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : [],
 
-        // Process warranty and return policy
+        // Process warranty and return policy (handle both JSON objects and FormData)
         warranty:
-          req.body.warrantyEnabled === "true"
-            ? {
-                period: req.body.warrantyPeriod,
-                description: req.body.warrantyDescription,
-                type: req.body.warrantyType || "none",
-              }
-            : undefined,
+          req.body.warranty && typeof req.body.warranty === "object"
+            ? req.body.warranty // JSON object format
+            : req.body.warrantyEnabled === "true"
+              ? {
+                  period: req.body.warrantyPeriod,
+                  description: req.body.warrantyDescription,
+                  type: req.body.warrantyType || "none",
+                }
+              : undefined,
 
         returnPolicy:
-          req.body.returnPolicyEnabled === "true"
-            ? {
-                returnable: true,
-                period: req.body.returnPeriod,
-                conditions: req.body.returnConditions
-                  ? req.body.returnConditions
-                      .split(",")
-                      .map((c) => c.trim())
-                      .filter((c) => c)
-                  : [],
-              }
-            : undefined,
+          req.body.returnPolicy && typeof req.body.returnPolicy === "object"
+            ? req.body.returnPolicy // JSON object format
+            : req.body.returnPolicyEnabled === "true"
+              ? {
+                  returnable: true,
+                  period: req.body.returnPeriod,
+                  conditions: req.body.returnConditions
+                    ? req.body.returnConditions
+                        .split(",")
+                        .map((c) => c.trim())
+                        .filter((c) => c)
+                    : [],
+                }
+              : undefined,
 
         // Process dimensions
         dimensions: req.body.dimensionsLength
@@ -518,43 +536,66 @@ router.put(
           updatedImages.length > 0 ? updatedImages[0].url : "/placeholder.svg",
         inStock: parseInt(req.body.stock || product.stock) > 0,
 
-        // Process arrays from comma-separated strings
+        // Process arrays (handle both string and array inputs)
         materials: req.body.materials
-          ? req.body.materials
-              .split(",")
-              .map((m) => m.trim())
-              .filter((m) => m)
+          ? Array.isArray(req.body.materials)
+            ? req.body.materials
+            : req.body.materials
+                .split(",")
+                .map((m) => m.trim())
+                .filter((m) => m)
           : product.materials,
         colors: req.body.colors
-          ? req.body.colors
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.colors)
+            ? req.body.colors
+            : req.body.colors
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : product.colors,
         sizes: req.body.sizes
-          ? req.body.sizes
-              .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s)
+          ? Array.isArray(req.body.sizes)
+            ? req.body.sizes
+            : req.body.sizes
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s)
           : product.sizes,
         tags: req.body.tags
-          ? req.body.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter((t) => t)
+          ? Array.isArray(req.body.tags)
+            ? req.body.tags
+            : req.body.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter((t) => t)
           : product.tags,
         careInstructions: req.body.careInstructions
-          ? req.body.careInstructions
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.careInstructions)
+            ? req.body.careInstructions
+            : req.body.careInstructions
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : product.careInstructions,
         certifications: req.body.certifications
-          ? req.body.certifications
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.certifications)
+            ? req.body.certifications
+            : req.body.certifications
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : product.certifications,
+
+        // Handle warranty and return policy updates
+        warranty:
+          req.body.warranty !== undefined
+            ? req.body.warranty
+            : product.warranty,
+
+        returnPolicy:
+          req.body.returnPolicy !== undefined
+            ? req.body.returnPolicy
+            : product.returnPolicy,
       };
 
       // Clean up undefined values

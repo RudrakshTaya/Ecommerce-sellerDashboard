@@ -265,28 +265,79 @@ export const productsAPI = {
   createWithImages: async (productData, images = []) => {
     const formData = new FormData();
 
-    // Add product data
+    // Add basic product data (excluding complex objects)
     Object.keys(productData).forEach((key) => {
       if (productData[key] !== undefined && productData[key] !== null) {
+        if (["warranty", "returnPolicy", "dimensions", "faq"].includes(key)) {
+          // Skip complex objects, handle them separately
+          return;
+        }
+
         if (Array.isArray(productData[key])) {
-          productData[key].forEach((item, index) => {
-            if (typeof item === "object") {
-              Object.keys(item).forEach((subKey) => {
-                formData.append(`${key}[${index}][${subKey}]`, item[subKey]);
-              });
-            } else {
-              formData.append(`${key}[${index}]`, item);
-            }
-          });
+          // For arrays, join with commas (backend will split them)
+          formData.append(key, productData[key].join(", "));
         } else if (typeof productData[key] === "object") {
-          Object.keys(productData[key]).forEach((subKey) => {
-            formData.append(`${key}[${subKey}]`, productData[key][subKey]);
-          });
+          // Convert object to JSON string
+          formData.append(key, JSON.stringify(productData[key]));
         } else {
           formData.append(key, productData[key]);
         }
       }
     });
+
+    // Handle warranty separately
+    if (productData.warranty) {
+      formData.append("warrantyEnabled", "true");
+      formData.append("warrantyPeriod", productData.warranty.period || "");
+      formData.append(
+        "warrantyDescription",
+        productData.warranty.description || "",
+      );
+      formData.append("warrantyType", productData.warranty.type || "none");
+    } else {
+      formData.append("warrantyEnabled", "false");
+    }
+
+    // Handle return policy separately
+    if (productData.returnPolicy) {
+      formData.append("returnPolicyEnabled", "true");
+      formData.append("returnPeriod", productData.returnPolicy.period || "");
+      formData.append(
+        "returnConditions",
+        Array.isArray(productData.returnPolicy.conditions)
+          ? productData.returnPolicy.conditions.join(", ")
+          : productData.returnPolicy.conditions || "",
+      );
+    } else {
+      formData.append("returnPolicyEnabled", "false");
+    }
+
+    // Handle dimensions separately
+    if (productData.dimensions) {
+      formData.append("dimensionsLength", productData.dimensions.length || "");
+      formData.append("dimensionsWidth", productData.dimensions.width || "");
+      formData.append("dimensionsHeight", productData.dimensions.height || "");
+      formData.append("dimensionsWeight", productData.dimensions.weight || "");
+      formData.append("dimensionsUnit", productData.dimensions.unit || "cm");
+    }
+
+    // Handle FAQ separately
+    if (productData.faq && Array.isArray(productData.faq)) {
+      const questions = productData.faq
+        .map((item) => item.question)
+        .filter((q) => q);
+      const answers = productData.faq
+        .map((item) => item.answer)
+        .filter((a) => a);
+      if (questions.length > 0 && answers.length > 0) {
+        questions.forEach((question, index) => {
+          formData.append(`faqQuestions[${index}]`, question);
+        });
+        answers.forEach((answer, index) => {
+          formData.append(`faqAnswers[${index}]`, answer);
+        });
+      }
+    }
 
     // Add images
     images.forEach((image, index) => {
@@ -327,10 +378,33 @@ export const productsAPI = {
       formData.append("removeImages", JSON.stringify(removeImages));
     }
 
-    return apiClient.upload(
-      API_CONFIG.ENDPOINTS.PRODUCTS.BY_ID(productId),
-      formData,
-    );
+    // Use custom upload with PUT method for updates
+    const url = createApiUrl(API_CONFIG.ENDPOINTS.PRODUCTS.BY_ID(productId));
+
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: createFormDataHeaders(true), // Auth headers only, no Content-Type for FormData
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || `HTTP error! status: ${response.status}`,
+        );
+      }
+
+      // Transform _id to id for frontend compatibility
+      if (data && data.data) {
+        data.data = transformData(data.data);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
   },
 
   delete: (id) => {

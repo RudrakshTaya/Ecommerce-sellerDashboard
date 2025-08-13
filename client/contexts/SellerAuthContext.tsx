@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Seller } from "@shared/api";
 import { loginSeller } from "../api/auth.js";
+import { authAPI } from "../lib/updatedApiClient.js";
 
 interface SellerAuthContextType {
   seller: Seller | null;
@@ -9,6 +10,7 @@ interface SellerAuthContextType {
   logout: () => void;
   loading: boolean;
   token: string | null;
+  updateProfile: (profileData: Partial<Seller>) => Promise<boolean>;
 }
 
 const SellerAuthContext = createContext<SellerAuthContextType | undefined>(
@@ -79,6 +81,29 @@ export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({
     return false;
   };
 
+  const updateProfile = async (
+    profileData: Partial<Seller>,
+  ): Promise<boolean> => {
+    if (!token || !seller) {
+      return false;
+    }
+
+    try {
+      const response = await authAPI.updateProfile(profileData);
+
+      if (response.success && response.seller) {
+        const updatedSeller = response.seller;
+        setSeller(updatedSeller);
+        localStorage.setItem("seller", JSON.stringify(updatedSeller));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      return false;
+    }
+  };
+
   const logout = () => {
     setSeller(null);
     setToken(null);
@@ -93,6 +118,7 @@ export const SellerAuthProvider: React.FC<SellerAuthProviderProps> = ({
     logout,
     loading,
     token,
+    updateProfile,
   };
 
   return (

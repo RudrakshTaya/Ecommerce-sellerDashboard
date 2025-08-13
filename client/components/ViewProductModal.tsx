@@ -1,25 +1,25 @@
-import React from 'react';
-import { Product } from '@shared/api';
-import { Badge } from './ui/badge';
-import { Button } from './ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Separator } from './ui/separator';
-import { 
+import React from "react";
+import { Product } from "@shared/api";
+import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Separator } from "./ui/separator";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from './ui/dialog';
-import { ScrollArea } from './ui/scroll-area';
-import { 
-  X, 
-  Star, 
-  MapPin, 
-  Package, 
-  Clock, 
-  Shield, 
-  RotateCcw, 
+} from "./ui/dialog";
+import { ScrollArea } from "./ui/scroll-area";
+import {
+  X,
+  Star,
+  MapPin,
+  Package,
+  Clock,
+  Shield,
+  RotateCcw,
   Heart,
   Award,
   Leaf,
@@ -29,8 +29,8 @@ import {
   Palette,
   Shirt,
   Edit,
-  TrendingUp
-} from 'lucide-react';
+  TrendingUp,
+} from "lucide-react";
 
 interface ViewProductModalProps {
   product: Product | null;
@@ -39,17 +39,26 @@ interface ViewProductModalProps {
   onEdit: (product: Product) => void;
 }
 
-export default function ViewProductModal({ product, isOpen, onClose, onEdit }: ViewProductModalProps) {
+export default function ViewProductModal({
+  product,
+  isOpen,
+  onClose,
+  onEdit,
+}: ViewProductModalProps) {
   if (!product) return null;
 
-  const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-  const discountPercentage = hasDiscount 
-    ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
+  const hasDiscount =
+    product.originalPrice && product.originalPrice > product.price;
+  const discountPercentage = hasDiscount
+    ? Math.round(
+        ((product.originalPrice! - product.price) / product.originalPrice!) *
+          100,
+      )
     : 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[95vh] overflow-hidden">
+      <DialogContent className="max-w-6xl max-h-[95vh] overflow-y-auto flex flex-col">
         <DialogHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
@@ -72,15 +81,15 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(95vh-120px)]">
-          <div className="space-y-6 pr-4">
+        <div className="flex-1 overflow-y-auto max-h-[calc(95vh-150px)] px-1">
+          <div className="space-y-6 pr-3">
             {/* Image Gallery & Basic Info */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Image Gallery */}
               <div className="space-y-4">
                 <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
-                  <img 
-                    src={product.image} 
+                  <img
+                    src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover"
                   />
@@ -92,12 +101,19 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                     </div>
                   )}
                 </div>
-                
+
                 {product.images.length > 1 && (
                   <div className="grid grid-cols-4 gap-2">
                     {product.images.slice(1, 5).map((img, index) => (
-                      <div key={index} className="aspect-square bg-gray-100 rounded overflow-hidden">
-                        <img src={img} alt={`${product.name} ${index + 2}`} className="w-full h-full object-cover" />
+                      <div
+                        key={index}
+                        className="aspect-square bg-gray-100 rounded overflow-hidden"
+                      >
+                        <img
+                          src={img}
+                          alt={`${product.name} ${index + 2}`}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
                     ))}
                   </div>
@@ -120,36 +136,54 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                           </span>
                         )}
                       </div>
-                      
+
                       {/* Rating & Reviews */}
                       <div className="flex items-center gap-4">
                         <div className="flex items-center">
                           <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                          <span className="ml-1 font-medium">{product.rating}</span>
+                          <span className="ml-1 font-medium">
+                            {product.rating}
+                          </span>
                         </div>
-                        <span className="text-gray-600">({product.reviews} reviews)</span>
+                        <span className="text-gray-600">
+                          ({product.reviews} reviews)
+                        </span>
                       </div>
 
                       {/* Badges */}
                       <div className="flex flex-wrap gap-2">
                         {product.badges.map((badge, index) => (
-                          <Badge key={index} variant="default" className="bg-blue-600">
+                          <Badge
+                            key={index}
+                            variant="default"
+                            className="bg-blue-600"
+                          >
                             {badge}
                           </Badge>
                         ))}
-                        {product.isNew && <Badge className="bg-green-600">New</Badge>}
+                        {product.isNew && (
+                          <Badge className="bg-green-600">New</Badge>
+                        )}
                         {product.isTrending && (
                           <Badge className="bg-purple-600">
                             <TrendingUp className="w-3 h-3 mr-1" />
                             Trending
                           </Badge>
                         )}
-                        {product.isHandmade && <Badge variant="secondary">Handmade</Badge>}
-                        {product.isDIY && <Badge className="bg-orange-600">DIY Kit</Badge>}
-                        {product.isInstagramPick && (
-                          <Badge className="bg-pink-600">📷 Instagram Pick</Badge>
+                        {product.isHandmade && (
+                          <Badge variant="secondary">Handmade</Badge>
                         )}
-                        {product.isCustomizable && <Badge variant="outline">Customizable</Badge>}
+                        {product.isDIY && (
+                          <Badge className="bg-orange-600">DIY Kit</Badge>
+                        )}
+                        {product.isInstagramPick && (
+                          <Badge className="bg-pink-600">
+                            📷 Instagram Pick
+                          </Badge>
+                        )}
+                        {product.isCustomizable && (
+                          <Badge variant="outline">Customizable</Badge>
+                        )}
                       </div>
                     </div>
                   </CardContent>
@@ -161,11 +195,15 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div className="flex items-center">
                         <Package className="w-4 h-4 mr-2 text-gray-500" />
-                        <span>Stock: <strong>{product.stock}</strong></span>
+                        <span>
+                          Stock: <strong>{product.stock}</strong>
+                        </span>
                       </div>
                       <div className="flex items-center">
                         <Clock className="w-4 h-4 mr-2 text-gray-500" />
-                        <span><strong>{product.deliveryDays}</strong> days delivery</span>
+                        <span>
+                          <strong>{product.deliveryDays}</strong> days delivery
+                        </span>
                       </div>
                       <div className="flex items-center">
                         <MapPin className="w-4 h-4 mr-2 text-gray-500" />
@@ -173,7 +211,9 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                       </div>
                       <div className="flex items-center">
                         <Info className="w-4 h-4 mr-2 text-gray-500" />
-                        <span>SKU: <strong>{product.sku}</strong></span>
+                        <span>
+                          SKU: <strong>{product.sku}</strong>
+                        </span>
                       </div>
                     </div>
                   </CardContent>
@@ -203,10 +243,16 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                   </div>
 
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Materials</h4>
+                    <h4 className="font-medium text-gray-900 mb-2">
+                      Materials
+                    </h4>
                     <div className="flex flex-wrap gap-1">
                       {product.materials.map((material, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           {material}
                         </Badge>
                       ))}
@@ -217,7 +263,11 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                     <h4 className="font-medium text-gray-900 mb-2">Colors</h4>
                     <div className="flex flex-wrap gap-1">
                       {product.colors.map((color, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="text-xs"
+                        >
                           {color}
                         </Badge>
                       ))}
@@ -226,10 +276,16 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
 
                   {product.sizes && product.sizes.length > 0 && (
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">Available Sizes</h4>
+                      <h4 className="font-medium text-gray-900 mb-2">
+                        Available Sizes
+                      </h4>
                       <div className="flex flex-wrap gap-1">
                         {product.sizes.map((size, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
+                          <Badge
+                            key={index}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             <Shirt className="w-3 h-3 mr-1" />
                             {size}
                           </Badge>
@@ -242,7 +298,11 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                     <h4 className="font-medium text-gray-900 mb-2">Tags</h4>
                     <div className="flex flex-wrap gap-1">
                       {product.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="text-xs"
+                        >
                           #{tag}
                         </Badge>
                       ))}
@@ -272,25 +332,36 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                       {product.dimensions.length && (
                         <div>
                           <span className="text-gray-600">Length:</span>
-                          <p className="font-medium">{product.dimensions.length} {product.dimensions.unit}</p>
+                          <p className="font-medium">
+                            {product.dimensions.length}{" "}
+                            {product.dimensions.unit}
+                          </p>
                         </div>
                       )}
                       {product.dimensions.width && (
                         <div>
                           <span className="text-gray-600">Width:</span>
-                          <p className="font-medium">{product.dimensions.width} {product.dimensions.unit}</p>
+                          <p className="font-medium">
+                            {product.dimensions.width} {product.dimensions.unit}
+                          </p>
                         </div>
                       )}
                       {product.dimensions.height && (
                         <div>
                           <span className="text-gray-600">Height:</span>
-                          <p className="font-medium">{product.dimensions.height} {product.dimensions.unit}</p>
+                          <p className="font-medium">
+                            {product.dimensions.height}{" "}
+                            {product.dimensions.unit}
+                          </p>
                         </div>
                       )}
                       {product.dimensions.weight && (
                         <div>
                           <span className="text-gray-600">Weight:</span>
-                          <p className="font-medium">{product.dimensions.weight} {product.dimensions.unit === 'cm' ? 'grams' : 'lbs'}</p>
+                          <p className="font-medium">
+                            {product.dimensions.weight}{" "}
+                            {product.dimensions.unit === "cm" ? "grams" : "lbs"}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -317,11 +388,15 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                       </div>
                       <div>
                         <span className="text-gray-600">Type:</span>
-                        <p className="font-medium capitalize">{product.warranty.type}</p>
+                        <p className="font-medium capitalize">
+                          {product.warranty.type}
+                        </p>
                       </div>
                       <div>
                         <span className="text-gray-600">Coverage:</span>
-                        <p className="text-sm">{product.warranty.description}</p>
+                        <p className="text-sm">
+                          {product.warranty.description}
+                        </p>
                       </div>
                     </div>
                   </CardContent>
@@ -340,23 +415,31 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                     <div className="space-y-3">
                       <div>
                         <span className="text-gray-600">Returnable:</span>
-                        <p className="font-medium">{product.returnPolicy.returnable ? 'Yes' : 'No'}</p>
+                        <p className="font-medium">
+                          {product.returnPolicy.returnable ? "Yes" : "No"}
+                        </p>
                       </div>
                       {product.returnPolicy.returnable && (
                         <>
                           <div>
-                            <span className="text-gray-600">Return Period:</span>
-                            <p className="font-medium">{product.returnPolicy.period}</p>
+                            <span className="text-gray-600">
+                              Return Period:
+                            </span>
+                            <p className="font-medium">
+                              {product.returnPolicy.period}
+                            </p>
                           </div>
                           <div>
                             <span className="text-gray-600">Conditions:</span>
                             <ul className="text-sm space-y-1 mt-1">
-                              {product.returnPolicy.conditions.map((condition, index) => (
-                                <li key={index} className="flex items-start">
-                                  <span className="w-1 h-1 bg-gray-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
-                                  {condition}
-                                </li>
-                              ))}
+                              {product.returnPolicy.conditions.map(
+                                (condition, index) => (
+                                  <li key={index} className="flex items-start">
+                                    <span className="w-1 h-1 bg-gray-400 rounded-full mt-2 mr-2 flex-shrink-0"></span>
+                                    {condition}
+                                  </li>
+                                ),
+                              )}
                             </ul>
                           </div>
                         </>
@@ -368,49 +451,55 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
             </div>
 
             {/* Care Instructions */}
-            {product.careInstructions && product.careInstructions.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Heart className="w-5 h-5 mr-2" />
-                    Care Instructions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
-                    {product.careInstructions.map((instruction, index) => (
-                      <li key={index} className="flex items-start text-sm">
-                        <span className="w-1 h-1 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
-                        {instruction}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )}
+            {product.careInstructions &&
+              product.careInstructions.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Heart className="w-5 h-5 mr-2" />
+                      Care Instructions
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ul className="space-y-2">
+                      {product.careInstructions.map((instruction, index) => (
+                        <li key={index} className="flex items-start text-sm">
+                          <span className="w-1 h-1 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                          {instruction}
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                </Card>
+              )}
 
             {/* Certifications & Sustainability */}
             {(product.certifications?.length || product.sustainabilityInfo) && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {product.certifications && product.certifications.length > 0 && (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <Award className="w-5 h-5 mr-2" />
-                        Certifications
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex flex-wrap gap-2">
-                        {product.certifications.map((cert, index) => (
-                          <Badge key={index} variant="default" className="bg-green-600">
-                            {cert}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                {product.certifications &&
+                  product.certifications.length > 0 && (
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <Award className="w-5 h-5 mr-2" />
+                          Certifications
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex flex-wrap gap-2">
+                          {product.certifications.map((cert, index) => (
+                            <Badge
+                              key={index}
+                              variant="default"
+                              className="bg-green-600"
+                            >
+                              {cert}
+                            </Badge>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
 
                 {product.sustainabilityInfo && (
                   <Card>
@@ -448,7 +537,9 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                       <span className="text-gray-600">Rating:</span>
                       <div className="flex items-center">
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
-                        <span className="font-medium">{product.vendor.rating}</span>
+                        <span className="font-medium">
+                          {product.vendor.rating}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -468,11 +559,16 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
                 <CardContent>
                   <div className="space-y-4">
                     {product.faq.map((faqItem, index) => (
-                      <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
+                      <div
+                        key={index}
+                        className="border-b border-gray-200 pb-4 last:border-b-0"
+                      >
                         <h4 className="font-medium text-gray-900 mb-2">
                           {faqItem.question}
                         </h4>
-                        <p className="text-sm text-gray-600">{faqItem.answer}</p>
+                        <p className="text-sm text-gray-600">
+                          {faqItem.answer}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -503,7 +599,7 @@ export default function ViewProductModal({ product, isOpen, onClose, onEdit }: V
               </Card>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );

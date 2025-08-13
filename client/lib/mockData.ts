@@ -2,7 +2,7 @@ import { Product } from "@shared/api";
 
 export const mockProducts: Product[] = [
   {
-    id: 1,
+    id: "1",
     name: "Handcrafted Wooden Coffee Table",
     price: 25999,
     originalPrice: 32999,
@@ -82,7 +82,7 @@ export const mockProducts: Product[] = [
     ],
   },
   {
-    id: 2,
+    id: "2",
     name: "Organic Cotton Bedsheet Set",
     price: 3499,
     originalPrice: 4999,
@@ -147,7 +147,7 @@ export const mockProducts: Product[] = [
     ],
   },
   {
-    id: 3,
+    id: "3",
     name: "Ceramic Plant Pot with Drainage",
     price: 899,
     description:
