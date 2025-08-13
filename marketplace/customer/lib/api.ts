@@ -154,7 +154,7 @@ export const sellersAPI = {
   },
 
   getFeaturedSellers: async (): Promise<Seller[]> => {
-    const response: AxiosResponse<ApiResponse<Seller[]>> = await api.get('/mock/sellers/featured');
+    const response: AxiosResponse<ApiResponse<Seller[]>> = await api.get('/public/sellers/featured');
     return response.data.data!;
   },
 };
