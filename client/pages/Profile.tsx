@@ -7,17 +7,18 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Badge } from '../components/ui/badge';
-import { 
-  User, 
-  Store, 
-  Phone, 
-  MapPin, 
-  CreditCard, 
+import {
+  User,
+  Store,
+  Phone,
+  MapPin,
+  CreditCard,
   Mail,
   Calendar,
   CheckCircle,
   AlertCircle,
-  Save
+  Save,
+  Loader2
 } from 'lucide-react';
 
 export default function Profile() {
