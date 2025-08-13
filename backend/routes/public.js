@@ -41,7 +41,7 @@ router.get(
     query("isHandmade").optional().isBoolean(),
     query("isCustomizable").optional().isBoolean(),
     query("isTrending").optional().isBoolean(),
-    query("isNew").optional().isBoolean(),
+    query("isNewProduct").optional().isBoolean(),
   ],
   asyncHandler(async (req, res) => {
     // Check for validation errors
