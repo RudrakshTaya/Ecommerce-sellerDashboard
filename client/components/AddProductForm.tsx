@@ -335,7 +335,7 @@ export default function AddProductForm({
         // Set image data from uploaded files or use placeholders
         if (formData.imageFiles.length > 0) {
           // If files were uploaded, include them for processing
-          productData.images = formData.imageFiles;
+          productData.images = formData.imageFiles; // Pass File objects for conversion to base64
           productData.image = formData.images[0]; // Use first base64 preview as main image
         } else {
           // Use placeholders only if no images were uploaded
