@@ -109,6 +109,7 @@ export default function EditProductForm({
         seoDescription: product.seoDescription || "",
         image: product.image || "",
         images: product.images || [],
+        imageFiles: [] as File[],
         isCustomizable: product.isCustomizable || false,
         isDIY: product.isDIY || false,
         isInstagramPick: product.isInstagramPick || false,
