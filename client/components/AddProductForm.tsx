@@ -292,7 +292,7 @@ export default function AddProductForm({
               description: formData.warranty.description,
               type: formData.warranty.type,
             }
-          : { enabled: false },
+          : undefined,
         returnPolicy: formData.returnPolicy.enabled
           ? {
               returnable: true,
@@ -302,7 +302,7 @@ export default function AddProductForm({
                 .map((c) => c.trim())
                 .filter((c) => c),
             }
-          : { enabled: false, returnable: false },
+          : undefined,
         dimensions: formData.dimensions.length
           ? {
               length: parseFloat(formData.dimensions.length) || undefined,
