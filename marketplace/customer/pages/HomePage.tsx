@@ -197,11 +197,22 @@ const HomePage: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : featuredProducts && featuredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts?.slice(0, 8).map((product) => (
+              {featuredProducts.slice(0, 8).map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-24 h-24 bg-warm-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Palette className="w-12 h-12 text-warm-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-earth-900 mb-2">No Featured Products</h3>
+              <p className="text-earth-600 mb-6">We're working on adding amazing handmade crafts to showcase.</p>
+              <Link to="/products" className="btn-primary">
+                Browse All Products
+              </Link>
             </div>
           )}
 
