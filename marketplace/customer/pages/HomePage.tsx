@@ -254,11 +254,17 @@ const HomePage: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : trendingProducts && trendingProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {trendingProducts?.slice(0, 4).map((product) => (
+              {trendingProducts.slice(0, 4).map((product) => (
                 <ProductCard key={product._id} product={product} />
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Camera className="w-16 h-16 text-warm-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-earth-900 mb-2">No Trending Products Yet</h3>
+              <p className="text-earth-600">Check back soon for what's popular in our community!</p>
             </div>
           )}
         </div>
