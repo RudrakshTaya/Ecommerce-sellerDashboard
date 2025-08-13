@@ -308,7 +308,7 @@ export default function EditProductForm({
                 .filter((c) => c),
             }
           : undefined,
-        dimensions: formData.dimensions.length
+        dimensions: (formData.dimensions.length || formData.dimensions.width || formData.dimensions.height || formData.dimensions.weight)
           ? {
               length: parseFloat(formData.dimensions.length) || undefined,
               width: parseFloat(formData.dimensions.width) || undefined,
