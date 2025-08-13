@@ -244,8 +244,6 @@ export default function AddProductForm({
           ? parseFloat(formData.originalPrice)
           : undefined,
         description: formData.description,
-        // Only include images if we have files to upload
-        ...(formData.imageFiles.length > 0 && { images: formData.imageFiles }),
         category: formData.category,
         subcategory: formData.subcategory || undefined,
         materials: formData.materials
