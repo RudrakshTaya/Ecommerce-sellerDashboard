@@ -16,15 +16,38 @@ export class ProductAPI {
   // Add new product with images
   static async addProduct(productData, token) {
     try {
-      // Always use regular product creation for now (avoiding file upload issues)
-      // TODO: Re-enable file uploads when Cloudinary is properly configured
       const cleanProductData = { ...productData };
-      delete cleanProductData.images; // Remove images from productData
 
-      // Set default placeholder image if no image provided
-      if (!cleanProductData.image) {
-        cleanProductData.image = "/placeholder.svg";
-        cleanProductData.images = ["/placeholder.svg"];
+      // Handle images - convert File objects to data URLs for temporary storage
+      if (productData.images && Array.isArray(productData.images) && productData.images.some(img => img instanceof File)) {
+        // Convert File objects to base64 for temporary storage
+        const imagePromises = productData.images
+          .filter(img => img instanceof File)
+          .slice(0, 3) // Limit to first 3 images
+          .map(file => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.readAsDataURL(file);
+            });
+          });
+
+        if (imagePromises.length > 0) {
+          const base64Images = await Promise.all(imagePromises);
+          cleanProductData.images = base64Images;
+          cleanProductData.image = base64Images[0];
+        } else {
+          cleanProductData.image = "/placeholder.svg";
+          cleanProductData.images = ["/placeholder.svg"];
+        }
+      } else {
+        // No file uploads, use existing image data or placeholders
+        if (!cleanProductData.image) {
+          cleanProductData.image = "/placeholder.svg";
+        }
+        if (!cleanProductData.images || cleanProductData.images.length === 0) {
+          cleanProductData.images = ["/placeholder.svg"];
+        }
       }
 
       const response = await productsAPI.create(cleanProductData);
