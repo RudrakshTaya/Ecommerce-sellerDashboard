@@ -12,6 +12,9 @@ const OrdersPage: React.FC = () => {
     queryKey: ['orders'],
     queryFn: ordersAPI.getOrders,
     retry: 1,
+    onError: (error) => {
+      console.error('Failed to fetch orders:', error);
+    },
   });
 
   const filteredOrders = orders.filter(order => {
