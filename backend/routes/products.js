@@ -518,42 +518,54 @@ router.put(
           updatedImages.length > 0 ? updatedImages[0].url : "/placeholder.svg",
         inStock: parseInt(req.body.stock || product.stock) > 0,
 
-        // Process arrays from comma-separated strings
+        // Process arrays (handle both string and array inputs)
         materials: req.body.materials
-          ? req.body.materials
-              .split(",")
-              .map((m) => m.trim())
-              .filter((m) => m)
+          ? Array.isArray(req.body.materials)
+            ? req.body.materials
+            : req.body.materials
+                .split(",")
+                .map((m) => m.trim())
+                .filter((m) => m)
           : product.materials,
         colors: req.body.colors
-          ? req.body.colors
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.colors)
+            ? req.body.colors
+            : req.body.colors
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : product.colors,
         sizes: req.body.sizes
-          ? req.body.sizes
-              .split(",")
-              .map((s) => s.trim())
-              .filter((s) => s)
+          ? Array.isArray(req.body.sizes)
+            ? req.body.sizes
+            : req.body.sizes
+                .split(",")
+                .map((s) => s.trim())
+                .filter((s) => s)
           : product.sizes,
         tags: req.body.tags
-          ? req.body.tags
-              .split(",")
-              .map((t) => t.trim())
-              .filter((t) => t)
+          ? Array.isArray(req.body.tags)
+            ? req.body.tags
+            : req.body.tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter((t) => t)
           : product.tags,
         careInstructions: req.body.careInstructions
-          ? req.body.careInstructions
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.careInstructions)
+            ? req.body.careInstructions
+            : req.body.careInstructions
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : product.careInstructions,
         certifications: req.body.certifications
-          ? req.body.certifications
-              .split(",")
-              .map((c) => c.trim())
-              .filter((c) => c)
+          ? Array.isArray(req.body.certifications)
+            ? req.body.certifications
+            : req.body.certifications
+                .split(",")
+                .map((c) => c.trim())
+                .filter((c) => c)
           : product.certifications,
       };
 
