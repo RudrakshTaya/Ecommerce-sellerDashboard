@@ -19,6 +19,7 @@ import adminRoutes from "./routes/admin.js";
 import publicRoutes from "./routes/public.js";
 import customerAuthRoutes from "./routes/customer-auth.js";
 import customerOrderRoutes from "./routes/customer-orders.js";
+import mockDataRoutes from "./routes/mock-data.js";
 
 // Load environment variables
 dotenv.config();
