@@ -9,6 +9,7 @@ interface SellerAuthContextType {
   logout: () => void;
   loading: boolean;
   token: string | null;
+  updateProfile: (profileData: Partial<Seller>) => Promise<boolean>;
 }
 
 const SellerAuthContext = createContext<SellerAuthContextType | undefined>(
