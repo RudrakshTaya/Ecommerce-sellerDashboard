@@ -78,7 +78,7 @@ const CartSidebar: React.FC = () => {
                         {item.product.name}
                       </h3>
                       <p className="text-sm text-earth-600 mt-1">
-                        by {item.product.seller.name}
+                        by {item.product.seller?.businessName || item.product.seller?.name || 'Unknown Seller'}
                       </p>
                       <div className="flex items-center justify-between mt-2">
                         <span className="text-sm font-semibold text-craft-600">
