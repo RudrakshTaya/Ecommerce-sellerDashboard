@@ -293,11 +293,17 @@ const HomePage: React.FC = () => {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : featuredSellers && featuredSellers.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredSellers?.slice(0, 3).map((seller) => (
+              {featuredSellers.slice(0, 3).map((seller) => (
                 <SellerCard key={seller._id} seller={seller} />
               ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Flower className="w-16 h-16 text-warm-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-earth-900 mb-2">No Featured Artisans Yet</h3>
+              <p className="text-earth-600">We're onboarding talented creators to showcase their work.</p>
             </div>
           )}
 
