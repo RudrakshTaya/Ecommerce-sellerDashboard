@@ -19,7 +19,7 @@ export interface Address {
 
 // Comprehensive Product interface
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   price: number;
   originalPrice?: number;
