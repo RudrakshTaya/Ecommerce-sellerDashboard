@@ -277,9 +277,11 @@ export default function EditProductForm({
               .filter((s) => s)
           : undefined,
         tags: formData.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter((t) => t),
+          ? formData.tags
+              .split(",")
+              .map((t) => t.trim())
+              .filter((t) => t)
+          : [],
         stock: parseInt(formData.stock),
         deliveryDays: parseInt(formData.deliveryDays),
         sku: formData.sku,
