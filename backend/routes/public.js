@@ -378,10 +378,10 @@ router.get(
 );
 
 // @desc    Search products
-// @route   GET /api/public/search
+// @route   GET /api/public/products/search
 // @access  Public
 router.get(
-  "/search",
+  "/products/search",
   [
     query("q").notEmpty().withMessage("Search query is required"),
     query("page")
