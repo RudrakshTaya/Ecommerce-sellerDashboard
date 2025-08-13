@@ -21,8 +21,9 @@ import {
 } from 'lucide-react';
 
 export default function Profile() {
-  const { seller } = useSellerAuth();
+  const { seller, updateProfile } = useSellerAuth();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     storeName: seller?.storeName || '',
     contactNumber: seller?.contactNumber || '',
@@ -33,10 +34,37 @@ export default function Profile() {
     bankName: seller?.bankDetails?.bankName || ''
   });
 
-  const handleSave = () => {
-    // In a real app, this would save to backend
-    console.log('Saving profile data:', formData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      // Prepare update data
+      const updateData = {
+        storeName: formData.storeName,
+        contactNumber: formData.contactNumber,
+        businessAddress: formData.businessAddress,
+        gstNumber: formData.gstNumber,
+        bankDetails: {
+          accountNumber: formData.bankAccountNumber,
+          ifscCode: formData.bankIfscCode,
+          bankName: formData.bankName
+        }
+      };
+
+      const success = await updateProfile(updateData);
+
+      if (success) {
+        setIsEditing(false);
+        // Show success message (you could add a toast notification here)
+        console.log('Profile updated successfully');
+      } else {
+        console.error('Failed to update profile');
+        // Show error message
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
