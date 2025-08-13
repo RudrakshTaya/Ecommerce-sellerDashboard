@@ -16,25 +16,19 @@ export class ProductAPI {
   // Add new product with images
   static async addProduct(productData, token) {
     try {
-      // If productData has file objects, use the form upload method
-      if (
-        productData.images &&
-        productData.images.some((img) => img instanceof File)
-      ) {
-        const images = productData.images.filter((img) => img instanceof File);
-        const cleanProductData = { ...productData };
-        delete cleanProductData.images; // Remove images from productData
+      // Always use regular product creation for now (avoiding file upload issues)
+      // TODO: Re-enable file uploads when Cloudinary is properly configured
+      const cleanProductData = { ...productData };
+      delete cleanProductData.images; // Remove images from productData
 
-        const response = await productsAPI.createWithImages(
-          cleanProductData,
-          images,
-        );
-        return response.data;
-      } else {
-        // Regular product creation without file uploads
-        const response = await productsAPI.create(productData);
-        return response.data;
+      // Set default placeholder image if no image provided
+      if (!cleanProductData.image) {
+        cleanProductData.image = "/placeholder.svg";
+        cleanProductData.images = ["/placeholder.svg"];
       }
+
+      const response = await productsAPI.create(cleanProductData);
+      return response.data;
     } catch (error) {
       console.error("Failed to create product:", error);
       throw new Error("Failed to create product: " + error.message);
