@@ -79,6 +79,15 @@ router.get(
         Order.distinct("customerId", { sellerId }).then((ids) => ids.length),
       ]);
 
+      // Debug logging
+      console.log("Analytics results:", {
+        totalProducts,
+        activeProducts,
+        lowStockProducts,
+        totalOrders,
+        sellerId
+      });
+
       // Get recent orders with details
       const recentOrdersDetails = await Order.find({
         sellerId,
