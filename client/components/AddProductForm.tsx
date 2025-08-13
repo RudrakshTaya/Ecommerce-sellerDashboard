@@ -131,9 +131,11 @@ export default function AddProductForm({
   const removeImage = (index: number) => {
     setFormData((prev) => {
       const newImages = prev.images.filter((_, i) => i !== index);
+      const newImageFiles = prev.imageFiles.filter((_, i) => i !== index);
       return {
         ...prev,
         images: newImages,
+        imageFiles: newImageFiles,
         image: newImages[0] || "",
       };
     });
