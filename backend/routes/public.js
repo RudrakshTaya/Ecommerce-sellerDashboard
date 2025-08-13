@@ -286,7 +286,7 @@ router.get(
 // @route   GET /api/public/products/category/:category
 // @access  Public
 router.get(
-  "/category/:category",
+  "/products/category/:category",
   [
     query("page")
       .optional()
