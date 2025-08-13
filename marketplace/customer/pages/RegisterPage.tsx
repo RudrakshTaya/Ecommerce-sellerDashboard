@@ -78,44 +78,23 @@ const RegisterPage: React.FC = () => {
         {/* Registration Form */}
         <div className="bg-white rounded-xl shadow-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-earth-900 mb-2">
-                  First Name
-                </label>
-                <div className="relative">
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    required
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="input pl-10"
-                    placeholder="First name"
-                  />
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-earth-400 w-4 h-4" />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-earth-900 mb-2">
-                  Last Name
-                </label>
-                <div className="relative">
-                  <input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    required
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className="input pl-10"
-                    placeholder="Last name"
-                  />
-                  <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-earth-400 w-4 h-4" />
-                </div>
+            {/* Name Field */}
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-earth-900 mb-2">
+                Full Name
+              </label>
+              <div className="relative">
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="input pl-10"
+                  placeholder="Enter your full name"
+                />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-earth-400 w-4 h-4" />
               </div>
             </div>
 
