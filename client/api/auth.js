@@ -1,34 +1,20 @@
 // src/api/auth.js
+import { authAPI } from '../lib/updatedApiClient.js';
 
 export async function loginSeller(email, password) {
-    const response = await fetch('http://localhost:5050/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-      // credentials: 'include'  // Enable if backend uses httpOnly cookies
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Login failed');
-    }
-
-    return data;  // { success, seller, token }
+  try {
+    const response = await authAPI.login({ email, password });
+    return response;  // { success, seller, token }
+  } catch (error) {
+    throw new Error(error.message || 'Login failed');
   }
+}
 
-  export async function signupSeller(payload) {
-    const response = await fetch('http://localhost:5050/api/auth/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || 'Signup failed');
-    }
-
-    return data;  // { success, seller }
+export async function signupSeller(payload) {
+  try {
+    const response = await authAPI.register(payload);
+    return response;  // { success, seller }
+  } catch (error) {
+    throw new Error(error.message || 'Signup failed');
   }
+}
