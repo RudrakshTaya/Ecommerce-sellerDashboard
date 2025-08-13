@@ -91,16 +91,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Product Info */}
         <div className="p-4">
           {/* Seller Info */}
-          <div className="flex items-center space-x-2 mb-2">
-            <img
-              src={product.seller.avatar || '/placeholder.svg'}
-              alt={product.seller.name}
-              className="w-6 h-6 rounded-full object-cover"
-            />
-            <span className="text-xs text-earth-600">
-              {product.seller.businessName || product.seller.name}
-            </span>
-          </div>
+          {product.seller && (
+            <div className="flex items-center space-x-2 mb-2">
+              <img
+                src={product.seller.avatar || '/placeholder.svg'}
+                alt={product.seller.name || 'Seller'}
+                className="w-6 h-6 rounded-full object-cover"
+              />
+              <span className="text-xs text-earth-600">
+                {product.seller.businessName || product.seller.name || 'Unknown Seller'}
+              </span>
+            </div>
+          )}
 
           {/* Product Name */}
           <h3 className="font-semibold text-earth-900 mb-2 line-clamp-2 group-hover:text-craft-600 transition-colors">
