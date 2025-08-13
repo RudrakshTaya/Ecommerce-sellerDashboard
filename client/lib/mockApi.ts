@@ -4,7 +4,7 @@ import { Product, Order, OrderItem, SellerStats, ProductsResponse, OrdersRespons
 const generateMockProducts = (sellerId: string): Product[] => {
   return [
     {
-      id: 1,
+      id: "1",
       name: "Handcrafted Wooden Jewelry Box",
       price: 2499,
       originalPrice: 2999,
@@ -72,7 +72,7 @@ const generateMockProducts = (sellerId: string): Product[] => {
       ]
     },
     {
-      id: 2,
+      id: "2",
       name: "DIY Macrame Wall Hanging Kit",
       price: 899,
       originalPrice: 1199,
@@ -135,7 +135,7 @@ const generateMockProducts = (sellerId: string): Product[] => {
       ]
     },
     {
-      id: 3,
+      id: "3",
       name: "Ceramic Tea Set - Blue Pottery",
       price: 1599,
       originalPrice: 1899,
@@ -204,7 +204,7 @@ const generateMockProducts = (sellerId: string): Product[] => {
       ]
     },
     {
-      id: 4,
+      id: "4",
       name: "Handwoven Cotton Throw",
       price: 2299,
       originalPrice: 2799,
