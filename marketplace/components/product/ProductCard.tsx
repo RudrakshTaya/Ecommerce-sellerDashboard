@@ -21,7 +21,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   className,
   showQuickAdd = true 
 }) => {
-  const addToCart = useCartStore(state => state.addToCart)
+  const addItem = useCartStore(state => state.addItem)
   const { addItem: addToWishlist, isInWishlist } = useWishlistStore()
   
   const isWishlisted = isInWishlist(product.id)
@@ -30,7 +30,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    addToCart(product)
+    addItem(product)
   }
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
@@ -53,16 +53,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
     <Link href={`/products/${product.id}`} className={cn('product-card', className)}>
       <div className="relative">
         {/* Product Image */}
-        <div className="aspect-square overflow-hidden rounded-t-2xl">
-          <Image
-            src={getImageUrl(product.image)}
-            alt={product.name}
-            width={300}
-            height={300}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-            placeholder="blur"
-            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-          />
+        <div className="aspect-square overflow-hidden rounded-t-2xl bg-craft-100">
+          <div className="w-full h-full flex items-center justify-center text-craft-400">
+            <span className="text-4xl">🎨</span>
+          </div>
           
           {/* Badges */}
           {getBadges().length > 0 && (
