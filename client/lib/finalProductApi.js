@@ -34,7 +34,12 @@ export class ProductAPI {
 
         if (imagePromises.length > 0) {
           const base64Images = await Promise.all(imagePromises);
-          cleanProductData.images = base64Images;
+          // Format images to match backend schema
+          cleanProductData.images = base64Images.map((base64, index) => ({
+            url: base64,
+            public_id: `temp_${Date.now()}_${index}`,
+            alt: cleanProductData.name || 'Product image'
+          }));
           cleanProductData.image = base64Images[0];
         } else {
           cleanProductData.image = "/placeholder.svg";
