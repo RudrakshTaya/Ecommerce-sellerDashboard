@@ -15,7 +15,7 @@ import {
   Address,
 } from './types';
 
-const API_BASE_URL = 'http://localhost:5050/api';
+const API_BASE_URL = 'http://localhost:5000/api';
 
 // Create axios instance
 const api = axios.create({
