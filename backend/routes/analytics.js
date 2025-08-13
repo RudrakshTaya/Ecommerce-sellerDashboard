@@ -21,6 +21,9 @@ router.get(
       const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
+      // Debug logging
+      console.log("Analytics dashboard request for sellerId:", sellerId);
+
       // Get overall statistics
       const [
         totalProducts,
