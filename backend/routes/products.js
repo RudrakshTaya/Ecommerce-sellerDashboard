@@ -381,9 +381,11 @@ router.post(
                 .filter((c) => c)
           : [],
 
-        // Process warranty and return policy
+        // Process warranty and return policy (handle both JSON objects and FormData)
         warranty:
-          req.body.warrantyEnabled === "true"
+          req.body.warranty && typeof req.body.warranty === 'object'
+            ? req.body.warranty // JSON object format
+            : req.body.warrantyEnabled === "true"
             ? {
                 period: req.body.warrantyPeriod,
                 description: req.body.warrantyDescription,
@@ -392,7 +394,9 @@ router.post(
             : undefined,
 
         returnPolicy:
-          req.body.returnPolicyEnabled === "true"
+          req.body.returnPolicy && typeof req.body.returnPolicy === 'object'
+            ? req.body.returnPolicy // JSON object format
+            : req.body.returnPolicyEnabled === "true"
             ? {
                 returnable: true,
                 period: req.body.returnPeriod,
