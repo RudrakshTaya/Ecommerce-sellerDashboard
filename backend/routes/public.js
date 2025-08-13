@@ -237,7 +237,7 @@ router.get(
 // @route   GET /api/public/products/customizable
 // @access  Public
 router.get(
-  "/customizable",
+  "/products/customizable",
   asyncHandler(async (req, res) => {
     const { page = 1, limit = 12 } = req.query;
 
