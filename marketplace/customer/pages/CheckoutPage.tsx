@@ -11,10 +11,10 @@ const CheckoutPage: React.FC = () => {
 
   const [step, setStep] = useState(1);
   const [shippingInfo, setShippingInfo] = useState({
-    firstName: customer?.firstName || '',
-    lastName: customer?.lastName || '',
+    firstName: customer?.name?.split(' ')[0] || '',
+    lastName: customer?.name?.split(' ').slice(1).join(' ') || '',
     email: customer?.email || '',
-    phone: '',
+    phone: customer?.phone || '',
     address: '',
     city: '',
     state: '',
