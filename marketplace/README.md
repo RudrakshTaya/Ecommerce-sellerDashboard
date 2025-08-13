@@ -1,36 +1,208 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CraftMart - Handmade Crafts Multi-Seller Marketplace
 
-## Getting Started
+A beautiful, modern e-commerce marketplace for handmade crafts, connecting artisans with customers worldwide. Built with Next.js, TypeScript, and Tailwind CSS.
 
-First, run the development server:
+## 🎨 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Core Marketplace Features
+- **Multi-seller platform** - Support for multiple independent artisans/sellers
+- **Product browsing** - Categories, search, filtering, and sorting
+- **Shopping cart & wishlist** - Full e-commerce functionality
+- **User authentication** - Customer registration and login
+- **Responsive design** - Mobile-first, optimized for all devices
+
+### Handmade Focus
+- **Artisan profiles** - Showcase seller stories and specialties
+- **Customization options** - Support for custom orders and personalization
+- **Handmade badges** - Clear indicators for handcrafted items
+- **Quality assurance** - Trust badges and verification system
+
+### User Experience
+- **Warm, artisanal design** - Earth tones and organic shapes
+- **Modern UI components** - Built with Radix UI and Tailwind CSS
+- **Fast performance** - Optimized images and lazy loading
+- **Accessibility** - WCAG compliant design
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Backend API running on port 5000
+
+### Installation
+
+1. **Clone and navigate to marketplace folder**
+   ```bash
+   cd marketplace
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.local.example .env.local
+   # Edit .env.local with your configuration
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open in browser**
+   ```
+   http://localhost:3001
+   ```
+
+## 🏗️ Project Structure
+
+```
+marketplace/
+├── app/                    # Next.js App Router
+│   ├── page.tsx           # Homepage
+│   ├── layout.tsx         # Root layout
+│   └── globals.css        # Global styles
+├── components/            # React components
+│   ├── ui/                # Reusable UI components
+│   ├── layout/            # Layout components
+│   ├── product/           # Product-related components
+│   ├── seller/            # Seller-related components
+│   ├── cart/              # Shopping cart components
+│   ├── auth/              # Authentication components
+│   └── search/            # Search components
+├── lib/                   # Utilities and configuration
+│   ├── api/               # API client functions
+│   ├── store/             # Zustand state management
+│   ├── types.ts           # TypeScript type definitions
+│   └── utils.ts           # Utility functions
+├── public/                # Static assets
+└── hooks/                 # Custom React hooks
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🎨 Design System
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Color Palette
+- **Craft**: Warm terracotta tones `#dd9658` to `#6f4331`
+- **Earth**: Natural brown tones `#a48b6f` to `#53453a` 
+- **Warm**: Sunset orange tones `#e2944d` to `#72442a`
+- **Sage**: Soft green tones `#828e6a` to `#3a3f30`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Typography
+- **Sans-serif**: Inter (body text)
+- **Serif**: Playfair Display (headings)
+- **Handwritten**: Dancing Script (accents)
 
-## Learn More
+### Components
+- Buttons with hover animations
+- Cards with soft shadows
+- Badges for product attributes
+- Responsive image galleries
+- Loading states and skeletons
 
-To learn more about Next.js, take a look at the following resources:
+## 🛍️ Key Components
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### HomePage
+- Hero section with call-to-action
+- Trending products showcase
+- Category navigation
+- New arrivals section
+- Featured artisans
+- Instagram picks
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ProductCard
+- Product images with badges
+- Seller attribution
+- Rating and reviews
+- Price with discounts
+- Quick add to cart
+- Wishlist functionality
 
-## Deploy on Vercel
+### Layout Components
+- Responsive header with navigation
+- Search functionality
+- Shopping cart preview
+- Footer with links and newsletter
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🔧 State Management
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Using Zustand for client-side state:
+
+- **Cart Store**: Shopping cart items and quantities
+- **Wishlist Store**: Saved products for later
+- **Auth Store**: User authentication state
+- **Search Store**: Search queries and filters
+- **UI Store**: Modal states and mobile menu
+
+## 🌐 API Integration
+
+### Public Endpoints
+- `GET /api/public/products` - Browse all products
+- `GET /api/public/products/:id` - Get product details
+- `GET /api/public/trending` - Trending products
+- `GET /api/public/new` - New arrivals
+- `GET /api/public/customizable` - Customizable products
+- `GET /api/public/categories` - Product categories
+- `GET /api/public/search` - Search products
+
+### Authentication
+- Customer registration and login
+- Profile management
+- Order history
+
+## 📱 Responsive Design
+
+- **Mobile-first**: Optimized for mobile devices
+- **Breakpoints**: 
+  - sm: 640px
+  - md: 768px  
+  - lg: 1024px
+  - xl: 1280px
+  - 2xl: 1536px
+
+## 🚀 Deployment
+
+### Build for Production
+```bash
+npm run build
+npm start
+```
+
+### Environment Variables
+```bash
+NEXT_PUBLIC_API_URL=https://your-backend-api.com
+NEXT_PUBLIC_APP_NAME=CraftMart
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🎯 Roadmap
+
+- [ ] Advanced search filters
+- [ ] Customer reviews and ratings
+- [ ] Order tracking
+- [ ] Live chat with sellers
+- [ ] Social media integration
+- [ ] Multi-language support
+- [ ] Progressive Web App (PWA)
+- [ ] Push notifications
+
+## 📞 Support
+
+For support and questions:
+- Email: support@craftmart.com
+- Documentation: [docs.craftmart.com](https://docs.craftmart.com)
+- Community: [community.craftmart.com](https://community.craftmart.com)
