@@ -54,6 +54,7 @@ export default function EditProductForm({
     seoDescription: "",
     image: "",
     images: [] as string[],
+    imageFiles: [] as File[],
     isCustomizable: false,
     isDIY: false,
     isInstagramPick: false,
@@ -185,6 +186,12 @@ export default function EditProductForm({
       const fileArray = Array.from(files);
       const imageUrls: string[] = [];
 
+      // Store the original files for API upload
+      setFormData((prev) => ({
+        ...prev,
+        imageFiles: [...prev.imageFiles, ...fileArray],
+      }));
+
       fileArray.forEach((file) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -194,7 +201,7 @@ export default function EditProductForm({
           if (imageUrls.length === fileArray.length) {
             setFormData((prev) => ({
               ...prev,
-              image: imageUrls[0] || prev.image,
+              image: prev.images.length === 0 ? imageUrls[0] : prev.image,
               images: [...prev.images, ...imageUrls],
             }));
           }
@@ -207,9 +214,11 @@ export default function EditProductForm({
   const removeImage = (index: number) => {
     setFormData((prev) => {
       const newImages = prev.images.filter((_, i) => i !== index);
+      const newImageFiles = prev.imageFiles.filter((_, i) => i !== index);
       return {
         ...prev,
         images: newImages,
+        imageFiles: newImageFiles,
         image: newImages[0] || "",
       };
     });
