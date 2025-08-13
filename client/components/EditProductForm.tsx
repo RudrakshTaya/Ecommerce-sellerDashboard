@@ -259,13 +259,17 @@ export default function EditProductForm({
         category: formData.category,
         subcategory: formData.subcategory || undefined,
         materials: formData.materials
-          .split(",")
-          .map((m) => m.trim())
-          .filter((m) => m),
+          ? formData.materials
+              .split(",")
+              .map((m) => m.trim())
+              .filter((m) => m)
+          : [],
         colors: formData.colors
-          .split(",")
-          .map((c) => c.trim())
-          .filter((c) => c),
+          ? formData.colors
+              .split(",")
+              .map((c) => c.trim())
+              .filter((c) => c)
+          : [],
         sizes: formData.sizes
           ? formData.sizes
               .split(",")
