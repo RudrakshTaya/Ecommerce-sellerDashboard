@@ -585,6 +585,15 @@ router.put(
                 .map((c) => c.trim())
                 .filter((c) => c)
           : product.certifications,
+
+        // Handle warranty and return policy updates
+        warranty: req.body.warranty !== undefined
+          ? req.body.warranty
+          : product.warranty,
+
+        returnPolicy: req.body.returnPolicy !== undefined
+          ? req.body.returnPolicy
+          : product.returnPolicy,
       };
 
       // Clean up undefined values
