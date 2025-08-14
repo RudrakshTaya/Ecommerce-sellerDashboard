@@ -98,6 +98,7 @@ app.use("/api/customer-orders", customerOrderRoutes); // Customer orders
 app.use("/api/payments", paymentRoutes);              // Payment processing
 app.use("/api/inventory", inventoryRoutes);            // Inventory management
 app.use("/api/notifications", notificationRoutes);      // Notification system
+app.use("/api/advanced-analytics", advancedAnalyticsRoutes); // Advanced analytics
 
 // 404 handler
 app.use("*", (req, res) => {
