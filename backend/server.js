@@ -49,16 +49,39 @@ connectDB();
 const app = express();
 const server = createServer(app);
 
-// Security middleware
-app.use(helmet());
+// Enhanced security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://checkout.razorpay.com"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://api.razorpay.com"],
+      frameSrc: ["https://api.razorpay.com"]
+    }
+  }
+}));
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later.",
-});
-app.use("/api/", limiter);
+// Enhanced CORS and security headers
+app.use(enhancedCORS);
+
+// Security logging
+app.use(securityLogger);
+
+// Request size limiting
+app.use(requestSizeLimit('10mb'));
+
+// Input sanitization
+app.use(sanitizeInput);
+app.use(mongoSanitize);
+
+// API rate limiting (general)
+app.use("/api/", apiRateLimit);
+
+// Specific rate limiting for auth routes
+app.use("/api/auth", authRateLimit);
+app.use("/api/customer-auth", authRateLimit);
 
 // CORS configuration - Updated to allow marketplace frontend
 const corsOptions = {
