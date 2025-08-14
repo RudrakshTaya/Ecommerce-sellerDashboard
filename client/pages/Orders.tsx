@@ -526,21 +526,22 @@ const OrderCard = ({
         </div>
 
         {/* Customer Address */}
-        <div className="flex items-center text-sm text-gray-600 p-2 bg-orange-50 rounded-lg">
-          <div className="flex items-center mr-2">
-            {getAddressTypeIcon(order.shippingAddress.type)}
-            <Badge
-              variant="outline"
-              className={`ml-1 ${getAddressTypeColor(order.shippingAddress.type)} text-xs`}
-            >
-              {order.shippingAddress.type}
-            </Badge>
+        {order.shippingAddress && (
+          <div className="flex items-center text-sm text-gray-600 p-2 bg-orange-50 rounded-lg">
+            <div className="flex items-center mr-2">
+              <Badge
+                variant="outline"
+                className={`ml-1 bg-blue-100 text-blue-800 text-xs`}
+              >
+                Shipping
+              </Badge>
+            </div>
+            <span className="truncate">
+              {order.shippingAddress.firstName} {order.shippingAddress.lastName},{" "}
+              {order.shippingAddress.city}
+            </span>
           </div>
-          <span className="truncate">
-            {order.shippingAddress.firstName} {order.shippingAddress.lastName},{" "}
-            {order.shippingAddress.city}
-          </span>
-        </div>
+        )}
 
         <div className="flex gap-2 pt-2">
           <Button
@@ -632,9 +633,9 @@ export default function Orders() {
   // Filter orders
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.userId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+      (order.orderNumber || order.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.customerId || order.customerInfo?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      `${order.shippingAddress?.firstName || ''} ${order.shippingAddress?.lastName || ''}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
     const matchesStatus =
