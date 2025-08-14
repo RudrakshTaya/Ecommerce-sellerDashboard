@@ -5,8 +5,10 @@ import morgan from "morgan";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
+import { createServer } from "http";
 import connectDB from "./config/database.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { realTimeService } from "./services/realTimeService.js";
 
 // Import routes
 import authRoutes from "./routes/auth.js";
