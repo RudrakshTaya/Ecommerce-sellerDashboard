@@ -4,14 +4,14 @@ const API_CONFIG = {
   BASE_URL:
     process.env.NODE_ENV === "production"
       ? "https://your-backend-domain.com"
-      : "http://localhost:5050",
+      : "http://localhost:5000",
 
   // API endpoints
   ENDPOINTS: {
     // Authentication
     AUTH: {
       LOGIN: "/api/auth/login",
-      REGISTER: "/api/auth/signup",
+      REGISTER: "/api/auth/register",
       ME: "/api/auth/me",
       PROFILE: "/api/auth/profile",
       CHANGE_PASSWORD: "/api/auth/change-password",

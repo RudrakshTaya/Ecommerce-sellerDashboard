@@ -5,8 +5,19 @@ import morgan from "morgan";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
+import { createServer } from "http";
 import connectDB from "./config/database.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { realTimeService } from "./services/realTimeService.js";
+import {
+  apiRateLimit,
+  authRateLimit,
+  sanitizeInput,
+  mongoSanitize,
+  enhancedCORS,
+  securityLogger,
+  requestSizeLimit,
+} from "./middleware/security.js";
 
 // Import routes
 import authRoutes from "./routes/auth.js";
@@ -20,6 +31,14 @@ import publicRoutes from "./routes/public.js";
 import customerAuthRoutes from "./routes/customer-auth.js";
 import customerOrderRoutes from "./routes/customer-orders.js";
 import mockDataRoutes from "./routes/mock-data.js";
+import paymentRoutes from "./routes/payments.js";
+import inventoryRoutes from "./routes/inventory.js";
+import notificationRoutes from "./routes/notifications.js";
+import advancedAnalyticsRoutes from "./routes/advanced-analytics.js";
+import orderTrackingRoutes from "./routes/order-tracking.js";
+import searchRoutes from "./routes/search.js";
+import reviewRoutes from "./routes/reviews.js";
+import cartWishlistRoutes from "./routes/cart-wishlist.js";
 
 // Load environment variables
 dotenv.config();
@@ -28,17 +47,47 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const server = createServer(app);
 
-// Security middleware
-app.use(helmet());
+// Enhanced security middleware
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://checkout.razorpay.com",
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://api.razorpay.com"],
+        frameSrc: ["https://api.razorpay.com"],
+      },
+    },
+  }),
+);
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later.",
-});
-app.use("/api/", limiter);
+// Enhanced CORS and security headers
+app.use(enhancedCORS);
+
+// Security logging
+app.use(securityLogger);
+
+// Request size limiting
+app.use(requestSizeLimit("10mb"));
+
+// Input sanitization
+app.use(sanitizeInput);
+app.use(mongoSanitize);
+
+// API rate limiting (general)
+app.use("/api/", apiRateLimit);
+
+// Specific rate limiting for auth routes
+app.use("/api/auth", authRateLimit);
+app.use("/api/customer-auth", authRateLimit);
 
 // CORS configuration - Updated to allow marketplace frontend
 const corsOptions = {
@@ -80,17 +129,25 @@ app.get("/health", (req, res) => {
 });
 
 // API routes
-app.use("/api/auth", authRoutes);                    // Seller authentication
-app.use("/api/products", productRoutes);             // Seller products management
-app.use("/api/orders", orderRoutes);                 // Seller orders management
-app.use("/api/analytics", analyticsRoutes);          // Seller analytics
-app.use("/api/upload", uploadRoutes);                // File uploads
-app.use("/api/test", testRoutes);                    // Testing endpoints
-app.use("/api/admin", adminRoutes);                  // Admin endpoints
-app.use("/api/public", publicRoutes);                // Public marketplace endpoints
-app.use("/api/mock", mockDataRoutes);                 // Mock data for testing
-app.use("/api/customer-auth", customerAuthRoutes);   // Customer authentication
+app.use("/api/auth", authRoutes); // Seller authentication
+app.use("/api/products", productRoutes); // Seller products management
+app.use("/api/orders", orderRoutes); // Seller orders management
+app.use("/api/analytics", analyticsRoutes); // Seller analytics
+app.use("/api/upload", uploadRoutes); // File uploads
+app.use("/api/test", testRoutes); // Testing endpoints
+app.use("/api/admin", adminRoutes); // Admin endpoints
+app.use("/api/public", publicRoutes); // Public marketplace endpoints
+app.use("/api/mock", mockDataRoutes); // Mock data for testing
+app.use("/api/customer-auth", customerAuthRoutes); // Customer authentication
 app.use("/api/customer-orders", customerOrderRoutes); // Customer orders
+app.use("/api/payments", paymentRoutes); // Payment processing
+app.use("/api/inventory", inventoryRoutes); // Inventory management
+app.use("/api/notifications", notificationRoutes); // Notification system
+app.use("/api/advanced-analytics", advancedAnalyticsRoutes); // Advanced analytics
+app.use("/api/order-tracking", orderTrackingRoutes); // Real-time order tracking
+app.use("/api/search", searchRoutes); // Advanced search functionality
+app.use("/api/reviews", reviewRoutes); // Review and rating system
+app.use("/api", cartWishlistRoutes); // Cart and wishlist functionality
 
 // 404 handler
 app.use("*", (req, res) => {
@@ -105,12 +162,17 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+// Initialize real-time service
+realTimeService.initialize(server);
+
+server.listen(PORT, () => {
   console.log(
     `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`,
   );
   console.log(`📊 API Health Check: http://localhost:${PORT}/health`);
-  console.log(`🔗 Seller Dashboard: ${process.env.FRONTEND_URL || "http://localhost:8080"}`);
+  console.log(
+    `🔗 Seller Dashboard: ${process.env.FRONTEND_URL || "http://localhost:8080"}`,
+  );
   console.log(`🛍️ Customer Marketplace: http://localhost:3001`);
   console.log(`\n📋 Available API Endpoints:`);
   console.log(`   • Seller Auth: /api/auth/*`);
