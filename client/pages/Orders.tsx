@@ -275,8 +275,10 @@ const OrderDetailsModal = ({
                 </CardHeader>
                 <CardContent className="p-6 space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Customer ID:</span>
-                    <span className="text-sm font-medium">{order.userId}</span>
+                    <span className="text-sm text-gray-600">Customer:</span>
+                    <span className="text-sm font-medium">
+                      {order.customerInfo?.name || order.customerId || 'N/A'}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">
@@ -484,9 +486,9 @@ const OrderCard = ({
           </Badge>
         </div>
         <div className="flex items-center justify-between text-sm text-gray-600">
-          <span>{new Date(order.orderDate).toLocaleDateString()}</span>
+          <span>{new Date(order.createdAt || order.orderDate).toLocaleDateString()}</span>
           <span className="font-semibold text-lg text-green-600">
-            ₹{sellerTotal.toLocaleString()}
+            ${(order.total || sellerTotal).toFixed(2)}
           </span>
         </div>
       </CardHeader>
