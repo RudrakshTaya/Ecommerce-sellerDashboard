@@ -161,7 +161,7 @@ const OrderDetailsModal = ({
         <DialogHeader className="pb-4">
           <DialogTitle className="flex items-center justify-between">
             <span className="text-xl font-bold">
-              Order Details - #{order.id}
+              Order Details - #{order.orderNumber || order.id}
             </span>
             <Badge className={getStatusColor(order.status)}>
               {getStatusIcon(order.status)}
@@ -169,8 +169,8 @@ const OrderDetailsModal = ({
             </Badge>
           </DialogTitle>
           <DialogDescription>
-            Order placed on {new Date(order.orderDate).toLocaleDateString()} at{" "}
-            {new Date(order.orderDate).toLocaleTimeString()}
+            Order placed on {new Date(order.createdAt || order.orderDate).toLocaleDateString()} at{" "}
+            {new Date(order.createdAt || order.orderDate).toLocaleTimeString()}
           </DialogDescription>
         </DialogHeader>
 
