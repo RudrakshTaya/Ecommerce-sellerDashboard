@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CreditCard, Lock, ArrowLeft, CheckCircle } from "lucide-react";
 import { useCartStore, useAuthStore, useUIStore } from "../lib/store";
+import { ordersAPI } from "../lib/api";
+import { useCustomerAuth } from "../contexts/CustomerAuthContext";
 
 const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { items, getCartTotal, clearCart } = useCartStore();
-  const { customer } = useAuthStore();
+  const { customer } = useCustomerAuth();
   const { showNotification } = useUIStore();
 
   const [step, setStep] = useState(1);
@@ -56,12 +58,40 @@ const CheckoutPage: React.FC = () => {
 
   const handleSubmitOrder = async () => {
     try {
-      // Simulate order processing
+      if (!customer) {
+        showNotification("Please log in to place an order", "error");
+        return;
+      }
+
+      const orderData = {
+        items: items.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+          price: item.product.price,
+          selectedColor: item.selectedColor,
+          selectedSize: item.selectedSize,
+        })),
+        shippingAddress: {
+          firstName: shippingInfo.firstName,
+          lastName: shippingInfo.lastName,
+          address: shippingInfo.address,
+          city: shippingInfo.city,
+          state: shippingInfo.state,
+          pincode: shippingInfo.zipCode,
+          phone: shippingInfo.phone,
+        },
+        paymentMethod: "card", // or get from payment form
+        notes: "Order placed from marketplace",
+      };
+
+      await ordersAPI.createOrder(orderData);
       showNotification("Order placed successfully!", "success");
       clearCart();
       navigate("/orders");
-    } catch (error) {
-      showNotification("Failed to place order. Please try again.", "error");
+    } catch (error: any) {
+      console.error("Order placement error:", error);
+      const errorMessage = error.response?.data?.message || "Failed to place order. Please try again.";
+      showNotification(errorMessage, "error");
     }
   };
 
