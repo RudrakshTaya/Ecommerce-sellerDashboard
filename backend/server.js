@@ -9,6 +9,15 @@ import { createServer } from "http";
 import connectDB from "./config/database.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { realTimeService } from "./services/realTimeService.js";
+import {
+  apiRateLimit,
+  authRateLimit,
+  sanitizeInput,
+  mongoSanitize,
+  enhancedCORS,
+  securityLogger,
+  requestSizeLimit
+} from "./middleware/security.js";
 
 // Import routes
 import authRoutes from "./routes/auth.js";
