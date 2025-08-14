@@ -73,7 +73,7 @@ router.post(
 
     try {
       // Get all product IDs and verify they exist
-      const productIds = items.map(item => item.productId);
+      const productIds = items.map((item) => item.productId);
       const products = await Product.find({
         _id: { $in: productIds },
         status: "active",
@@ -89,10 +89,12 @@ router.post(
 
       // Group items by seller to create separate orders
       const ordersBySeller = {};
-      
+
       for (const item of items) {
-        const product = products.find(p => p._id.toString() === item.productId);
-        
+        const product = products.find(
+          (p) => p._id.toString() === item.productId,
+        );
+
         // Check stock availability
         if (product.stock < item.quantity) {
           return res.status(400).json({
@@ -102,7 +104,7 @@ router.post(
         }
 
         const sellerId = product.sellerId._id.toString();
-        
+
         if (!ordersBySeller[sellerId]) {
           ordersBySeller[sellerId] = {
             sellerId: product.sellerId._id,
@@ -143,9 +145,13 @@ router.post(
         const total = orderData.subtotal + shipping + tax;
 
         // Calculate estimated delivery date (max delivery days from items)
-        const maxDeliveryDays = Math.max(...orderData.items.map(item => item.deliveryDays));
+        const maxDeliveryDays = Math.max(
+          ...orderData.items.map((item) => item.deliveryDays),
+        );
         const estimatedDelivery = new Date();
-        estimatedDelivery.setDate(estimatedDelivery.getDate() + maxDeliveryDays);
+        estimatedDelivery.setDate(
+          estimatedDelivery.getDate() + maxDeliveryDays,
+        );
 
         // Generate order ID
         const orderNumber = `ORD${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
@@ -195,7 +201,10 @@ router.post(
       }
 
       // Update customer statistics (total from all orders)
-      const grandTotal = createdOrders.reduce((sum, order) => sum + order.total, 0);
+      const grandTotal = createdOrders.reduce(
+        (sum, order) => sum + order.total,
+        0,
+      );
       await req.customer.updateStats(grandTotal);
 
       res.status(201).json({
@@ -214,7 +223,7 @@ router.post(
         message: "Error creating order",
       });
     }
-  })
+  }),
 );
 
 // @desc    Get customer's orders
@@ -260,7 +269,7 @@ router.get(
         message: "Error fetching orders",
       });
     }
-  })
+  }),
 );
 
 // @desc    Get single order details
@@ -275,7 +284,10 @@ router.get(
         _id: req.params.id,
         customerId: req.customer._id,
       })
-        .populate("sellerId", "storeName email contactNumber businessAddress rating reviewCount")
+        .populate(
+          "sellerId",
+          "storeName email contactNumber businessAddress rating reviewCount",
+        )
         .populate("items.product", "name image sku category");
 
       if (!order) {
@@ -296,7 +308,7 @@ router.get(
         message: "Error fetching order",
       });
     }
-  })
+  }),
 );
 
 // @desc    Cancel order (only if pending or confirmed)
@@ -369,7 +381,7 @@ router.patch(
         message: "Error cancelling order",
       });
     }
-  })
+  }),
 );
 
 // @desc    Request return/refund
@@ -379,10 +391,7 @@ router.patch(
   "/:id/return",
   protectCustomer,
   [
-    body("reason")
-      .trim()
-      .notEmpty()
-      .withMessage("Return reason is required"),
+    body("reason").trim().notEmpty().withMessage("Return reason is required"),
     body("itemIds")
       .optional()
       .isArray()
@@ -429,7 +438,7 @@ router.patch(
       order.returnRequest = {
         reason,
         requestedAt: new Date(),
-        itemIds: itemIds || order.items.map(item => item._id),
+        itemIds: itemIds || order.items.map((item) => item._id),
         status: "pending",
       };
 
@@ -454,7 +463,7 @@ router.patch(
         message: "Error processing return request",
       });
     }
-  })
+  }),
 );
 
 export default router;
