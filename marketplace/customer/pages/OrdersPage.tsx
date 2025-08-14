@@ -216,7 +216,7 @@ const OrdersPage: React.FC = () => {
                     {order.items.map((item) => (
                       <div key={item._id} className="flex space-x-3">
                         <img
-                          src={item.product.images[0] || "/placeholder.svg"}
+                          src={(item.product.images && item.product.images[0]) || "/placeholder.svg"}
                           alt={item.product.name}
                           className="w-16 h-16 object-cover rounded-lg"
                         />
