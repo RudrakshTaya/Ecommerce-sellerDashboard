@@ -26,7 +26,7 @@ const customerSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: [true, "Phone number is required"],
+      
       match: [/^[0-9]{10,15}$/, "Please enter a valid phone number"],
     },
     dateOfBirth: Date,

@@ -60,9 +60,7 @@ const validateCustomerRegistration = [
     .isEmail()
     .normalizeEmail()
     .withMessage("Please enter a valid email"),
-  body("phone")
-    .matches(/^[0-9]{10,15}$/)
-    .withMessage("Please enter a valid phone number"),
+
   body("password")
     .isLength({ min: 6 })
     .withMessage("Password must be at least 6 characters"),
