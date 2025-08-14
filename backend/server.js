@@ -109,6 +109,7 @@ app.use("/api/advanced-analytics", advancedAnalyticsRoutes); // Advanced analyti
 app.use("/api/order-tracking", orderTrackingRoutes);        // Real-time order tracking
 app.use("/api/search", searchRoutes);                       // Advanced search functionality
 app.use("/api/reviews", reviewRoutes);                      // Review and rating system
+app.use("/api", cartWishlistRoutes);                        // Cart and wishlist functionality
 
 // 404 handler
 app.use("*", (req, res) => {
