@@ -103,6 +103,7 @@ app.use("/api/payments", paymentRoutes);              // Payment processing
 app.use("/api/inventory", inventoryRoutes);            // Inventory management
 app.use("/api/notifications", notificationRoutes);      // Notification system
 app.use("/api/advanced-analytics", advancedAnalyticsRoutes); // Advanced analytics
+app.use("/api/order-tracking", orderTrackingRoutes);        // Real-time order tracking
 
 // 404 handler
 app.use("*", (req, res) => {
