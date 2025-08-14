@@ -148,15 +148,17 @@ export interface Order {
 
 export interface OrderItem {
   _id?: string;
-  product: string | {
-    _id: string;
-    name: string;
-    images?: string[];
-    image?: string;
-    price: number;
-    sku?: string;
-    category?: string;
-  };
+  product:
+    | string
+    | {
+        _id: string;
+        name: string;
+        images?: string[];
+        image?: string;
+        price: number;
+        sku?: string;
+        category?: string;
+      };
   productSnapshot?: {
     name: string;
     price: number;

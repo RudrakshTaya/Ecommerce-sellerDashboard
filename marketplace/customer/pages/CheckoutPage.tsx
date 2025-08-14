@@ -64,7 +64,7 @@ const CheckoutPage: React.FC = () => {
       }
 
       const orderData = {
-        items: items.map(item => ({
+        items: items.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
           price: item.product.price,
@@ -90,7 +90,9 @@ const CheckoutPage: React.FC = () => {
       navigate("/orders");
     } catch (error: any) {
       console.error("Order placement error:", error);
-      const errorMessage = error.response?.data?.message || "Failed to place order. Please try again.";
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to place order. Please try again.";
       showNotification(errorMessage, "error");
     }
   };

@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { Product, Customer, CartItem, Cart, Address } from './types';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { Product, Customer, CartItem, Cart, Address } from "./types";
 
 // Auth Store
 interface AuthState {
@@ -19,29 +19,29 @@ export const useAuthStore = create<AuthState>()(
       customer: null,
       token: null,
       login: (customer: Customer, token: string) => {
-        localStorage.setItem('customerToken', token);
-        localStorage.setItem('customer', JSON.stringify(customer));
+        localStorage.setItem("customerToken", token);
+        localStorage.setItem("customer", JSON.stringify(customer));
         set({ isAuthenticated: true, customer, token });
       },
       logout: () => {
-        localStorage.removeItem('customerToken');
-        localStorage.removeItem('customer');
+        localStorage.removeItem("customerToken");
+        localStorage.removeItem("customer");
         set({ isAuthenticated: false, customer: null, token: null });
       },
       updateCustomer: (customer: Customer) => {
-        localStorage.setItem('customer', JSON.stringify(customer));
+        localStorage.setItem("customer", JSON.stringify(customer));
         set({ customer });
       },
     }),
     {
-      name: 'customer-auth-storage',
+      name: "customer-auth-storage",
       partialize: (state) => ({
         isAuthenticated: state.isAuthenticated,
         customer: state.customer,
         token: state.token,
       }),
-    }
-  )
+    },
+  ),
 );
 
 // Cart Store
@@ -70,7 +70,7 @@ export const useCartStore = create<CartState>()(
 
         // Handle both CartItem and Product types
         let cartItem: CartItem;
-        if ('productId' in item) {
+        if ("productId" in item) {
           // It's already a CartItem
           cartItem = item as CartItem;
         } else {
@@ -86,14 +86,16 @@ export const useCartStore = create<CartState>()(
           };
         }
 
-        const existingItem = items.find(item => item.productId === cartItem.productId);
+        const existingItem = items.find(
+          (item) => item.productId === cartItem.productId,
+        );
 
         if (existingItem) {
           set({
-            items: items.map(item =>
+            items: items.map((item) =>
               item.productId === cartItem.productId
                 ? { ...item, quantity: item.quantity + cartItem.quantity }
-                : item
+                : item,
             ),
           });
         } else {
@@ -104,7 +106,7 @@ export const useCartStore = create<CartState>()(
       },
       removeItem: (productId: string) => {
         set({
-          items: get().items.filter(item => item.productId !== productId),
+          items: get().items.filter((item) => item.productId !== productId),
         });
       },
       updateQuantity: (productId: string, quantity: number) => {
@@ -112,12 +114,10 @@ export const useCartStore = create<CartState>()(
           get().removeItem(productId);
           return;
         }
-        
+
         set({
-          items: get().items.map(item =>
-            item.productId === productId
-              ? { ...item, quantity }
-              : item
+          items: get().items.map((item) =>
+            item.productId === productId ? { ...item, quantity } : item,
           ),
         });
       },
@@ -134,7 +134,10 @@ export const useCartStore = create<CartState>()(
         set({ isOpen: !get().isOpen });
       },
       getCartTotal: () => {
-        return get().items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+        return get().items.reduce(
+          (total, item) => total + item.product.price * item.quantity,
+          0,
+        );
       },
       getCartCount: () => {
         return get().items.reduce((count, item) => count + item.quantity, 0);
@@ -147,12 +150,12 @@ export const useCartStore = create<CartState>()(
       },
     }),
     {
-      name: 'customer-cart-storage',
+      name: "customer-cart-storage",
       partialize: (state) => ({
         items: state.items,
       }),
-    }
-  )
+    },
+  ),
 );
 
 // Wishlist Store
@@ -170,31 +173,31 @@ export const useWishlistStore = create<WishlistState>()(
       items: [],
       addItem: (product: Product) => {
         const items = get().items;
-        const exists = items.find(item => item._id === product._id);
-        
+        const exists = items.find((item) => item._id === product._id);
+
         if (!exists) {
           set({ items: [...items, product] });
         }
       },
       removeItem: (productId: string) => {
         set({
-          items: get().items.filter(item => item._id !== productId),
+          items: get().items.filter((item) => item._id !== productId),
         });
       },
       isInWishlist: (productId: string) => {
-        return get().items.some(item => item._id === productId);
+        return get().items.some((item) => item._id === productId);
       },
       clearWishlist: () => {
         set({ items: [] });
       },
     }),
     {
-      name: 'customer-wishlist-storage',
+      name: "customer-wishlist-storage",
       partialize: (state) => ({
         items: state.items,
       }),
-    }
-  )
+    },
+  ),
 );
 
 // Search Store
@@ -208,11 +211,11 @@ interface SearchState {
     isHandmade?: boolean;
     inStock?: boolean;
     sortBy?: string;
-    sortOrder?: 'asc' | 'desc';
+    sortOrder?: "asc" | "desc";
   };
   recentSearches: string[];
   setQuery: (query: string) => void;
-  setFilters: (filters: Partial<SearchState['filters']>) => void;
+  setFilters: (filters: Partial<SearchState["filters"]>) => void;
   clearFilters: () => void;
   addRecentSearch: (query: string) => void;
   clearRecentSearches: () => void;
@@ -221,13 +224,13 @@ interface SearchState {
 export const useSearchStore = create<SearchState>()(
   persist(
     (set, get) => ({
-      query: '',
+      query: "",
       filters: {},
       recentSearches: [],
       setQuery: (query: string) => {
         set({ query });
       },
-      setFilters: (filters: Partial<SearchState['filters']>) => {
+      setFilters: (filters: Partial<SearchState["filters"]>) => {
         set({ filters: { ...get().filters, ...filters } });
       },
       clearFilters: () => {
@@ -235,11 +238,11 @@ export const useSearchStore = create<SearchState>()(
       },
       addRecentSearch: (query: string) => {
         if (!query.trim()) return;
-        
+
         const recentSearches = get().recentSearches;
-        const filtered = recentSearches.filter(search => search !== query);
+        const filtered = recentSearches.filter((search) => search !== query);
         const updated = [query, ...filtered].slice(0, 10); // Keep only last 10 searches
-        
+
         set({ recentSearches: updated });
       },
       clearRecentSearches: () => {
@@ -247,12 +250,12 @@ export const useSearchStore = create<SearchState>()(
       },
     }),
     {
-      name: 'customer-search-storage',
+      name: "customer-search-storage",
       partialize: (state) => ({
         recentSearches: state.recentSearches,
       }),
-    }
-  )
+    },
+  ),
 );
 
 // UI Store
@@ -261,14 +264,17 @@ interface UIState {
   isSearchOpen: boolean;
   notification: {
     message: string;
-    type: 'success' | 'error' | 'info' | 'warning';
+    type: "success" | "error" | "info" | "warning";
     isVisible: boolean;
   } | null;
   toggleMobileMenu: () => void;
   closeMobileMenu: () => void;
   toggleSearch: () => void;
   closeSearch: () => void;
-  showNotification: (message: string, type: 'success' | 'error' | 'info' | 'warning') => void;
+  showNotification: (
+    message: string,
+    type: "success" | "error" | "info" | "warning",
+  ) => void;
   hideNotification: () => void;
 }
 
@@ -277,18 +283,21 @@ export const useUIStore = create<UIState>((set) => ({
   isSearchOpen: false,
   notification: null,
   toggleMobileMenu: () => {
-    set(state => ({ isMobileMenuOpen: !state.isMobileMenuOpen }));
+    set((state) => ({ isMobileMenuOpen: !state.isMobileMenuOpen }));
   },
   closeMobileMenu: () => {
     set({ isMobileMenuOpen: false });
   },
   toggleSearch: () => {
-    set(state => ({ isSearchOpen: !state.isSearchOpen }));
+    set((state) => ({ isSearchOpen: !state.isSearchOpen }));
   },
   closeSearch: () => {
     set({ isSearchOpen: false });
   },
-  showNotification: (message: string, type: 'success' | 'error' | 'info' | 'warning') => {
+  showNotification: (
+    message: string,
+    type: "success" | "error" | "info" | "warning",
+  ) => {
     set({
       notification: {
         message,
@@ -296,17 +305,21 @@ export const useUIStore = create<UIState>((set) => ({
         isVisible: true,
       },
     });
-    
+
     // Auto hide after 5 seconds
     setTimeout(() => {
-      set(state => ({
-        notification: state.notification ? { ...state.notification, isVisible: false } : null,
+      set((state) => ({
+        notification: state.notification
+          ? { ...state.notification, isVisible: false }
+          : null,
       }));
     }, 5000);
   },
   hideNotification: () => {
-    set(state => ({
-      notification: state.notification ? { ...state.notification, isVisible: false } : null,
+    set((state) => ({
+      notification: state.notification
+        ? { ...state.notification, isVisible: false }
+        : null,
     }));
   },
 }));
@@ -326,7 +339,7 @@ export const useAddressStore = create<AddressState>((set, get) => ({
   addresses: [],
   defaultAddress: null,
   setAddresses: (addresses: Address[]) => {
-    const defaultAddr = addresses.find(addr => addr.isDefault) || null;
+    const defaultAddr = addresses.find((addr) => addr.isDefault) || null;
     set({ addresses, defaultAddress: defaultAddr });
   },
   addAddress: (address: Address) => {
@@ -335,19 +348,19 @@ export const useAddressStore = create<AddressState>((set, get) => ({
     set({ addresses, defaultAddress: defaultAddr });
   },
   updateAddress: (id: string, updatedAddress: Partial<Address>) => {
-    const addresses = get().addresses.map(addr =>
-      addr._id === id ? { ...addr, ...updatedAddress } : addr
+    const addresses = get().addresses.map((addr) =>
+      addr._id === id ? { ...addr, ...updatedAddress } : addr,
     );
-    const defaultAddr = addresses.find(addr => addr.isDefault) || null;
+    const defaultAddr = addresses.find((addr) => addr.isDefault) || null;
     set({ addresses, defaultAddress: defaultAddr });
   },
   removeAddress: (id: string) => {
-    const addresses = get().addresses.filter(addr => addr._id !== id);
-    const defaultAddr = addresses.find(addr => addr.isDefault) || null;
+    const addresses = get().addresses.filter((addr) => addr._id !== id);
+    const defaultAddr = addresses.find((addr) => addr.isDefault) || null;
     set({ addresses, defaultAddress: defaultAddr });
   },
   setDefaultAddress: (address: Address) => {
-    const addresses = get().addresses.map(addr => ({
+    const addresses = get().addresses.map((addr) => ({
       ...addr,
       isDefault: addr._id === address._id,
     }));

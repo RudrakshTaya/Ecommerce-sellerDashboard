@@ -169,7 +169,9 @@ const OrderDetailsModal = ({
             </Badge>
           </DialogTitle>
           <DialogDescription>
-            Order placed on {new Date(order.createdAt || order.orderDate).toLocaleDateString()} at{" "}
+            Order placed on{" "}
+            {new Date(order.createdAt || order.orderDate).toLocaleDateString()}{" "}
+            at{" "}
             {new Date(order.createdAt || order.orderDate).toLocaleTimeString()}
           </DialogDescription>
         </DialogHeader>
@@ -277,7 +279,7 @@ const OrderDetailsModal = ({
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Customer:</span>
                     <span className="text-sm font-medium">
-                      {order.customerInfo?.name || order.customerId || 'N/A'}
+                      {order.customerInfo?.name || order.customerId || "N/A"}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
@@ -486,7 +488,9 @@ const OrderCard = ({
           </Badge>
         </div>
         <div className="flex items-center justify-between text-sm text-gray-600">
-          <span>{new Date(order.createdAt || order.orderDate).toLocaleDateString()}</span>
+          <span>
+            {new Date(order.createdAt || order.orderDate).toLocaleDateString()}
+          </span>
           <span className="font-semibold text-lg text-green-600">
             ${(order.total || sellerTotal).toFixed(2)}
           </span>
@@ -537,8 +541,8 @@ const OrderCard = ({
               </Badge>
             </div>
             <span className="truncate">
-              {order.shippingAddress.firstName} {order.shippingAddress.lastName},{" "}
-              {order.shippingAddress.city}
+              {order.shippingAddress.firstName} {order.shippingAddress.lastName}
+              , {order.shippingAddress.city}
             </span>
           </div>
         )}
@@ -633,9 +637,13 @@ export default function Orders() {
   // Filter orders
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
-      (order.orderNumber || order.id || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (order.customerId || order.customerInfo?.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${order.shippingAddress?.firstName || ''} ${order.shippingAddress?.lastName || ''}`
+      (order.orderNumber || order.id || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (order.customerId || order.customerInfo?.name || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      `${order.shippingAddress?.firstName || ""} ${order.shippingAddress?.lastName || ""}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
     const matchesStatus =
