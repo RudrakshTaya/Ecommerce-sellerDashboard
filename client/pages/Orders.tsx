@@ -161,7 +161,7 @@ const OrderDetailsModal = ({
         <DialogHeader className="pb-4">
           <DialogTitle className="flex items-center justify-between">
             <span className="text-xl font-bold">
-              Order Details - #{order.id}
+              Order Details - #{order.orderNumber || order.id}
             </span>
             <Badge className={getStatusColor(order.status)}>
               {getStatusIcon(order.status)}
@@ -169,8 +169,10 @@ const OrderDetailsModal = ({
             </Badge>
           </DialogTitle>
           <DialogDescription>
-            Order placed on {new Date(order.orderDate).toLocaleDateString()} at{" "}
-            {new Date(order.orderDate).toLocaleTimeString()}
+            Order placed on{" "}
+            {new Date(order.createdAt || order.orderDate).toLocaleDateString()}{" "}
+            at{" "}
+            {new Date(order.createdAt || order.orderDate).toLocaleTimeString()}
           </DialogDescription>
         </DialogHeader>
 
@@ -275,8 +277,10 @@ const OrderDetailsModal = ({
                 </CardHeader>
                 <CardContent className="p-6 space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Customer ID:</span>
-                    <span className="text-sm font-medium">{order.userId}</span>
+                    <span className="text-sm text-gray-600">Customer:</span>
+                    <span className="text-sm font-medium">
+                      {order.customerInfo?.name || order.customerId || "N/A"}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">
@@ -476,7 +480,7 @@ const OrderCard = ({
       <CardHeader className="pb-3 bg-gradient-to-r from-gray-50 to-blue-50">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-bold text-gray-900">
-            Order #{order.id}
+            Order #{order.orderNumber || order.id}
           </CardTitle>
           <Badge className={getStatusColor(order.status)}>
             {getStatusIcon(order.status)}
@@ -484,9 +488,11 @@ const OrderCard = ({
           </Badge>
         </div>
         <div className="flex items-center justify-between text-sm text-gray-600">
-          <span>{new Date(order.orderDate).toLocaleDateString()}</span>
+          <span>
+            {new Date(order.createdAt || order.orderDate).toLocaleDateString()}
+          </span>
           <span className="font-semibold text-lg text-green-600">
-            ₹{sellerTotal.toLocaleString()}
+            ${(order.total || sellerTotal).toFixed(2)}
           </span>
         </div>
       </CardHeader>
@@ -524,21 +530,22 @@ const OrderCard = ({
         </div>
 
         {/* Customer Address */}
-        <div className="flex items-center text-sm text-gray-600 p-2 bg-orange-50 rounded-lg">
-          <div className="flex items-center mr-2">
-            {getAddressTypeIcon(order.shippingAddress.type)}
-            <Badge
-              variant="outline"
-              className={`ml-1 ${getAddressTypeColor(order.shippingAddress.type)} text-xs`}
-            >
-              {order.shippingAddress.type}
-            </Badge>
+        {order.shippingAddress && (
+          <div className="flex items-center text-sm text-gray-600 p-2 bg-orange-50 rounded-lg">
+            <div className="flex items-center mr-2">
+              <Badge
+                variant="outline"
+                className={`ml-1 bg-blue-100 text-blue-800 text-xs`}
+              >
+                Shipping
+              </Badge>
+            </div>
+            <span className="truncate">
+              {order.shippingAddress.firstName} {order.shippingAddress.lastName}
+              , {order.shippingAddress.city}
+            </span>
           </div>
-          <span className="truncate">
-            {order.shippingAddress.firstName} {order.shippingAddress.lastName},{" "}
-            {order.shippingAddress.city}
-          </span>
-        </div>
+        )}
 
         <div className="flex gap-2 pt-2">
           <Button
@@ -630,9 +637,13 @@ export default function Orders() {
   // Filter orders
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.userId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
+      (order.orderNumber || order.id || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (order.customerId || order.customerInfo?.name || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      `${order.shippingAddress?.firstName || ""} ${order.shippingAddress?.lastName || ""}`
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
     const matchesStatus =

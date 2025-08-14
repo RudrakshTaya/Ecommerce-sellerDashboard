@@ -18,11 +18,11 @@ const protectCustomer = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
-      if (decoded.type !== 'customer') {
-        throw new Error('Invalid token type');
+
+      if (decoded.type !== "customer") {
+        throw new Error("Invalid token type");
       }
-      
+
       req.customer = await Customer.findById(decoded.id);
       next();
     } catch (error) {
@@ -44,9 +44,9 @@ const protectCustomer = async (req, res, next) => {
 // Generate JWT token for customer
 const generateCustomerToken = (customerId) => {
   return jwt.sign(
-    { id: customerId, type: 'customer' },
+    { id: customerId, type: "customer" },
     process.env.JWT_SECRET,
-    { expiresIn: "30d" }
+    { expiresIn: "30d" },
   );
 };
 
@@ -157,7 +157,7 @@ router.post(
         message: "Error creating customer account",
       });
     }
-  })
+  }),
 );
 
 // @desc    Login customer
@@ -240,7 +240,7 @@ router.post(
         message: "Error during login",
       });
     }
-  })
+  }),
 );
 
 // @desc    Get current customer profile
@@ -269,7 +269,7 @@ router.get(
         createdAt: req.customer.createdAt,
       },
     });
-  })
+  }),
 );
 
 // @desc    Update customer profile
@@ -322,7 +322,7 @@ router.put(
         {
           new: true,
           runValidators: true,
-        }
+        },
       );
 
       res.json({
@@ -349,7 +349,7 @@ router.put(
         message: "Error updating profile",
       });
     }
-  })
+  }),
 );
 
 // @desc    Add customer address
@@ -387,18 +387,18 @@ router.post(
 
     try {
       const customer = await Customer.findById(req.customer._id);
-      
+
       // If this is the first address or marked as default, make it default
       const isDefault = customer.addresses.length === 0 || req.body.isDefault;
-      
+
       // If setting as default, remove default from other addresses
       if (isDefault) {
-        customer.addresses.forEach(addr => addr.isDefault = false);
+        customer.addresses.forEach((addr) => (addr.isDefault = false));
       }
 
       const newAddress = {
         ...req.body,
-        isDefault
+        isDefault,
       };
 
       customer.addresses.push(newAddress);
@@ -416,7 +416,281 @@ router.post(
         message: "Error adding address",
       });
     }
-  })
+  }),
+);
+
+// @desc    Get customer addresses
+// @route   GET /api/customer-auth/addresses
+// @access  Private (Customer)
+router.get(
+  "/addresses",
+  protectCustomer,
+  asyncHandler(async (req, res) => {
+    try {
+      const customer = await Customer.findById(req.customer._id);
+      res.json({
+        success: true,
+        data: customer.addresses,
+      });
+    } catch (error) {
+      console.error("Get addresses error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching addresses",
+      });
+    }
+  }),
+);
+
+// @desc    Update customer address
+// @route   PUT /api/customer-auth/addresses/:id
+// @access  Private (Customer)
+router.put(
+  "/addresses/:id",
+  protectCustomer,
+  [
+    body("firstName")
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage("First name cannot be empty"),
+    body("lastName")
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage("Last name cannot be empty"),
+    body("address")
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage("Address cannot be empty"),
+    body("city")
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage("City cannot be empty"),
+    body("state")
+      .optional()
+      .trim()
+      .notEmpty()
+      .withMessage("State cannot be empty"),
+    body("pincode")
+      .optional()
+      .matches(/^[0-9]{6}$/)
+      .withMessage("Valid pincode is required"),
+    body("phone")
+      .optional()
+      .matches(/^[0-9]{10,15}$/)
+      .withMessage("Valid phone number is required"),
+    body("type")
+      .optional()
+      .isIn(["home", "work", "other"])
+      .withMessage("Invalid address type"),
+  ],
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
+    }
+
+    try {
+      const customer = await Customer.findById(req.customer._id);
+      const address = customer.addresses.id(req.params.id);
+
+      if (!address) {
+        return res.status(404).json({
+          success: false,
+          message: "Address not found",
+        });
+      }
+
+      Object.assign(address, req.body);
+      await customer.save();
+
+      res.json({
+        success: true,
+        message: "Address updated successfully",
+        data: address,
+      });
+    } catch (error) {
+      console.error("Update address error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error updating address",
+      });
+    }
+  }),
+);
+
+// @desc    Delete customer address
+// @route   DELETE /api/customer-auth/addresses/:id
+// @access  Private (Customer)
+router.delete(
+  "/addresses/:id",
+  protectCustomer,
+  asyncHandler(async (req, res) => {
+    try {
+      const customer = await Customer.findById(req.customer._id);
+      const address = customer.addresses.id(req.params.id);
+
+      if (!address) {
+        return res.status(404).json({
+          success: false,
+          message: "Address not found",
+        });
+      }
+
+      address.remove();
+      await customer.save();
+
+      res.json({
+        success: true,
+        message: "Address deleted successfully",
+      });
+    } catch (error) {
+      console.error("Delete address error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error deleting address",
+      });
+    }
+  }),
+);
+
+// @desc    Set default address
+// @route   PUT /api/customer-auth/addresses/:id/default
+// @access  Private (Customer)
+router.put(
+  "/addresses/:id/default",
+  protectCustomer,
+  asyncHandler(async (req, res) => {
+    try {
+      const customer = await Customer.findById(req.customer._id);
+      const address = customer.addresses.id(req.params.id);
+
+      if (!address) {
+        return res.status(404).json({
+          success: false,
+          message: "Address not found",
+        });
+      }
+
+      // Remove default from all addresses
+      customer.addresses.forEach((addr) => (addr.isDefault = false));
+
+      // Set this address as default
+      address.isDefault = true;
+      await customer.save();
+
+      res.json({
+        success: true,
+        message: "Default address updated successfully",
+        data: address,
+      });
+    } catch (error) {
+      console.error("Set default address error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error setting default address",
+      });
+    }
+  }),
+);
+
+// @desc    Get customer wishlist
+// @route   GET /api/customer-auth/wishlist
+// @access  Private (Customer)
+router.get(
+  "/wishlist",
+  protectCustomer,
+  asyncHandler(async (req, res) => {
+    try {
+      const customer = await Customer.findById(req.customer._id).populate(
+        "wishlist",
+      );
+      res.json({
+        success: true,
+        data: customer.wishlist || [],
+      });
+    } catch (error) {
+      console.error("Get wishlist error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error fetching wishlist",
+      });
+    }
+  }),
+);
+
+// @desc    Add product to wishlist
+// @route   POST /api/customer-auth/wishlist
+// @access  Private (Customer)
+router.post(
+  "/wishlist",
+  protectCustomer,
+  [body("productId").isMongoId().withMessage("Valid product ID is required")],
+  asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: errors.array(),
+      });
+    }
+
+    try {
+      const customer = await Customer.findById(req.customer._id);
+
+      if (!customer.wishlist.includes(req.body.productId)) {
+        customer.wishlist.push(req.body.productId);
+        await customer.save();
+      }
+
+      res.json({
+        success: true,
+        message: "Product added to wishlist",
+      });
+    } catch (error) {
+      console.error("Add to wishlist error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error adding to wishlist",
+      });
+    }
+  }),
+);
+
+// @desc    Remove product from wishlist
+// @route   DELETE /api/customer-auth/wishlist/:productId
+// @access  Private (Customer)
+router.delete(
+  "/wishlist/:productId",
+  protectCustomer,
+  asyncHandler(async (req, res) => {
+    try {
+      const customer = await Customer.findById(req.customer._id);
+      customer.wishlist = customer.wishlist.filter(
+        (productId) => productId.toString() !== req.params.productId,
+      );
+      await customer.save();
+
+      res.json({
+        success: true,
+        message: "Product removed from wishlist",
+      });
+    } catch (error) {
+      console.error("Remove from wishlist error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Error removing from wishlist",
+      });
+    }
+  }),
 );
 
 // @desc    Change customer password
@@ -447,11 +721,16 @@ router.put(
 
     try {
       // Get customer with password
-      const customer = await Customer.findById(req.customer._id).select("+password");
+      const customer = await Customer.findById(req.customer._id).select(
+        "+password",
+      );
 
       // Check current password
-      const isCurrentPasswordValid = await bcrypt.compare(currentPassword, customer.password);
-      
+      const isCurrentPasswordValid = await bcrypt.compare(
+        currentPassword,
+        customer.password,
+      );
+
       if (!isCurrentPasswordValid) {
         return res.status(400).json({
           success: false,
@@ -475,7 +754,7 @@ router.put(
         message: "Error changing password",
       });
     }
-  })
+  }),
 );
 
 // @desc    Logout customer (client-side token removal)
@@ -489,7 +768,7 @@ router.post(
       success: true,
       message: "Logged out successfully",
     });
-  })
+  }),
 );
 
 export { protectCustomer };

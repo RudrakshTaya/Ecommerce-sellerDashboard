@@ -57,6 +57,14 @@ const customerSchema = new mongoose.Schema(
       },
     ],
 
+    // Wishlist
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product",
+      },
+    ],
+
     // Order statistics
     totalOrders: {
       type: Number,

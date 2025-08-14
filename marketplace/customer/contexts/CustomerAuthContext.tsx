@@ -9,14 +9,15 @@ interface CustomerAuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (data: {
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     password: string;
     confirmPassword: string;
+    phone?: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: Partial<Customer>) => Promise<void>;
+  setCustomer: (customer: Customer) => void;
 }
 
 const CustomerAuthContext = createContext<CustomerAuthContextType | undefined>(
@@ -98,11 +99,11 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const register = async (data: {
-    firstName: string;
-    lastName: string;
+    name: string;
     email: string;
     password: string;
     confirmPassword: string;
+    phone?: string;
   }) => {
     setLoading(true);
     try {
@@ -156,6 +157,7 @@ export const CustomerAuthProvider: React.FC<{ children: React.ReactNode }> = ({
     register,
     logout,
     updateProfile,
+    setCustomer: updateCustomer,
   };
 
   return (
