@@ -77,12 +77,17 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
         </div>
 
         {/* Location */}
-        <div className="flex items-center justify-center space-x-1 text-earth-600 mb-3">
-          <MapPin className="w-4 h-4" />
-          <span className="text-sm">
-            {seller.location.city}, {seller.location.state}
-          </span>
-        </div>
+        {seller.location && (seller.location.city || seller.location.state) && (
+          <div className="flex items-center justify-center space-x-1 text-earth-600 mb-3">
+            <MapPin className="w-4 h-4" />
+            <span className="text-sm">
+              {seller.location.city && seller.location.state
+                ? `${seller.location.city}, ${seller.location.state}`
+                : seller.location.city || seller.location.state || 'Location not specified'
+              }
+            </span>
+          </div>
+        )}
 
         {/* Description */}
         <p className="text-sm text-earth-600 mb-4 line-clamp-2">
