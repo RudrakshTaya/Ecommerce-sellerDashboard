@@ -1,19 +1,19 @@
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 
 class EmailService {
   constructor() {
     this.transporter = nodemailer.createTransporter({
-      host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+      host: process.env.EMAIL_HOST || "smtp.gmail.com",
       port: process.env.EMAIL_PORT || 587,
       secure: false, // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_USER || 'demo@example.com',
-        pass: process.env.EMAIL_PASS || 'demo_password',
+        user: process.env.EMAIL_USER || "demo@example.com",
+        pass: process.env.EMAIL_PASS || "demo_password",
       },
     });
 
     // Verify connection (in development mode)
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === "development") {
       this.verifyConnection();
     }
   }
@@ -21,17 +21,20 @@ class EmailService {
   async verifyConnection() {
     try {
       await this.transporter.verify();
-      console.log('📧 Email service is ready');
+      console.log("📧 Email service is ready");
     } catch (error) {
-      console.log('⚠️ Email service not configured properly (using mock mode)');
+      console.log("⚠️ Email service not configured properly (using mock mode)");
     }
   }
 
   async sendEmail(to, subject, html, text = null) {
     try {
       // In development/demo mode, just log the email
-      if (process.env.NODE_ENV === 'development' || process.env.EMAIL_USER === 'demo@example.com') {
-        console.log('📧 EMAIL SENT (Mock Mode):');
+      if (
+        process.env.NODE_ENV === "development" ||
+        process.env.EMAIL_USER === "demo@example.com"
+      ) {
+        console.log("📧 EMAIL SENT (Mock Mode):");
         console.log(`To: ${to}`);
         console.log(`Subject: ${subject}`);
         console.log(`Content: ${text || html.substring(0, 100)}...`);
@@ -49,13 +52,16 @@ class EmailService {
       const info = await this.transporter.sendMail(mailOptions);
       return { success: true, messageId: info.messageId };
     } catch (error) {
-      console.error('Email sending error:', error);
+      console.error("Email sending error:", error);
       return { success: false, error: error.message };
     }
   }
 
   htmlToText(html) {
-    return html.replace(/<[^>]*>?/gm, '').replace(/\s+/g, ' ').trim();
+    return html
+      .replace(/<[^>]*>?/gm, "")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   // Order confirmation email
@@ -74,14 +80,14 @@ class EmailService {
 
   // Welcome email for new customers
   async sendWelcomeEmail(customerEmail, customerName) {
-    const subject = 'Welcome to CraftMart!';
+    const subject = "Welcome to CraftMart!";
     const html = this.generateWelcomeHTML(customerName);
     return await this.sendEmail(customerEmail, subject, html);
   }
 
   // Low stock alert for sellers
   async sendLowStockAlert(sellerEmail, products) {
-    const subject = 'Low Stock Alert - CraftMart';
+    const subject = "Low Stock Alert - CraftMart";
     const html = this.generateLowStockHTML(products);
     return await this.sendEmail(sellerEmail, subject, html);
   }
@@ -110,17 +116,21 @@ class EmailService {
             <p><strong>Order Number:</strong> ${orderData.orderNumber}</p>
             <p><strong>Order Date:</strong> ${new Date(orderData.createdAt).toLocaleDateString()}</p>
             <p><strong>Total Amount:</strong> ₹${orderData.totalAmount}</p>
-            <p><strong>Estimated Delivery:</strong> ${orderData.estimatedDelivery || '5-7 business days'}</p>
+            <p><strong>Estimated Delivery:</strong> ${orderData.estimatedDelivery || "5-7 business days"}</p>
           </div>
 
           <div style="background: white; padding: 15px; border-radius: 8px; margin: 20px 0;">
             <h3 style="color: #dd9658; margin-top: 0;">Items Ordered</h3>
-            ${orderData.items.map(item => `
+            ${orderData.items
+              .map(
+                (item) => `
               <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
                 <p><strong>${item.productName}</strong></p>
                 <p>Quantity: ${item.quantity} × ₹${item.price} = ₹${item.quantity * item.price}</p>
               </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
           </div>
 
           <div style="text-align: center; margin: 30px 0;">
@@ -141,29 +151,33 @@ class EmailService {
 
   generateOrderStatusHTML(orderData) {
     const statusColors = {
-      confirmed: '#28a745',
-      processing: '#ffc107',
-      shipped: '#17a2b8',
-      delivered: '#28a745',
-      cancelled: '#dc3545'
+      confirmed: "#28a745",
+      processing: "#ffc107",
+      shipped: "#17a2b8",
+      delivered: "#28a745",
+      cancelled: "#dc3545",
     };
 
     return `
       <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">
-        <div style="background: ${statusColors[orderData.status] || '#dd9658'}; padding: 20px; text-align: center;">
+        <div style="background: ${statusColors[orderData.status] || "#dd9658"}; padding: 20px; text-align: center;">
           <h1 style="color: white; margin: 0;">Order Update</h1>
         </div>
         
         <div style="padding: 20px; background: #f9f9f9;">
           <h2 style="color: #333;">Order #${orderData.orderNumber}</h2>
-          <p>Your order status has been updated to: <strong style="color: ${statusColors[orderData.status] || '#dd9658'};">${orderData.status.toUpperCase()}</strong></p>
+          <p>Your order status has been updated to: <strong style="color: ${statusColors[orderData.status] || "#dd9658"};">${orderData.status.toUpperCase()}</strong></p>
           
-          ${orderData.trackingNumber ? `
+          ${
+            orderData.trackingNumber
+              ? `
             <div style="background: white; padding: 15px; border-radius: 8px; margin: 20px 0;">
               <h3 style="color: #dd9658; margin-top: 0;">Tracking Information</h3>
               <p><strong>Tracking Number:</strong> ${orderData.trackingNumber}</p>
             </div>
-          ` : ''}
+          `
+              : ""
+          }
 
           <div style="text-align: center; margin: 30px 0;">
             <a href="${process.env.MARKETPLACE_URL}/orders/${orderData._id}" 
@@ -228,12 +242,16 @@ class EmailService {
           <p>The following products are running low on stock:</p>
           
           <div style="background: white; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            ${products.map(product => `
+            ${products
+              .map(
+                (product) => `
               <div style="border-bottom: 1px solid #eee; padding: 10px 0; display: flex; justify-content: space-between;">
                 <span><strong>${product.name}</strong></span>
                 <span style="color: #dc3545;">${product.stock} remaining</span>
               </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
           </div>
 
           <div style="text-align: center; margin: 30px 0;">

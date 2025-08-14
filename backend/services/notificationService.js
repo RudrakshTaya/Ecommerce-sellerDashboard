@@ -1,5 +1,5 @@
-import { emailService } from './emailService.js';
-import { smsService } from './smsService.js';
+import { emailService } from "./emailService.js";
+import { smsService } from "./smsService.js";
 
 class NotificationService {
   constructor() {
@@ -16,7 +16,7 @@ class NotificationService {
       if (customerData.email) {
         results.email = await this.emailService.sendOrderConfirmation(
           customerData.email,
-          { ...orderData, customerName: customerData.name }
+          { ...orderData, customerName: customerData.name },
         );
       }
 
@@ -24,20 +24,20 @@ class NotificationService {
       if (customerData.phone) {
         results.sms = await this.smsService.sendOrderConfirmationSMS(
           customerData.phone,
-          { ...orderData, customerName: customerData.name }
+          { ...orderData, customerName: customerData.name },
         );
       }
 
       return {
         success: true,
-        results
+        results,
       };
     } catch (error) {
-      console.error('Order confirmation notification error:', error);
+      console.error("Order confirmation notification error:", error);
       return {
         success: false,
         error: error.message,
-        results
+        results,
       };
     }
   }
@@ -51,7 +51,7 @@ class NotificationService {
       if (customerData.email) {
         results.email = await this.emailService.sendOrderStatusUpdate(
           customerData.email,
-          orderData
+          orderData,
         );
       }
 
@@ -59,20 +59,20 @@ class NotificationService {
       if (customerData.phone) {
         results.sms = await this.smsService.sendOrderStatusSMS(
           customerData.phone,
-          orderData
+          orderData,
         );
       }
 
       return {
         success: true,
-        results
+        results,
       };
     } catch (error) {
-      console.error('Order status notification error:', error);
+      console.error("Order status notification error:", error);
       return {
         success: false,
         error: error.message,
-        results
+        results,
       };
     }
   }
@@ -86,7 +86,7 @@ class NotificationService {
       if (customerData.email) {
         results.email = await this.emailService.sendWelcomeEmail(
           customerData.email,
-          customerData.name
+          customerData.name,
         );
       }
 
@@ -94,20 +94,20 @@ class NotificationService {
       if (customerData.phone) {
         results.sms = await this.smsService.sendWelcomeSMS(
           customerData.phone,
-          customerData.name
+          customerData.name,
         );
       }
 
       return {
         success: true,
-        results
+        results,
       };
     } catch (error) {
-      console.error('Welcome notification error:', error);
+      console.error("Welcome notification error:", error);
       return {
         success: false,
         error: error.message,
-        results
+        results,
       };
     }
   }
@@ -121,7 +121,7 @@ class NotificationService {
       if (customerData.email) {
         results.email = await this.emailService.sendPaymentConfirmation(
           customerData.email,
-          paymentData
+          paymentData,
         );
       }
 
@@ -129,20 +129,20 @@ class NotificationService {
       if (customerData.phone) {
         results.sms = await this.smsService.sendPaymentConfirmationSMS(
           customerData.phone,
-          paymentData
+          paymentData,
         );
       }
 
       return {
         success: true,
-        results
+        results,
       };
     } catch (error) {
-      console.error('Payment confirmation notification error:', error);
+      console.error("Payment confirmation notification error:", error);
       return {
         success: false,
         error: error.message,
-        results
+        results,
       };
     }
   }
@@ -156,7 +156,7 @@ class NotificationService {
       if (sellerData.email) {
         results.email = await this.emailService.sendLowStockAlert(
           sellerData.email,
-          products
+          products,
         );
       }
 
@@ -164,20 +164,20 @@ class NotificationService {
       if (sellerData.contactNumber) {
         results.sms = await this.smsService.sendLowStockSMS(
           sellerData.contactNumber,
-          products.length
+          products.length,
         );
       }
 
       return {
         success: true,
-        results
+        results,
       };
     } catch (error) {
-      console.error('Low stock alert notification error:', error);
+      console.error("Low stock alert notification error:", error);
       return {
         success: false,
         error: error.message,
-        results
+        results,
       };
     }
   }
@@ -188,10 +188,10 @@ class NotificationService {
       const result = await this.smsService.sendOTPSMS(phone, otp);
       return result;
     } catch (error) {
-      console.error('OTP notification error:', error);
+      console.error("OTP notification error:", error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -206,20 +206,20 @@ class NotificationService {
         results.sms = await this.smsService.sendPromotionalSMS(
           customerData.phone,
           customerData.name,
-          offer
+          offer,
         );
       }
 
       return {
         success: true,
-        results
+        results,
       };
     } catch (error) {
-      console.error('Promotional notification error:', error);
+      console.error("Promotional notification error:", error);
       return {
         success: false,
         error: error.message,
-        results
+        results,
       };
     }
   }
@@ -232,12 +232,12 @@ class NotificationService {
     for (const customer of customers) {
       try {
         let result;
-        
+
         switch (type) {
-          case 'promotional':
+          case "promotional":
             result = await this.sendPromotionalNotification(customer, data);
             break;
-          case 'welcome':
+          case "welcome":
             result = await this.sendWelcomeNotifications(customer);
             break;
           default:
@@ -246,12 +246,12 @@ class NotificationService {
 
         results.push({
           customerId: customer._id,
-          result
+          result,
         });
       } catch (error) {
         errors.push({
           customerId: customer._id,
-          error: error.message
+          error: error.message,
         });
       }
     }
@@ -261,7 +261,7 @@ class NotificationService {
       processed: results.length,
       errors: errors.length,
       results,
-      errorDetails: errors
+      errorDetails: errors,
     };
   }
 }

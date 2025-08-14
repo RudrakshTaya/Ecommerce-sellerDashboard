@@ -16,28 +16,37 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
     // Calculate date range
     let dateFilter = {};
     const now = new Date();
-    
+
     if (startDate && endDate) {
       dateFilter = {
         createdAt: {
           $gte: new Date(startDate),
-          $lte: new Date(endDate)
-        }
+          $lte: new Date(endDate),
+        },
       };
     } else {
       let daysBack;
       switch (period) {
-        case "7d": daysBack = 7; break;
-        case "30d": daysBack = 30; break;
-        case "90d": daysBack = 90; break;
-        case "365d": daysBack = 365; break;
-        default: daysBack = 30;
+        case "7d":
+          daysBack = 7;
+          break;
+        case "30d":
+          daysBack = 30;
+          break;
+        case "90d":
+          daysBack = 90;
+          break;
+        case "365d":
+          daysBack = 365;
+          break;
+        default:
+          daysBack = 30;
       }
-      
+
       dateFilter = {
         createdAt: {
-          $gte: new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000)
-        }
+          $gte: new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000),
+        },
       };
     }
 
@@ -47,22 +56,22 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
         $match: {
           sellerId: sellerId,
           status: { $in: ["confirmed", "shipped", "delivered"] },
-          ...dateFilter
-        }
+          ...dateFilter,
+        },
       },
       {
         $group: {
           _id: {
             year: { $year: "$createdAt" },
             month: { $month: "$createdAt" },
-            day: { $dayOfMonth: "$createdAt" }
+            day: { $dayOfMonth: "$createdAt" },
           },
           totalRevenue: { $sum: "$totalAmount" },
           orderCount: { $sum: 1 },
-          averageOrderValue: { $avg: "$totalAmount" }
-        }
+          averageOrderValue: { $avg: "$totalAmount" },
+        },
       },
-      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } }
+      { $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 } },
     ]);
 
     // Product performance
@@ -71,25 +80,27 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
         $match: {
           sellerId: sellerId,
           status: { $in: ["confirmed", "shipped", "delivered"] },
-          ...dateFilter
-        }
+          ...dateFilter,
+        },
       },
       { $unwind: "$items" },
       {
         $group: {
           _id: "$items.productId",
           totalSold: { $sum: "$items.quantity" },
-          totalRevenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
-          orderCount: { $sum: 1 }
-        }
+          totalRevenue: {
+            $sum: { $multiply: ["$items.price", "$items.quantity"] },
+          },
+          orderCount: { $sum: 1 },
+        },
       },
       {
         $lookup: {
           from: "products",
           localField: "_id",
           foreignField: "_id",
-          as: "product"
-        }
+          as: "product",
+        },
       },
       { $unwind: "$product" },
       {
@@ -99,11 +110,11 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
           totalSold: 1,
           totalRevenue: 1,
           orderCount: 1,
-          averagePrice: { $divide: ["$totalRevenue", "$totalSold"] }
-        }
+          averagePrice: { $divide: ["$totalRevenue", "$totalSold"] },
+        },
       },
       { $sort: { totalRevenue: -1 } },
-      { $limit: 10 }
+      { $limit: 10 },
     ]);
 
     // Customer acquisition and retention
@@ -117,17 +128,17 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
               $match: {
                 $expr: { $eq: ["$customerId", "$$customerId"] },
                 sellerId: sellerId,
-                ...dateFilter
-              }
-            }
+                ...dateFilter,
+              },
+            },
           ],
-          as: "orders"
-        }
+          as: "orders",
+        },
       },
       {
         $match: {
-          "orders.0": { $exists: true }
-        }
+          "orders.0": { $exists: true },
+        },
       },
       {
         $project: {
@@ -138,16 +149,19 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
           firstOrder: { $min: "$orders.createdAt" },
           lastOrder: { $max: "$orders.createdAt" },
           isNewCustomer: {
-            $gte: [{ $min: "$orders.createdAt" }, new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)]
-          }
-        }
-      }
+            $gte: [
+              { $min: "$orders.createdAt" },
+              new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+            ],
+          },
+        },
+      },
     ]);
 
     // Category performance
     const categoryPerformance = await Product.aggregate([
       {
-        $match: { sellerId: sellerId }
+        $match: { sellerId: sellerId },
       },
       {
         $lookup: {
@@ -158,18 +172,18 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
               $match: {
                 sellerId: sellerId,
                 status: { $in: ["confirmed", "shipped", "delivered"] },
-                ...dateFilter
-              }
+                ...dateFilter,
+              },
             },
             { $unwind: "$items" },
             {
               $match: {
-                $expr: { $eq: ["$items.productId", "$$productId"] }
-              }
-            }
+                $expr: { $eq: ["$items.productId", "$$productId"] },
+              },
+            },
           ],
-          as: "orders"
-        }
+          as: "orders",
+        },
       },
       {
         $group: {
@@ -182,22 +196,27 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
                 $map: {
                   input: "$orders",
                   as: "order",
-                  in: { $multiply: ["$$order.items.price", "$$order.items.quantity"] }
-                }
-              }
-            }
-          }
-        }
+                  in: {
+                    $multiply: [
+                      "$$order.items.price",
+                      "$$order.items.quantity",
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        },
       },
-      { $sort: { totalRevenue: -1 } }
+      { $sort: { totalRevenue: -1 } },
     ]);
 
     // Growth metrics
     const previousPeriodFilter = {
       createdAt: {
         $gte: new Date(now.getTime() - 60 * 24 * 60 * 60 * 1000),
-        $lt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
-      }
+        $lt: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000),
+      },
     };
 
     const currentPeriodRevenue = await Order.aggregate([
@@ -205,10 +224,10 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
         $match: {
           sellerId: sellerId,
           status: { $in: ["confirmed", "shipped", "delivered"] },
-          ...dateFilter
-        }
+          ...dateFilter,
+        },
       },
-      { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
     ]);
 
     const previousPeriodRevenue = await Order.aggregate([
@@ -216,15 +235,18 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
         $match: {
           sellerId: sellerId,
           status: { $in: ["confirmed", "shipped", "delivered"] },
-          ...previousPeriodFilter
-        }
+          ...previousPeriodFilter,
+        },
       },
-      { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
     ]);
 
     const currentRevenue = currentPeriodRevenue[0]?.total || 0;
     const previousRevenue = previousPeriodRevenue[0]?.total || 0;
-    const revenueGrowth = previousRevenue > 0 ? ((currentRevenue - previousRevenue) / previousRevenue) * 100 : 0;
+    const revenueGrowth =
+      previousRevenue > 0
+        ? ((currentRevenue - previousRevenue) / previousRevenue) * 100
+        : 0;
 
     res.status(200).json({
       success: true,
@@ -236,24 +258,33 @@ router.get("/dashboard-advanced", verifyAuth, async (req, res) => {
           current: currentRevenue,
           previous: previousRevenue,
           growth: revenueGrowth,
-          timeline: revenueData
+          timeline: revenueData,
         },
         products: {
           topPerforming: productPerformance,
-          categoryBreakdown: categoryPerformance
+          categoryBreakdown: categoryPerformance,
         },
         customers: {
           metrics: customerMetrics,
-          newCustomers: customerMetrics.filter(c => c.isNewCustomer).length,
-          returningCustomers: customerMetrics.filter(c => c.orderCount > 1).length
+          newCustomers: customerMetrics.filter((c) => c.isNewCustomer).length,
+          returningCustomers: customerMetrics.filter((c) => c.orderCount > 1)
+            .length,
         },
         summary: {
-          totalOrders: revenueData.reduce((sum, item) => sum + item.orderCount, 0),
-          averageOrderValue: revenueData.reduce((sum, item) => sum + item.averageOrderValue, 0) / revenueData.length || 0,
+          totalOrders: revenueData.reduce(
+            (sum, item) => sum + item.orderCount,
+            0,
+          ),
+          averageOrderValue:
+            revenueData.reduce((sum, item) => sum + item.averageOrderValue, 0) /
+              revenueData.length || 0,
           totalProducts: await Product.countDocuments({ sellerId }),
-          activeProducts: await Product.countDocuments({ sellerId, status: "active" })
-        }
-      }
+          activeProducts: await Product.countDocuments({
+            sellerId,
+            status: "active",
+          }),
+        },
+      },
     });
   } catch (error) {
     console.error("Advanced analytics error:", error);
@@ -274,12 +305,15 @@ router.get("/sales-funnel", verifyAuth, async (req, res) => {
     const daysBack = period === "7d" ? 7 : period === "90d" ? 90 : 30;
     const dateFilter = {
       createdAt: {
-        $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000)
-      }
+        $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000),
+      },
     };
 
     // Product views (simulated - in real app, track page views)
-    const totalProducts = await Product.countDocuments({ sellerId, status: "active" });
+    const totalProducts = await Product.countDocuments({
+      sellerId,
+      status: "active",
+    });
     const estimatedViews = totalProducts * 50; // Assume 50 views per product on average
 
     // Add to cart (simulated - track cart additions)
@@ -288,14 +322,14 @@ router.get("/sales-funnel", verifyAuth, async (req, res) => {
     // Orders placed
     const ordersPlaced = await Order.countDocuments({
       sellerId,
-      ...dateFilter
+      ...dateFilter,
     });
 
     // Orders completed
     const ordersCompleted = await Order.countDocuments({
       sellerId,
       status: { $in: ["confirmed", "shipped", "delivered"] },
-      ...dateFilter
+      ...dateFilter,
     });
 
     // Calculate conversion rates
@@ -309,20 +343,36 @@ router.get("/sales-funnel", verifyAuth, async (req, res) => {
       message: "Sales funnel analysis retrieved successfully",
       data: {
         funnel: [
-          { stage: "Product Views", count: estimatedViews, conversionRate: 100 },
-          { stage: "Add to Cart", count: cartAdditions, conversionRate: viewToCartRate },
-          { stage: "Orders Placed", count: ordersPlaced, conversionRate: cartToOrderRate },
-          { stage: "Orders Completed", count: ordersCompleted, conversionRate: orderCompletionRate }
+          {
+            stage: "Product Views",
+            count: estimatedViews,
+            conversionRate: 100,
+          },
+          {
+            stage: "Add to Cart",
+            count: cartAdditions,
+            conversionRate: viewToCartRate,
+          },
+          {
+            stage: "Orders Placed",
+            count: ordersPlaced,
+            conversionRate: cartToOrderRate,
+          },
+          {
+            stage: "Orders Completed",
+            count: ordersCompleted,
+            conversionRate: orderCompletionRate,
+          },
         ],
         insights: {
           overallConversionRate,
           dropOffPoints: {
             viewToCart: 100 - viewToCartRate,
             cartToOrder: 100 - cartToOrderRate,
-            orderCompletion: 100 - orderCompletionRate
-          }
-        }
-      }
+            orderCompletion: 100 - orderCompletionRate,
+          },
+        },
+      },
     });
   } catch (error) {
     console.error("Sales funnel error:", error);
@@ -349,17 +399,17 @@ router.get("/customer-ltv", verifyAuth, async (req, res) => {
               $match: {
                 $expr: { $eq: ["$customerId", "$$customerId"] },
                 sellerId: sellerId,
-                status: { $in: ["confirmed", "shipped", "delivered"] }
-              }
-            }
+                status: { $in: ["confirmed", "shipped", "delivered"] },
+              },
+            },
           ],
-          as: "orders"
-        }
+          as: "orders",
+        },
       },
       {
         $match: {
-          "orders.0": { $exists: true }
-        }
+          "orders.0": { $exists: true },
+        },
       },
       {
         $project: {
@@ -373,29 +423,36 @@ router.get("/customer-ltv", verifyAuth, async (req, res) => {
           customerAge: {
             $divide: [
               { $subtract: [new Date(), { $min: "$orders.createdAt" }] },
-              1000 * 60 * 60 * 24 // Convert to days
-            ]
-          }
-        }
+              1000 * 60 * 60 * 24, // Convert to days
+            ],
+          },
+        },
       },
       {
         $addFields: {
           estimatedLTV: {
             $multiply: [
               "$averageOrderValue",
-              { $divide: ["$orderCount", { $max: [{ $divide: ["$customerAge", 30] }, 1] }] }, // Orders per month
-              12 // Estimate for a year
-            ]
-          }
-        }
+              {
+                $divide: [
+                  "$orderCount",
+                  { $max: [{ $divide: ["$customerAge", 30] }, 1] },
+                ],
+              }, // Orders per month
+              12, // Estimate for a year
+            ],
+          },
+        },
       },
-      { $sort: { totalSpent: -1 } }
+      { $sort: { totalSpent: -1 } },
     ]);
 
     // Calculate segments
-    const highValueCustomers = customerLTV.filter(c => c.totalSpent > 10000);
-    const mediumValueCustomers = customerLTV.filter(c => c.totalSpent > 5000 && c.totalSpent <= 10000);
-    const lowValueCustomers = customerLTV.filter(c => c.totalSpent <= 5000);
+    const highValueCustomers = customerLTV.filter((c) => c.totalSpent > 10000);
+    const mediumValueCustomers = customerLTV.filter(
+      (c) => c.totalSpent > 5000 && c.totalSpent <= 10000,
+    );
+    const lowValueCustomers = customerLTV.filter((c) => c.totalSpent <= 5000);
 
     res.status(200).json({
       success: true,
@@ -403,16 +460,31 @@ router.get("/customer-ltv", verifyAuth, async (req, res) => {
       data: {
         customers: customerLTV,
         segments: {
-          highValue: { count: highValueCustomers.length, customers: highValueCustomers.slice(0, 10) },
-          mediumValue: { count: mediumValueCustomers.length, customers: mediumValueCustomers.slice(0, 10) },
-          lowValue: { count: lowValueCustomers.length, customers: lowValueCustomers.slice(0, 10) }
+          highValue: {
+            count: highValueCustomers.length,
+            customers: highValueCustomers.slice(0, 10),
+          },
+          mediumValue: {
+            count: mediumValueCustomers.length,
+            customers: mediumValueCustomers.slice(0, 10),
+          },
+          lowValue: {
+            count: lowValueCustomers.length,
+            customers: lowValueCustomers.slice(0, 10),
+          },
         },
         averages: {
-          averageLTV: customerLTV.reduce((sum, c) => sum + (c.estimatedLTV || 0), 0) / customerLTV.length,
-          averageOrderValue: customerLTV.reduce((sum, c) => sum + c.averageOrderValue, 0) / customerLTV.length,
-          averageOrderCount: customerLTV.reduce((sum, c) => sum + c.orderCount, 0) / customerLTV.length
-        }
-      }
+          averageLTV:
+            customerLTV.reduce((sum, c) => sum + (c.estimatedLTV || 0), 0) /
+            customerLTV.length,
+          averageOrderValue:
+            customerLTV.reduce((sum, c) => sum + c.averageOrderValue, 0) /
+            customerLTV.length,
+          averageOrderCount:
+            customerLTV.reduce((sum, c) => sum + c.orderCount, 0) /
+            customerLTV.length,
+        },
+      },
     });
   } catch (error) {
     console.error("Customer LTV error:", error);
@@ -433,13 +505,13 @@ router.get("/inventory-turnover", verifyAuth, async (req, res) => {
     const daysBack = period === "7d" ? 7 : period === "90d" ? 90 : 30;
     const dateFilter = {
       createdAt: {
-        $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000)
-      }
+        $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000),
+      },
     };
 
     const inventoryAnalysis = await Product.aggregate([
       {
-        $match: { sellerId: sellerId }
+        $match: { sellerId: sellerId },
       },
       {
         $lookup: {
@@ -450,39 +522,43 @@ router.get("/inventory-turnover", verifyAuth, async (req, res) => {
               $match: {
                 sellerId: sellerId,
                 status: { $in: ["confirmed", "shipped", "delivered"] },
-                ...dateFilter
-              }
+                ...dateFilter,
+              },
             },
             { $unwind: "$items" },
             {
               $match: {
-                $expr: { $eq: ["$items.productId", "$$productId"] }
-              }
+                $expr: { $eq: ["$items.productId", "$$productId"] },
+              },
             },
             {
               $group: {
                 _id: null,
-                totalSold: { $sum: "$items.quantity" }
-              }
-            }
+                totalSold: { $sum: "$items.quantity" },
+              },
+            },
           ],
-          as: "salesData"
-        }
+          as: "salesData",
+        },
       },
       {
         $addFields: {
-          totalSold: { $ifNull: [{ $arrayElemAt: ["$salesData.totalSold", 0] }, 0] },
+          totalSold: {
+            $ifNull: [{ $arrayElemAt: ["$salesData.totalSold", 0] }, 0],
+          },
           turnoverRate: {
             $cond: {
               if: { $gt: ["$stock", 0] },
               then: {
                 $divide: [
-                  { $ifNull: [{ $arrayElemAt: ["$salesData.totalSold", 0] }, 0] },
-                  "$stock"
-                ]
+                  {
+                    $ifNull: [{ $arrayElemAt: ["$salesData.totalSold", 0] }, 0],
+                  },
+                  "$stock",
+                ],
               },
-              else: 0
-            }
+              else: 0,
+            },
           },
           stockStatus: {
             $cond: {
@@ -496,14 +572,14 @@ router.get("/inventory-turnover", verifyAuth, async (req, res) => {
                     $cond: {
                       if: { $gte: ["$stock", 100] },
                       then: "overstock",
-                      else: "normal"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
+                      else: "normal",
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
       {
         $project: {
@@ -522,21 +598,23 @@ router.get("/inventory-turnover", verifyAuth, async (req, res) => {
               then: {
                 $divide: [
                   { $multiply: ["$stock", parseInt(period)] },
-                  "$totalSold"
-                ]
+                  "$totalSold",
+                ],
               },
-              else: 999 // High number for products with no sales
-            }
-          }
-        }
+              else: 999, // High number for products with no sales
+            },
+          },
+        },
       },
-      { $sort: { turnoverRate: -1 } }
+      { $sort: { turnoverRate: -1 } },
     ]);
 
     // Categorize products
-    const fastMoving = inventoryAnalysis.filter(p => p.turnoverRate > 0.5);
-    const slowMoving = inventoryAnalysis.filter(p => p.turnoverRate < 0.1 && p.turnoverRate > 0);
-    const nonMoving = inventoryAnalysis.filter(p => p.turnoverRate === 0);
+    const fastMoving = inventoryAnalysis.filter((p) => p.turnoverRate > 0.5);
+    const slowMoving = inventoryAnalysis.filter(
+      (p) => p.turnoverRate < 0.1 && p.turnoverRate > 0,
+    );
+    const nonMoving = inventoryAnalysis.filter((p) => p.turnoverRate === 0);
 
     res.status(200).json({
       success: true,
@@ -546,19 +624,31 @@ router.get("/inventory-turnover", verifyAuth, async (req, res) => {
         categories: {
           fastMoving: { count: fastMoving.length, products: fastMoving },
           slowMoving: { count: slowMoving.length, products: slowMoving },
-          nonMoving: { count: nonMoving.length, products: nonMoving }
+          nonMoving: { count: nonMoving.length, products: nonMoving },
         },
         summary: {
-          totalInventoryValue: inventoryAnalysis.reduce((sum, p) => sum + p.stockValue, 0),
-          averageTurnoverRate: inventoryAnalysis.reduce((sum, p) => sum + p.turnoverRate, 0) / inventoryAnalysis.length,
+          totalInventoryValue: inventoryAnalysis.reduce(
+            (sum, p) => sum + p.stockValue,
+            0,
+          ),
+          averageTurnoverRate:
+            inventoryAnalysis.reduce((sum, p) => sum + p.turnoverRate, 0) /
+            inventoryAnalysis.length,
           stockDistribution: {
-            outOfStock: inventoryAnalysis.filter(p => p.stockStatus === "out_of_stock").length,
-            lowStock: inventoryAnalysis.filter(p => p.stockStatus === "low_stock").length,
-            normal: inventoryAnalysis.filter(p => p.stockStatus === "normal").length,
-            overstock: inventoryAnalysis.filter(p => p.stockStatus === "overstock").length
-          }
-        }
-      }
+            outOfStock: inventoryAnalysis.filter(
+              (p) => p.stockStatus === "out_of_stock",
+            ).length,
+            lowStock: inventoryAnalysis.filter(
+              (p) => p.stockStatus === "low_stock",
+            ).length,
+            normal: inventoryAnalysis.filter((p) => p.stockStatus === "normal")
+              .length,
+            overstock: inventoryAnalysis.filter(
+              (p) => p.stockStatus === "overstock",
+            ).length,
+          },
+        },
+      },
     });
   } catch (error) {
     console.error("Inventory turnover error:", error);
@@ -596,24 +686,30 @@ router.get("/export/:reportType", verifyAuth, async (req, res) => {
       default:
         return res.status(400).json({
           success: false,
-          message: "Invalid report type"
+          message: "Invalid report type",
         });
     }
 
     if (format === "csv") {
       // Convert to CSV (simplified)
       const csv = convertToCSV(data);
-      res.setHeader('Content-Type', 'text/csv');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${filename}"`,
+      );
       res.send(csv);
     } else {
-      res.setHeader('Content-Type', 'application/json');
-      res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${filename}"`,
+      );
       res.json({
         success: true,
         message: `${reportType} report generated successfully`,
         data,
-        generatedAt: new Date().toISOString()
+        generatedAt: new Date().toISOString(),
       });
     }
   } catch (error) {
@@ -631,28 +727,29 @@ async function generateSalesReport(sellerId, period) {
   const daysBack = period === "7d" ? 7 : period === "90d" ? 90 : 30;
   const dateFilter = {
     createdAt: {
-      $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000)
-    }
+      $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000),
+    },
   };
 
   return await Order.find({
     sellerId,
     status: { $in: ["confirmed", "shipped", "delivered"] },
-    ...dateFilter
-  }).populate('customerId', 'name email')
-    .populate('items.productId', 'name sku')
-    .select('orderNumber totalAmount status createdAt items');
+    ...dateFilter,
+  })
+    .populate("customerId", "name email")
+    .populate("items.productId", "name sku")
+    .select("orderNumber totalAmount status createdAt items");
 }
 
 async function generateInventoryReport(sellerId) {
   return await Product.find({ sellerId })
-    .select('name sku category stock price status createdAt')
+    .select("name sku category stock price status createdAt")
     .sort({ category: 1, name: 1 });
 }
 
 async function generateCustomerReport(sellerId, period) {
   const daysBack = period === "7d" ? 7 : period === "90d" ? 90 : 30;
-  
+
   return await Customer.aggregate([
     {
       $lookup: {
@@ -664,13 +761,13 @@ async function generateCustomerReport(sellerId, period) {
               $expr: { $eq: ["$customerId", "$$customerId"] },
               sellerId: sellerId,
               createdAt: {
-                $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000)
-              }
-            }
-          }
+                $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000),
+              },
+            },
+          },
         ],
-        as: "recentOrders"
-      }
+        as: "recentOrders",
+      },
     },
     {
       $project: {
@@ -679,25 +776,31 @@ async function generateCustomerReport(sellerId, period) {
         phone: 1,
         createdAt: 1,
         recentOrderCount: { $size: "$recentOrders" },
-        recentOrderValue: { $sum: "$recentOrders.totalAmount" }
-      }
-    }
+        recentOrderValue: { $sum: "$recentOrders.totalAmount" },
+      },
+    },
   ]);
 }
 
 function convertToCSV(data) {
   if (!Array.isArray(data) || data.length === 0) {
-    return '';
+    return "";
   }
 
   const headers = Object.keys(data[0]);
   const csvContent = [
-    headers.join(','),
-    ...data.map(row => headers.map(header => {
-      const value = row[header];
-      return typeof value === 'string' ? `"${value.replace(/"/g, '""')}"` : value;
-    }).join(','))
-  ].join('\n');
+    headers.join(","),
+    ...data.map((row) =>
+      headers
+        .map((header) => {
+          const value = row[header];
+          return typeof value === "string"
+            ? `"${value.replace(/"/g, '""')}"`
+            : value;
+        })
+        .join(","),
+    ),
+  ].join("\n");
 
   return csvContent;
 }

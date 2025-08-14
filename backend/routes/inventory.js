@@ -15,15 +15,20 @@ router.get("/overview", verifyAuth, async (req, res) => {
     const totalProducts = await Product.countDocuments({ sellerId });
     const lowStockProducts = await Product.countDocuments({
       sellerId,
-      stock: { $lte: 10, $gt: 0 }
+      stock: { $lte: 10, $gt: 0 },
     });
     const outOfStockProducts = await Product.countDocuments({
       sellerId,
-      stock: 0
+      stock: 0,
     });
     const totalInventoryValue = await Product.aggregate([
       { $match: { sellerId: sellerId } },
-      { $group: { _id: null, total: { $sum: { $multiply: ["$price", "$stock"] } } } }
+      {
+        $group: {
+          _id: null,
+          total: { $sum: { $multiply: ["$price", "$stock"] } },
+        },
+      },
     ]);
 
     // Get recent stock movements (from orders)
@@ -32,8 +37,8 @@ router.get("/overview", verifyAuth, async (req, res) => {
         $match: {
           sellerId: sellerId,
           status: { $in: ["confirmed", "shipped", "delivered"] },
-          createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-        }
+          createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+        },
       },
       { $unwind: "$items" },
       {
@@ -41,8 +46,8 @@ router.get("/overview", verifyAuth, async (req, res) => {
           from: "products",
           localField: "items.productId",
           foreignField: "_id",
-          as: "product"
-        }
+          as: "product",
+        },
       },
       { $unwind: "$product" },
       {
@@ -50,11 +55,11 @@ router.get("/overview", verifyAuth, async (req, res) => {
           _id: "$items.productId",
           productName: { $first: "$product.name" },
           totalSold: { $sum: "$items.quantity" },
-          revenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } }
-        }
+          revenue: { $sum: { $multiply: ["$items.price", "$items.quantity"] } },
+        },
       },
       { $sort: { totalSold: -1 } },
-      { $limit: 10 }
+      { $limit: 10 },
     ]);
 
     res.status(200).json({
@@ -65,9 +70,9 @@ router.get("/overview", verifyAuth, async (req, res) => {
           totalProducts,
           lowStockProducts,
           outOfStockProducts,
-          totalInventoryValue: totalInventoryValue[0]?.total || 0
+          totalInventoryValue: totalInventoryValue[0]?.total || 0,
         },
-        recentMovements
+        recentMovements,
       },
     });
   } catch (error) {
@@ -89,8 +94,10 @@ router.get("/low-stock", verifyAuth, async (req, res) => {
     const lowStockProducts = await Product.find({
       sellerId,
       stock: { $lte: parseInt(threshold), $gt: 0 },
-      status: "active"
-    }).select("name sku stock price image category").sort({ stock: 1 });
+      status: "active",
+    })
+      .select("name sku stock price image category")
+      .sort({ stock: 1 });
 
     res.status(200).json({
       success: true,
@@ -112,8 +119,12 @@ router.patch(
   "/update-stock/:id",
   verifyAuth,
   [
-    body("stock").isInt({ min: 0 }).withMessage("Stock must be a non-negative integer"),
-    body("reason").notEmpty().withMessage("Reason for stock update is required"),
+    body("stock")
+      .isInt({ min: 0 })
+      .withMessage("Stock must be a non-negative integer"),
+    body("reason")
+      .notEmpty()
+      .withMessage("Reason for stock update is required"),
   ],
   async (req, res) => {
     try {
@@ -146,7 +157,7 @@ router.patch(
         previousStock,
         newStock: stock,
         reason,
-        updatedBy: sellerId
+        updatedBy: sellerId,
       });
 
       await product.save();
@@ -159,7 +170,7 @@ router.patch(
           name: product.name,
           previousStock,
           newStock: stock,
-          reason
+          reason,
         },
       });
     } catch (error) {
@@ -170,7 +181,7 @@ router.patch(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Bulk stock update
@@ -179,8 +190,12 @@ router.patch(
   verifyAuth,
   [
     body("updates").isArray().withMessage("Updates must be an array"),
-    body("updates.*.productId").isMongoId().withMessage("Valid product ID is required"),
-    body("updates.*.stock").isInt({ min: 0 }).withMessage("Stock must be a non-negative integer"),
+    body("updates.*.productId")
+      .isMongoId()
+      .withMessage("Valid product ID is required"),
+    body("updates.*.stock")
+      .isInt({ min: 0 })
+      .withMessage("Stock must be a non-negative integer"),
     body("reason").notEmpty().withMessage("Reason for bulk update is required"),
   ],
   async (req, res) => {
@@ -204,13 +219,13 @@ router.patch(
         try {
           const product = await Product.findOne({
             _id: update.productId,
-            sellerId
+            sellerId,
           });
 
           if (!product) {
             failed.push({
               productId: update.productId,
-              error: "Product not found"
+              error: "Product not found",
             });
             continue;
           }
@@ -223,7 +238,7 @@ router.patch(
             previousStock,
             newStock: update.stock,
             reason: `Bulk update: ${reason}`,
-            updatedBy: sellerId
+            updatedBy: sellerId,
           });
 
           await product.save();
@@ -232,12 +247,12 @@ router.patch(
             productId: product._id,
             name: product.name,
             previousStock,
-            newStock: update.stock
+            newStock: update.stock,
           });
         } catch (error) {
           failed.push({
             productId: update.productId,
-            error: error.message
+            error: error.message,
           });
         }
       }
@@ -247,7 +262,7 @@ router.patch(
         message: `Bulk stock update completed. ${results.length} updated, ${failed.length} failed.`,
         data: {
           updated: results,
-          failed
+          failed,
         },
       });
     } catch (error) {
@@ -258,7 +273,7 @@ router.patch(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Get stock history for a product
@@ -269,7 +284,7 @@ router.get("/stock-history/:id", verifyAuth, async (req, res) => {
 
     const product = await Product.findOne(
       { _id: id, sellerId },
-      { stockHistory: 1, name: 1, sku: 1 }
+      { stockHistory: 1, name: 1, sku: 1 },
     );
 
     if (!product) {
@@ -288,9 +303,11 @@ router.get("/stock-history/:id", verifyAuth, async (req, res) => {
         product: {
           id: product._id,
           name: product.name,
-          sku: product.sku
+          sku: product.sku,
         },
-        history: stockHistory.sort((a, b) => new Date(b.date) - new Date(a.date))
+        history: stockHistory.sort(
+          (a, b) => new Date(b.date) - new Date(a.date),
+        ),
       },
     });
   } catch (error) {
@@ -312,22 +329,28 @@ router.get("/alerts", verifyAuth, async (req, res) => {
     const outOfStock = await Product.find({
       sellerId,
       stock: 0,
-      status: "active"
-    }).select("name sku price image category").sort({ name: 1 });
+      status: "active",
+    })
+      .select("name sku price image category")
+      .sort({ name: 1 });
 
     // Warning alerts (low stock)
     const lowStock = await Product.find({
       sellerId,
       stock: { $lte: 10, $gt: 0 },
-      status: "active"
-    }).select("name sku stock price image category").sort({ stock: 1 });
+      status: "active",
+    })
+      .select("name sku stock price image category")
+      .sort({ stock: 1 });
 
     // Overstock alerts (high inventory)
     const overstock = await Product.find({
       sellerId,
       stock: { $gte: 100 },
-      status: "active"
-    }).select("name sku stock price image category").sort({ stock: -1 });
+      status: "active",
+    })
+      .select("name sku stock price image category")
+      .sort({ stock: -1 });
 
     res.status(200).json({
       success: true,
@@ -335,7 +358,7 @@ router.get("/alerts", verifyAuth, async (req, res) => {
       data: {
         critical: outOfStock,
         warning: lowStock,
-        overstock: overstock
+        overstock: overstock,
       },
     });
   } catch (error) {
@@ -353,9 +376,13 @@ router.patch(
   "/bulk-operations",
   verifyAuth,
   [
-    body("operation").isIn(["delete", "activate", "deactivate", "changeCategory"]).withMessage("Invalid operation"),
+    body("operation")
+      .isIn(["delete", "activate", "deactivate", "changeCategory"])
+      .withMessage("Invalid operation"),
     body("productIds").isArray().withMessage("Product IDs must be an array"),
-    body("productIds.*").isMongoId().withMessage("Valid product IDs are required"),
+    body("productIds.*")
+      .isMongoId()
+      .withMessage("Valid product IDs are required"),
   ],
   async (req, res) => {
     try {
@@ -378,12 +405,12 @@ router.patch(
         case "delete":
           const deleteResult = await Product.deleteMany({
             _id: { $in: productIds },
-            sellerId
+            sellerId,
           });
           return res.status(200).json({
             success: true,
             message: `${deleteResult.deletedCount} products deleted successfully`,
-            data: { deletedCount: deleteResult.deletedCount }
+            data: { deletedCount: deleteResult.deletedCount },
           });
 
         case "activate":
@@ -400,7 +427,7 @@ router.patch(
           if (!category) {
             return res.status(400).json({
               success: false,
-              message: "Category is required for category change operation"
+              message: "Category is required for category change operation",
             });
           }
           updateQuery = { category };
@@ -410,19 +437,19 @@ router.patch(
         default:
           return res.status(400).json({
             success: false,
-            message: "Invalid operation"
+            message: "Invalid operation",
           });
       }
 
       const updateResult = await Product.updateMany(
         { _id: { $in: productIds }, sellerId },
-        { $set: updateQuery }
+        { $set: updateQuery },
       );
 
       res.status(200).json({
         success: true,
         message: `${updateResult.modifiedCount} products ${operationName} successfully`,
-        data: { modifiedCount: updateResult.modifiedCount }
+        data: { modifiedCount: updateResult.modifiedCount },
       });
     } catch (error) {
       console.error("Bulk operations error:", error);
@@ -432,7 +459,7 @@ router.patch(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 export default router;

@@ -12,12 +12,12 @@ router.get("/:orderId", verifyAuth, async (req, res) => {
   try {
     const { orderId } = req.params;
     const userId = req.user.id;
-    const userType = req.user.userType || 'customer';
+    const userType = req.user.userType || "customer";
 
     const order = await Order.findById(orderId)
-      .populate('customerId', 'name email phone')
-      .populate('sellerId', 'storeName email contactNumber')
-      .populate('items.productId', 'name image price');
+      .populate("customerId", "name email phone")
+      .populate("sellerId", "storeName email contactNumber")
+      .populate("items.productId", "name image price");
 
     if (!order) {
       return res.status(404).json({
@@ -27,10 +27,9 @@ router.get("/:orderId", verifyAuth, async (req, res) => {
     }
 
     // Check permission
-    const hasPermission = (
-      (userType === 'customer' && order.customerId._id.toString() === userId) ||
-      (userType === 'seller' && order.sellerId._id.toString() === userId)
-    );
+    const hasPermission =
+      (userType === "customer" && order.customerId._id.toString() === userId) ||
+      (userType === "seller" && order.sellerId._id.toString() === userId);
 
     if (!hasPermission) {
       return res.status(403).json({
@@ -57,12 +56,12 @@ router.get("/:orderId", verifyAuth, async (req, res) => {
           trackingNumber: order.trackingNumber,
           estimatedDelivery: order.estimatedDelivery,
           shippingAddress: order.shippingAddress,
-          items: order.items
+          items: order.items,
         },
         customer: order.customerId,
         seller: order.sellerId,
         timeline: trackingTimeline,
-        realTimeEnabled: true
+        realTimeEnabled: true,
       },
     });
   } catch (error) {
@@ -80,13 +79,27 @@ router.patch(
   "/:orderId/status",
   verifyAuth,
   [
-    body("status").isIn([
-      "pending", "confirmed", "processing", "shipped", 
-      "out_for_delivery", "delivered", "cancelled", "refunded"
-    ]).withMessage("Invalid order status"),
+    body("status")
+      .isIn([
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+        "out_for_delivery",
+        "delivered",
+        "cancelled",
+        "refunded",
+      ])
+      .withMessage("Invalid order status"),
     body("note").optional().isString().withMessage("Note must be a string"),
-    body("trackingNumber").optional().isString().withMessage("Tracking number must be a string"),
-    body("estimatedDelivery").optional().isISO8601().withMessage("Invalid date format"),
+    body("trackingNumber")
+      .optional()
+      .isString()
+      .withMessage("Tracking number must be a string"),
+    body("estimatedDelivery")
+      .optional()
+      .isISO8601()
+      .withMessage("Invalid date format"),
   ],
   async (req, res) => {
     try {
@@ -114,24 +127,25 @@ router.patch(
       // Update order
       const previousStatus = order.status;
       order.status = status;
-      
+
       if (note) {
         order.statusHistory = order.statusHistory || [];
         order.statusHistory.push({
           status,
           note,
           timestamp: new Date(),
-          updatedBy: sellerId
+          updatedBy: sellerId,
         });
       }
 
       if (trackingNumber) order.trackingNumber = trackingNumber;
-      if (estimatedDelivery) order.estimatedDelivery = new Date(estimatedDelivery);
+      if (estimatedDelivery)
+        order.estimatedDelivery = new Date(estimatedDelivery);
 
       await order.save();
 
       // Populate customer data for notifications
-      await order.populate('customerId', 'name email phone');
+      await order.populate("customerId", "name email phone");
 
       // Send real-time update
       realTimeService.broadcastOrderStatusUpdate(orderId, order);
@@ -139,7 +153,10 @@ router.patch(
       // Send notifications if status changed significantly
       if (shouldSendNotification(previousStatus, status)) {
         try {
-          await notificationService.sendOrderStatusUpdate(order.customerId, order);
+          await notificationService.sendOrderStatusUpdate(
+            order.customerId,
+            order,
+          );
         } catch (notificationError) {
           console.error("Notification sending failed:", notificationError);
           // Don't fail the request if notification fails
@@ -155,7 +172,7 @@ router.patch(
           newStatus: status,
           trackingNumber: order.trackingNumber,
           estimatedDelivery: order.estimatedDelivery,
-          updatedAt: order.updatedAt
+          updatedAt: order.updatedAt,
         },
       });
     } catch (error) {
@@ -166,7 +183,7 @@ router.patch(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Add tracking event (for detailed tracking)
@@ -175,8 +192,14 @@ router.post(
   verifyAuth,
   [
     body("event").notEmpty().withMessage("Event description is required"),
-    body("location").optional().isString().withMessage("Location must be a string"),
-    body("timestamp").optional().isISO8601().withMessage("Invalid timestamp format"),
+    body("location")
+      .optional()
+      .isString()
+      .withMessage("Location must be a string"),
+    body("timestamp")
+      .optional()
+      .isISO8601()
+      .withMessage("Invalid timestamp format"),
   ],
   async (req, res) => {
     try {
@@ -205,9 +228,9 @@ router.post(
       order.trackingEvents = order.trackingEvents || [];
       order.trackingEvents.push({
         event,
-        location: location || '',
+        location: location || "",
         timestamp: timestamp ? new Date(timestamp) : new Date(),
-        recordedBy: sellerId
+        recordedBy: sellerId,
       });
 
       await order.save();
@@ -222,7 +245,8 @@ router.post(
           orderId: order._id,
           event,
           location,
-          timestamp: order.trackingEvents[order.trackingEvents.length - 1].timestamp
+          timestamp:
+            order.trackingEvents[order.trackingEvents.length - 1].timestamp,
         },
       });
     } catch (error) {
@@ -233,7 +257,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Get all orders with tracking info for customer
@@ -248,8 +272,8 @@ router.get("/customer/all", verifyAuth, async (req, res) => {
     }
 
     const orders = await Order.find(filter)
-      .populate('sellerId', 'storeName')
-      .populate('items.productId', 'name image')
+      .populate("sellerId", "storeName")
+      .populate("items.productId", "name image")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
@@ -257,15 +281,15 @@ router.get("/customer/all", verifyAuth, async (req, res) => {
     const total = await Order.countDocuments(filter);
 
     // Add tracking status for each order
-    const ordersWithTracking = orders.map(order => ({
+    const ordersWithTracking = orders.map((order) => ({
       ...order.toObject(),
       trackingInfo: {
         canTrack: !!order.trackingNumber,
         estimatedDelivery: order.estimatedDelivery,
         statusMessage: getStatusMessage(order.status),
-        isDelivered: order.status === 'delivered',
-        canCancel: ['pending', 'confirmed'].includes(order.status)
-      }
+        isDelivered: order.status === "delivered",
+        canCancel: ["pending", "confirmed"].includes(order.status),
+      },
     }));
 
     res.status(200).json({
@@ -298,8 +322,8 @@ router.get("/seller/delivery-analytics", verifyAuth, async (req, res) => {
     const daysBack = period === "7d" ? 7 : period === "90d" ? 90 : 30;
     const dateFilter = {
       createdAt: {
-        $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000)
-      }
+        $gte: new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000),
+      },
     };
 
     // Delivery performance metrics
@@ -307,8 +331,8 @@ router.get("/seller/delivery-analytics", verifyAuth, async (req, res) => {
       {
         $match: {
           sellerId: sellerId,
-          ...dateFilter
-        }
+          ...dateFilter,
+        },
       },
       {
         $group: {
@@ -319,12 +343,12 @@ router.get("/seller/delivery-analytics", verifyAuth, async (req, res) => {
               $cond: {
                 if: { $in: ["$status", ["delivered", "shipped"]] },
                 then: { $subtract: ["$updatedAt", "$createdAt"] },
-                else: null
-              }
-            }
-          }
-        }
-      }
+                else: null,
+              },
+            },
+          },
+        },
+      },
     ]);
 
     // On-time delivery rate
@@ -332,16 +356,17 @@ router.get("/seller/delivery-analytics", verifyAuth, async (req, res) => {
       sellerId,
       status: "delivered",
       deliveredAt: { $lte: "$estimatedDelivery" },
-      ...dateFilter
+      ...dateFilter,
     });
 
     const totalDeliveries = await Order.countDocuments({
       sellerId,
       status: "delivered",
-      ...dateFilter
+      ...dateFilter,
     });
 
-    const onTimeRate = totalDeliveries > 0 ? (onTimeDeliveries / totalDeliveries) * 100 : 0;
+    const onTimeRate =
+      totalDeliveries > 0 ? (onTimeDeliveries / totalDeliveries) * 100 : 0;
 
     res.status(200).json({
       success: true,
@@ -353,12 +378,18 @@ router.get("/seller/delivery-analytics", verifyAuth, async (req, res) => {
         totalDeliveries,
         onTimeDeliveries,
         summary: {
-          avgProcessingTime: deliveryMetrics.reduce((sum, m) => sum + (m.avgProcessingTime || 0), 0) / deliveryMetrics.length / (1000 * 60 * 60 * 24), // Convert to days
+          avgProcessingTime:
+            deliveryMetrics.reduce(
+              (sum, m) => sum + (m.avgProcessingTime || 0),
+              0,
+            ) /
+            deliveryMetrics.length /
+            (1000 * 60 * 60 * 24), // Convert to days
           statusDistribution: deliveryMetrics.reduce((acc, m) => {
             acc[m._id] = m.count;
             return acc;
-          }, {})
-        }
+          }, {}),
+        },
       },
     });
   } catch (error) {
@@ -374,32 +405,38 @@ router.get("/seller/delivery-analytics", verifyAuth, async (req, res) => {
 // Helper functions
 function generateTrackingTimeline(order) {
   const timeline = [];
-  
+
   // Add order placed event
   timeline.push({
-    status: 'placed',
-    title: 'Order Placed',
-    description: 'Your order has been placed successfully',
+    status: "placed",
+    title: "Order Placed",
+    description: "Your order has been placed successfully",
     timestamp: order.createdAt,
-    completed: true
+    completed: true,
   });
 
   // Add status history
   if (order.statusHistory && order.statusHistory.length > 0) {
-    order.statusHistory.forEach(entry => {
+    order.statusHistory.forEach((entry) => {
       timeline.push({
         status: entry.status,
         title: getStatusTitle(entry.status),
         description: entry.note || getStatusMessage(entry.status),
         timestamp: entry.timestamp,
-        completed: true
+        completed: true,
       });
     });
   } else {
     // Generate timeline based on current status
-    const statusOrder = ['confirmed', 'processing', 'shipped', 'out_for_delivery', 'delivered'];
+    const statusOrder = [
+      "confirmed",
+      "processing",
+      "shipped",
+      "out_for_delivery",
+      "delivered",
+    ];
     const currentStatusIndex = statusOrder.indexOf(order.status);
-    
+
     statusOrder.forEach((status, index) => {
       timeline.push({
         status,
@@ -407,21 +444,21 @@ function generateTrackingTimeline(order) {
         description: getStatusMessage(status),
         timestamp: index <= currentStatusIndex ? order.updatedAt : null,
         completed: index <= currentStatusIndex,
-        estimated: index === currentStatusIndex + 1
+        estimated: index === currentStatusIndex + 1,
       });
     });
   }
 
   // Add tracking events if available
   if (order.trackingEvents && order.trackingEvents.length > 0) {
-    order.trackingEvents.forEach(event => {
+    order.trackingEvents.forEach((event) => {
       timeline.push({
-        status: 'tracking_event',
+        status: "tracking_event",
         title: event.event,
-        description: event.location ? `Location: ${event.location}` : '',
+        description: event.location ? `Location: ${event.location}` : "",
         timestamp: event.timestamp,
         completed: true,
-        isTrackingEvent: true
+        isTrackingEvent: true,
       });
     });
   }
@@ -431,36 +468,44 @@ function generateTrackingTimeline(order) {
 
 function getStatusTitle(status) {
   const titles = {
-    'pending': 'Order Pending',
-    'confirmed': 'Order Confirmed',
-    'processing': 'Being Prepared',
-    'shipped': 'Shipped',
-    'out_for_delivery': 'Out for Delivery',
-    'delivered': 'Delivered',
-    'cancelled': 'Cancelled',
-    'refunded': 'Refunded'
+    pending: "Order Pending",
+    confirmed: "Order Confirmed",
+    processing: "Being Prepared",
+    shipped: "Shipped",
+    out_for_delivery: "Out for Delivery",
+    delivered: "Delivered",
+    cancelled: "Cancelled",
+    refunded: "Refunded",
   };
   return titles[status] || status;
 }
 
 function getStatusMessage(status) {
   const messages = {
-    'pending': 'Your order is being processed',
-    'confirmed': 'Your order has been confirmed',
-    'processing': 'Your order is being prepared',
-    'shipped': 'Your order has been shipped',
-    'out_for_delivery': 'Your order is out for delivery',
-    'delivered': 'Your order has been delivered',
-    'cancelled': 'Your order has been cancelled',
-    'refunded': 'Your order has been refunded'
+    pending: "Your order is being processed",
+    confirmed: "Your order has been confirmed",
+    processing: "Your order is being prepared",
+    shipped: "Your order has been shipped",
+    out_for_delivery: "Your order is out for delivery",
+    delivered: "Your order has been delivered",
+    cancelled: "Your order has been cancelled",
+    refunded: "Your order has been refunded",
   };
-  return messages[status] || 'Order status updated';
+  return messages[status] || "Order status updated";
 }
 
 function shouldSendNotification(previousStatus, newStatus) {
   // Send notifications for significant status changes
-  const notificationStatuses = ['confirmed', 'shipped', 'out_for_delivery', 'delivered', 'cancelled'];
-  return notificationStatuses.includes(newStatus) && previousStatus !== newStatus;
+  const notificationStatuses = [
+    "confirmed",
+    "shipped",
+    "out_for_delivery",
+    "delivered",
+    "cancelled",
+  ];
+  return (
+    notificationStatuses.includes(newStatus) && previousStatus !== newStatus
+  );
 }
 
 export default router;

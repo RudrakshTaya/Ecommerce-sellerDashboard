@@ -16,9 +16,15 @@ router.post(
   [
     body("productId").isMongoId().withMessage("Valid product ID is required"),
     body("orderId").isMongoId().withMessage("Valid order ID is required"),
-    body("rating").isFloat({ min: 1, max: 5 }).withMessage("Rating must be between 1 and 5"),
-    body("title").isLength({ min: 5, max: 100 }).withMessage("Title must be between 5 and 100 characters"),
-    body("comment").isLength({ min: 10, max: 1000 }).withMessage("Comment must be between 10 and 1000 characters"),
+    body("rating")
+      .isFloat({ min: 1, max: 5 })
+      .withMessage("Rating must be between 1 and 5"),
+    body("title")
+      .isLength({ min: 5, max: 100 })
+      .withMessage("Title must be between 5 and 100 characters"),
+    body("comment")
+      .isLength({ min: 10, max: 1000 })
+      .withMessage("Comment must be between 10 and 1000 characters"),
     body("pros").optional().isArray().withMessage("Pros must be an array"),
     body("cons").optional().isArray().withMessage("Cons must be an array"),
   ],
@@ -33,25 +39,29 @@ router.post(
         });
       }
 
-      const { productId, orderId, rating, title, comment, pros, cons, images } = req.body;
+      const { productId, orderId, rating, title, comment, pros, cons, images } =
+        req.body;
       const customerId = req.user.id;
 
       // Verify order exists and belongs to customer
       const order = await Order.findOne({
         _id: orderId,
         customerId: customerId,
-        status: { $in: ["delivered"] } // Only allow reviews for delivered orders
+        status: { $in: ["delivered"] }, // Only allow reviews for delivered orders
       });
 
       if (!order) {
         return res.status(404).json({
           success: false,
-          message: "Order not found or not eligible for review (order must be delivered)",
+          message:
+            "Order not found or not eligible for review (order must be delivered)",
         });
       }
 
       // Verify product is in the order
-      const orderItem = order.items.find(item => item.productId.toString() === productId);
+      const orderItem = order.items.find(
+        (item) => item.productId.toString() === productId,
+      );
       if (!orderItem) {
         return res.status(400).json({
           success: false,
@@ -63,7 +73,7 @@ router.post(
       const existingReview = await Review.findOne({
         productId,
         customerId,
-        orderId
+        orderId,
       });
 
       if (existingReview) {
@@ -94,15 +104,15 @@ router.post(
         pros: pros || [],
         cons: cons || [],
         images: images || [],
-        verified: true // Mark as verified since it's from a real purchase
+        verified: true, // Mark as verified since it's from a real purchase
       });
 
       await review.save();
 
       // Populate review data for response
       await review.populate([
-        { path: 'customerId', select: 'name' },
-        { path: 'productId', select: 'name' }
+        { path: "customerId", select: "name" },
+        { path: "productId", select: "name" },
       ]);
 
       res.status(201).json({
@@ -118,26 +128,26 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Get reviews for a product
 router.get("/product/:productId", async (req, res) => {
   try {
     const { productId } = req.params;
-    const { 
-      page = 1, 
-      limit = 10, 
-      sort = "newest", 
+    const {
+      page = 1,
+      limit = 10,
+      sort = "newest",
       rating,
       verified,
-      withImages 
+      withImages,
     } = req.query;
 
     // Build filter
-    let filter = { 
-      productId, 
-      status: "approved" 
+    let filter = {
+      productId,
+      status: "approved",
     };
 
     if (rating) {
@@ -175,7 +185,7 @@ router.get("/product/:productId", async (req, res) => {
     }
 
     const reviews = await Review.find(filter)
-      .populate('customerId', 'name')
+      .populate("customerId", "name")
       .sort(sortOptions)
       .limit(limit * 1)
       .skip((page - 1) * limit);
@@ -216,8 +226,8 @@ router.get("/customer/my-reviews", verifyAuth, async (req, res) => {
     const { page = 1, limit = 10 } = req.query;
 
     const reviews = await Review.find({ customerId })
-      .populate('productId', 'name image')
-      .populate('sellerId', 'storeName')
+      .populate("productId", "name image")
+      .populate("sellerId", "storeName")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
@@ -259,8 +269,8 @@ router.get("/seller/my-reviews", verifyAuth, async (req, res) => {
     }
 
     const reviews = await Review.find(filter)
-      .populate('customerId', 'name')
-      .populate('productId', 'name image')
+      .populate("customerId", "name")
+      .populate("productId", "name image")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
@@ -276,10 +286,10 @@ router.get("/seller/my-reviews", verifyAuth, async (req, res) => {
           totalReviews: { $sum: 1 },
           averageRating: { $avg: "$rating" },
           ratingDistribution: {
-            $push: "$rating"
-          }
-        }
-      }
+            $push: "$rating",
+          },
+        },
+      },
     ]);
 
     res.status(200).json({
@@ -311,9 +321,18 @@ router.put(
   "/:reviewId",
   verifyAuth,
   [
-    body("rating").optional().isFloat({ min: 1, max: 5 }).withMessage("Rating must be between 1 and 5"),
-    body("title").optional().isLength({ min: 5, max: 100 }).withMessage("Title must be between 5 and 100 characters"),
-    body("comment").optional().isLength({ min: 10, max: 1000 }).withMessage("Comment must be between 10 and 1000 characters"),
+    body("rating")
+      .optional()
+      .isFloat({ min: 1, max: 5 })
+      .withMessage("Rating must be between 1 and 5"),
+    body("title")
+      .optional()
+      .isLength({ min: 5, max: 100 })
+      .withMessage("Title must be between 5 and 100 characters"),
+    body("comment")
+      .optional()
+      .isLength({ min: 10, max: 1000 })
+      .withMessage("Comment must be between 10 and 1000 characters"),
   ],
   async (req, res) => {
     try {
@@ -332,7 +351,7 @@ router.put(
 
       const review = await Review.findOne({
         _id: reviewId,
-        customerId: customerId
+        customerId: customerId,
       });
 
       if (!review) {
@@ -343,7 +362,7 @@ router.put(
       }
 
       // Update review
-      Object.keys(updateData).forEach(key => {
+      Object.keys(updateData).forEach((key) => {
         if (updateData[key] !== undefined) {
           review[key] = updateData[key];
         }
@@ -364,7 +383,7 @@ router.put(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Delete review (Customer only - their own reviews)
@@ -375,7 +394,7 @@ router.delete("/:reviewId", verifyAuth, async (req, res) => {
 
     const review = await Review.findOneAndDelete({
       _id: reviewId,
-      customerId: customerId
+      customerId: customerId,
     });
 
     if (!review) {
@@ -403,9 +422,7 @@ router.delete("/:reviewId", verifyAuth, async (req, res) => {
 router.post(
   "/:reviewId/helpful",
   verifyAuth,
-  [
-    body("helpful").isBoolean().withMessage("Helpful must be boolean"),
-  ],
+  [body("helpful").isBoolean().withMessage("Helpful must be boolean")],
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -431,7 +448,7 @@ router.post(
 
       // Check if customer already voted
       const existingVoteIndex = review.helpfulVotes.findIndex(
-        vote => vote.customerId.toString() === customerId
+        (vote) => vote.customerId.toString() === customerId,
       );
 
       if (existingVoteIndex >= 0) {
@@ -441,12 +458,14 @@ router.post(
         // Add new vote
         review.helpfulVotes.push({
           customerId,
-          helpful
+          helpful,
         });
       }
 
       // Update helpful count
-      review.helpful = review.helpfulVotes.filter(vote => vote.helpful).length;
+      review.helpful = review.helpfulVotes.filter(
+        (vote) => vote.helpful,
+      ).length;
 
       await review.save();
 
@@ -455,7 +474,7 @@ router.post(
         message: "Vote recorded successfully",
         data: {
           helpful: review.helpful,
-          helpfulPercentage: review.helpfulPercentage
+          helpfulPercentage: review.helpfulPercentage,
         },
       });
     } catch (error) {
@@ -466,7 +485,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Seller response to review
@@ -474,7 +493,9 @@ router.post(
   "/:reviewId/response",
   verifyAuth,
   [
-    body("message").isLength({ min: 10, max: 500 }).withMessage("Response must be between 10 and 500 characters"),
+    body("message")
+      .isLength({ min: 10, max: 500 })
+      .withMessage("Response must be between 10 and 500 characters"),
   ],
   async (req, res) => {
     try {
@@ -493,7 +514,7 @@ router.post(
 
       const review = await Review.findOne({
         _id: reviewId,
-        sellerId: sellerId
+        sellerId: sellerId,
       });
 
       if (!review) {
@@ -506,7 +527,7 @@ router.post(
       review.sellerResponse = {
         message,
         respondedAt: new Date(),
-        respondedBy: sellerId
+        respondedBy: sellerId,
       };
 
       await review.save();
@@ -524,7 +545,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Flag review for moderation
@@ -532,7 +553,9 @@ router.post(
   "/:reviewId/flag",
   verifyAuth,
   [
-    body("reason").isIn(["inappropriate", "spam", "fake", "offensive", "other"]).withMessage("Invalid flag reason"),
+    body("reason")
+      .isIn(["inappropriate", "spam", "fake", "offensive", "other"])
+      .withMessage("Invalid flag reason"),
   ],
   async (req, res) => {
     try {
@@ -559,7 +582,7 @@ router.post(
 
       // Check if customer already flagged this review
       const alreadyFlagged = review.flagged.flaggedBy.some(
-        flag => flag.customerId.toString() === customerId
+        (flag) => flag.customerId.toString() === customerId,
       );
 
       if (alreadyFlagged) {
@@ -573,7 +596,7 @@ router.post(
       review.flagged.flaggedBy.push({
         customerId,
         reason,
-        flaggedAt: new Date()
+        flaggedAt: new Date(),
       });
 
       review.flagged.count += 1;
@@ -600,7 +623,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Get review statistics
@@ -620,33 +643,68 @@ router.get("/stats", async (req, res) => {
           totalReviews: { $sum: 1 },
           averageRating: { $avg: "$rating" },
           verifiedReviews: {
-            $sum: { $cond: ["$verified", 1, 0] }
+            $sum: { $cond: ["$verified", 1, 0] },
           },
           reviewsWithImages: {
-            $sum: { $cond: [{ $gt: [{ $size: "$images" }, 0] }, 1, 0] }
+            $sum: { $cond: [{ $gt: [{ $size: "$images" }, 0] }, 1, 0] },
           },
           ratingDistribution: {
-            $push: "$rating"
-          }
-        }
+            $push: "$rating",
+          },
+        },
       },
       {
         $addFields: {
           ratingBreakdown: {
-            5: { $size: { $filter: { input: "$ratingDistribution", cond: { $eq: ["$$this", 5] } } } },
-            4: { $size: { $filter: { input: "$ratingDistribution", cond: { $eq: ["$$this", 4] } } } },
-            3: { $size: { $filter: { input: "$ratingDistribution", cond: { $eq: ["$$this", 3] } } } },
-            2: { $size: { $filter: { input: "$ratingDistribution", cond: { $eq: ["$$this", 2] } } } },
-            1: { $size: { $filter: { input: "$ratingDistribution", cond: { $eq: ["$$this", 1] } } } }
+            5: {
+              $size: {
+                $filter: {
+                  input: "$ratingDistribution",
+                  cond: { $eq: ["$$this", 5] },
+                },
+              },
+            },
+            4: {
+              $size: {
+                $filter: {
+                  input: "$ratingDistribution",
+                  cond: { $eq: ["$$this", 4] },
+                },
+              },
+            },
+            3: {
+              $size: {
+                $filter: {
+                  input: "$ratingDistribution",
+                  cond: { $eq: ["$$this", 3] },
+                },
+              },
+            },
+            2: {
+              $size: {
+                $filter: {
+                  input: "$ratingDistribution",
+                  cond: { $eq: ["$$this", 2] },
+                },
+              },
+            },
+            1: {
+              $size: {
+                $filter: {
+                  input: "$ratingDistribution",
+                  cond: { $eq: ["$$this", 1] },
+                },
+              },
+            },
           },
           verificationRate: {
             $multiply: [
               { $divide: ["$verifiedReviews", "$totalReviews"] },
-              100
-            ]
-          }
-        }
-      }
+              100,
+            ],
+          },
+        },
+      },
     ]);
 
     res.status(200).json({
@@ -658,7 +716,7 @@ router.get("/stats", async (req, res) => {
         verifiedReviews: 0,
         reviewsWithImages: 0,
         ratingBreakdown: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
-        verificationRate: 0
+        verificationRate: 0,
       },
     });
   } catch (error) {

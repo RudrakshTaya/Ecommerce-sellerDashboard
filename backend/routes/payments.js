@@ -21,7 +21,10 @@ router.post(
   [
     body("orderId").isMongoId().withMessage("Valid order ID is required"),
     body("amount").isNumeric().withMessage("Valid amount is required"),
-    body("currency").optional().isIn(["INR", "USD"]).withMessage("Invalid currency"),
+    body("currency")
+      .optional()
+      .isIn(["INR", "USD"])
+      .withMessage("Invalid currency"),
   ],
   async (req, res) => {
     try {
@@ -41,8 +44,8 @@ router.post(
       const order = await Order.findOne({
         _id: orderId,
         customerId: customerId,
-        status: "pending"
-      }).populate('items.productId');
+        status: "pending",
+      }).populate("items.productId");
 
       if (!order) {
         return res.status(404).json({
@@ -63,7 +66,7 @@ router.post(
       const razorpayResult = await createRazorpayOrder(
         amount,
         currency,
-        `order_${orderId}_${Date.now()}`
+        `order_${orderId}_${Date.now()}`,
       );
 
       if (!razorpayResult.success) {
@@ -111,7 +114,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Verify payment
@@ -119,9 +122,15 @@ router.post(
   "/verify-payment",
   verifyAuth,
   [
-    body("razorpay_order_id").notEmpty().withMessage("Razorpay order ID is required"),
-    body("razorpay_payment_id").notEmpty().withMessage("Razorpay payment ID is required"),
-    body("razorpay_signature").notEmpty().withMessage("Razorpay signature is required"),
+    body("razorpay_order_id")
+      .notEmpty()
+      .withMessage("Razorpay order ID is required"),
+    body("razorpay_payment_id")
+      .notEmpty()
+      .withMessage("Razorpay payment ID is required"),
+    body("razorpay_signature")
+      .notEmpty()
+      .withMessage("Razorpay signature is required"),
   ],
   async (req, res) => {
     try {
@@ -134,7 +143,8 @@ router.post(
         });
       }
 
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+        req.body;
       const customerId = req.user.id;
 
       // Find payment record
@@ -154,7 +164,7 @@ router.post(
       const isValidSignature = verifyRazorpaySignature(
         razorpay_order_id,
         razorpay_payment_id,
-        razorpay_signature
+        razorpay_signature,
       );
 
       if (!isValidSignature) {
@@ -201,10 +211,9 @@ router.post(
 
         // Update product stock
         for (const item of order.items) {
-          await Product.findByIdAndUpdate(
-            item.productId,
-            { $inc: { stock: -item.quantity, soldCount: item.quantity } }
-          );
+          await Product.findByIdAndUpdate(item.productId, {
+            $inc: { stock: -item.quantity, soldCount: item.quantity },
+          });
         }
       }
 
@@ -226,7 +235,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Get payment history
@@ -277,7 +286,10 @@ router.post(
   verifyAuth,
   [
     body("paymentId").isMongoId().withMessage("Valid payment ID is required"),
-    body("amount").optional().isNumeric().withMessage("Valid refund amount required"),
+    body("amount")
+      .optional()
+      .isNumeric()
+      .withMessage("Valid refund amount required"),
     body("reason").notEmpty().withMessage("Refund reason is required"),
   ],
   async (req, res) => {
@@ -313,7 +325,10 @@ router.post(
       // Calculate refund amount
       const refundAmount = amount || payment.amount - payment.refundAmount;
 
-      if (refundAmount <= 0 || refundAmount > (payment.amount - payment.refundAmount)) {
+      if (
+        refundAmount <= 0 ||
+        refundAmount > payment.amount - payment.refundAmount
+      ) {
         return res.status(400).json({
           success: false,
           message: "Invalid refund amount",
@@ -324,7 +339,7 @@ router.post(
       const refundResult = await refundPayment(
         payment.razorpayPaymentId,
         refundAmount,
-        { reason }
+        { reason },
       );
 
       if (!refundResult.success) {
@@ -369,7 +384,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Get payment by ID

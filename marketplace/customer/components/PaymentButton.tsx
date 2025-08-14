@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useCustomerAuth } from '../contexts/CustomerAuthContext';
-import { paymentService } from '../lib/payments';
-import { toast } from 'react-hot-toast';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCustomerAuth } from "../contexts/CustomerAuthContext";
+import { paymentService } from "../lib/payments";
+import { toast } from "react-hot-toast";
 
 interface PaymentButtonProps {
   orderId: string;
@@ -16,8 +16,8 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
   orderId,
   amount,
   disabled = false,
-  className = '',
-  children = 'Pay Now',
+  className = "",
+  children = "Pay Now",
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { customer } = useCustomerAuth();
@@ -25,8 +25,8 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
 
   const handlePayment = async () => {
     if (!customer) {
-      toast.error('Please login to continue');
-      navigate('/login');
+      toast.error("Please login to continue");
+      navigate("/login");
       return;
     }
 
@@ -38,13 +38,13 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
         amount,
         customerName: customer.name,
         customerEmail: customer.email,
-        customerContact: customer.phone || '',
+        customerContact: customer.phone || "",
       });
 
-      toast.success('Payment completed successfully!');
+      toast.success("Payment completed successfully!");
       navigate(`/orders/${orderId}`);
     } catch (error: any) {
-      toast.error(error.message || 'Payment failed. Please try again.');
+      toast.error(error.message || "Payment failed. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -56,8 +56,8 @@ export const PaymentButton: React.FC<PaymentButtonProps> = ({
       disabled={disabled || isProcessing}
       className={`btn-primary w-full py-4 text-lg font-semibold rounded-lg transition-all duration-200 ${
         disabled || isProcessing
-          ? 'opacity-50 cursor-not-allowed'
-          : 'hover:shadow-lg transform hover:-translate-y-1'
+          ? "opacity-50 cursor-not-allowed"
+          : "hover:shadow-lg transform hover:-translate-y-1"
       } ${className}`}
     >
       {isProcessing ? (

@@ -14,7 +14,9 @@ router.post(
   "/test",
   verifyAuth,
   [
-    body("type").isIn(["email", "sms", "both"]).withMessage("Invalid notification type"),
+    body("type")
+      .isIn(["email", "sms", "both"])
+      .withMessage("Invalid notification type"),
     body("recipient").notEmpty().withMessage("Recipient is required"),
   ],
   async (req, res) => {
@@ -35,7 +37,8 @@ router.post(
         phone: type === "sms" || type === "both" ? recipient : null,
       };
 
-      const result = await notificationService.sendWelcomeNotifications(testData);
+      const result =
+        await notificationService.sendWelcomeNotifications(testData);
 
       res.status(200).json({
         success: true,
@@ -50,7 +53,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Send promotional notification to customers
@@ -59,7 +62,9 @@ router.post(
   verifyAuth,
   [
     body("offer").notEmpty().withMessage("Offer description is required"),
-    body("targetAudience").isIn(["all", "active", "inactive"]).withMessage("Invalid target audience"),
+    body("targetAudience")
+      .isIn(["all", "active", "inactive"])
+      .withMessage("Invalid target audience"),
   ],
   async (req, res) => {
     try {
@@ -73,10 +78,10 @@ router.post(
       }
 
       const { offer, targetAudience } = req.body;
-      
+
       // Build customer query based on target audience
       let customerQuery = { smsConsent: true };
-      
+
       if (targetAudience === "active") {
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
         customerQuery.lastActive = { $gte: thirtyDaysAgo };
@@ -85,12 +90,14 @@ router.post(
         customerQuery.lastActive = { $lt: thirtyDaysAgo };
       }
 
-      const customers = await Customer.find(customerQuery).select("name email phone smsConsent");
+      const customers = await Customer.find(customerQuery).select(
+        "name email phone smsConsent",
+      );
 
       const result = await notificationService.sendBulkNotifications(
         customers,
         "promotional",
-        offer
+        offer,
       );
 
       res.status(200).json({
@@ -106,7 +113,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Send low stock alerts to seller
@@ -127,25 +134,28 @@ router.post("/low-stock-alert", verifyAuth, async (req, res) => {
     const lowStockProducts = await Product.find({
       sellerId,
       stock: { $lte: 10, $gt: 0 },
-      status: "active"
+      status: "active",
     }).select("name stock");
 
     if (lowStockProducts.length === 0) {
       return res.status(200).json({
         success: true,
         message: "No low stock products found",
-        data: { alertsSent: 0 }
+        data: { alertsSent: 0 },
       });
     }
 
-    const result = await notificationService.sendLowStockAlert(seller, lowStockProducts);
+    const result = await notificationService.sendLowStockAlert(
+      seller,
+      lowStockProducts,
+    );
 
     res.status(200).json({
       success: true,
       message: "Low stock alert sent successfully",
       data: {
         alertsSent: lowStockProducts.length,
-        result
+        result,
       },
     });
   } catch (error) {
@@ -164,7 +174,9 @@ router.post(
   verifyAuth,
   [
     body("orderId").isMongoId().withMessage("Valid order ID is required"),
-    body("type").isIn(["confirmation", "status_update"]).withMessage("Invalid notification type"),
+    body("type")
+      .isIn(["confirmation", "status_update"])
+      .withMessage("Invalid notification type"),
   ],
   async (req, res) => {
     try {
@@ -180,7 +192,7 @@ router.post(
       const { orderId, type } = req.body;
 
       // Get order and customer information
-      const order = await Order.findById(orderId).populate('customerId');
+      const order = await Order.findById(orderId).populate("customerId");
       if (!order) {
         return res.status(404).json({
           success: false,
@@ -192,9 +204,15 @@ router.post(
       let result;
 
       if (type === "confirmation") {
-        result = await notificationService.sendOrderConfirmation(customer, order);
+        result = await notificationService.sendOrderConfirmation(
+          customer,
+          order,
+        );
       } else if (type === "status_update") {
-        result = await notificationService.sendOrderStatusUpdate(customer, order);
+        result = await notificationService.sendOrderStatusUpdate(
+          customer,
+          order,
+        );
       }
 
       res.status(200).json({
@@ -210,15 +228,13 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Send OTP for phone verification
 router.post(
   "/send-otp",
-  [
-    body("phone").isMobilePhone().withMessage("Valid phone number is required"),
-  ],
+  [body("phone").isMobilePhone().withMessage("Valid phone number is required")],
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -231,16 +247,16 @@ router.post(
       }
 
       const { phone } = req.body;
-      
+
       // Generate 6-digit OTP
       const otp = Math.floor(100000 + Math.random() * 900000);
-      
+
       // Store OTP in session/cache (in production, use Redis)
       // For now, we'll use a simple in-memory store
       global.otpStore = global.otpStore || {};
       global.otpStore[phone] = {
         otp,
-        expiresAt: Date.now() + 10 * 60 * 1000 // 10 minutes
+        expiresAt: Date.now() + 10 * 60 * 1000, // 10 minutes
       };
 
       const result = await notificationService.sendOTP(phone, otp);
@@ -250,7 +266,7 @@ router.post(
         message: "OTP sent successfully",
         data: {
           phone,
-          expiresIn: 600 // 10 minutes in seconds
+          expiresIn: 600, // 10 minutes in seconds
         },
       });
     } catch (error) {
@@ -261,7 +277,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Verify OTP
@@ -269,7 +285,9 @@ router.post(
   "/verify-otp",
   [
     body("phone").isMobilePhone().withMessage("Valid phone number is required"),
-    body("otp").isLength({ min: 6, max: 6 }).withMessage("OTP must be 6 digits"),
+    body("otp")
+      .isLength({ min: 6, max: 6 })
+      .withMessage("OTP must be 6 digits"),
   ],
   async (req, res) => {
     try {
@@ -283,10 +301,10 @@ router.post(
       }
 
       const { phone, otp } = req.body;
-      
+
       // Check OTP from store
       const storedOTP = global.otpStore?.[phone];
-      
+
       if (!storedOTP) {
         return res.status(400).json({
           success: false,
@@ -317,7 +335,7 @@ router.post(
         message: "OTP verified successfully",
         data: {
           phone,
-          verified: true
+          verified: true,
         },
       });
     } catch (error) {
@@ -328,7 +346,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Get notification preferences for customer
@@ -337,7 +355,7 @@ router.get("/preferences", verifyAuth, async (req, res) => {
     const customerId = req.user.id;
 
     const customer = await Customer.findById(customerId).select(
-      "emailConsent smsConsent notificationPreferences"
+      "emailConsent smsConsent notificationPreferences",
     );
 
     if (!customer) {
@@ -357,8 +375,8 @@ router.get("/preferences", verifyAuth, async (req, res) => {
           orderUpdates: true,
           promotions: false,
           lowStock: true,
-          newsletters: false
-        }
+          newsletters: false,
+        },
       },
     });
   } catch (error) {
@@ -376,8 +394,14 @@ router.put(
   "/preferences",
   verifyAuth,
   [
-    body("emailConsent").optional().isBoolean().withMessage("Email consent must be boolean"),
-    body("smsConsent").optional().isBoolean().withMessage("SMS consent must be boolean"),
+    body("emailConsent")
+      .optional()
+      .isBoolean()
+      .withMessage("Email consent must be boolean"),
+    body("smsConsent")
+      .optional()
+      .isBoolean()
+      .withMessage("SMS consent must be boolean"),
   ],
   async (req, res) => {
     try {
@@ -401,7 +425,7 @@ router.put(
       const customer = await Customer.findByIdAndUpdate(
         customerId,
         { $set: updateData },
-        { new: true }
+        { new: true },
       ).select("emailConsent smsConsent notificationPreferences");
 
       res.status(200).json({
@@ -417,7 +441,7 @@ router.put(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 export default router;

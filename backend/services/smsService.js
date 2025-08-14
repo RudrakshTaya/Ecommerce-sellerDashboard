@@ -1,13 +1,16 @@
-import twilio from 'twilio';
+import twilio from "twilio";
 
 class SMSService {
   constructor() {
     // Initialize Twilio client (or use mock in development)
     if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      this.client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+      this.client = twilio(
+        process.env.TWILIO_ACCOUNT_SID,
+        process.env.TWILIO_AUTH_TOKEN,
+      );
       this.fromNumber = process.env.TWILIO_PHONE_NUMBER;
     } else {
-      console.log('📱 SMS service running in mock mode');
+      console.log("📱 SMS service running in mock mode");
       this.client = null;
     }
   }
@@ -15,8 +18,8 @@ class SMSService {
   async sendSMS(to, message) {
     try {
       // In development/demo mode, just log the SMS
-      if (!this.client || process.env.NODE_ENV === 'development') {
-        console.log('📱 SMS SENT (Mock Mode):');
+      if (!this.client || process.env.NODE_ENV === "development") {
+        console.log("📱 SMS SENT (Mock Mode):");
         console.log(`To: ${to}`);
         console.log(`Message: ${message}`);
         return { success: true, sid: `mock_${Date.now()}` };
@@ -25,12 +28,12 @@ class SMSService {
       const response = await this.client.messages.create({
         body: message,
         from: this.fromNumber,
-        to: to
+        to: to,
       });
 
       return { success: true, sid: response.sid };
     } catch (error) {
-      console.error('SMS sending error:', error);
+      console.error("SMS sending error:", error);
       return { success: false, error: error.message };
     }
   }
@@ -44,13 +47,13 @@ class SMSService {
   // Order status update SMS
   async sendOrderStatusSMS(phone, orderData) {
     let message = `Order #${orderData.orderNumber} status: ${orderData.status.toUpperCase()}`;
-    
+
     if (orderData.trackingNumber) {
       message += ` | Tracking: ${orderData.trackingNumber}`;
     }
-    
+
     message += ` | Track: ${process.env.MARKETPLACE_URL}/orders/${orderData._id}`;
-    
+
     return await this.sendSMS(phone, message);
   }
 

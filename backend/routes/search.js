@@ -9,17 +9,44 @@ const router = express.Router();
 router.get(
   "/products",
   [
-    query("q").optional().isString().withMessage("Search query must be a string"),
-    query("category").optional().isString().withMessage("Category must be a string"),
-    query("minPrice").optional().isNumeric().withMessage("Min price must be a number"),
-    query("maxPrice").optional().isNumeric().withMessage("Max price must be a number"),
-    query("sortBy").optional().isIn(["price", "name", "rating", "soldCount", "createdAt", "relevance"]).withMessage("Invalid sort field"),
-    query("sortOrder").optional().isIn(["asc", "desc"]).withMessage("Sort order must be asc or desc"),
-    query("inStock").optional().isBoolean().withMessage("In stock must be boolean"),
+    query("q")
+      .optional()
+      .isString()
+      .withMessage("Search query must be a string"),
+    query("category")
+      .optional()
+      .isString()
+      .withMessage("Category must be a string"),
+    query("minPrice")
+      .optional()
+      .isNumeric()
+      .withMessage("Min price must be a number"),
+    query("maxPrice")
+      .optional()
+      .isNumeric()
+      .withMessage("Max price must be a number"),
+    query("sortBy")
+      .optional()
+      .isIn(["price", "name", "rating", "soldCount", "createdAt", "relevance"])
+      .withMessage("Invalid sort field"),
+    query("sortOrder")
+      .optional()
+      .isIn(["asc", "desc"])
+      .withMessage("Sort order must be asc or desc"),
+    query("inStock")
+      .optional()
+      .isBoolean()
+      .withMessage("In stock must be boolean"),
     query("sellerId").optional().isMongoId().withMessage("Invalid seller ID"),
     query("tags").optional().isString().withMessage("Tags must be a string"),
-    query("page").optional().isInt({ min: 1 }).withMessage("Page must be a positive integer"),
-    query("limit").optional().isInt({ min: 1, max: 50 }).withMessage("Limit must be between 1 and 50"),
+    query("page")
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage("Page must be a positive integer"),
+    query("limit")
+      .optional()
+      .isInt({ min: 1, max: 50 })
+      .withMessage("Limit must be between 1 and 50"),
   ],
   async (req, res) => {
     try {
@@ -43,7 +70,7 @@ router.get(
         sellerId,
         tags,
         page = 1,
-        limit = 12
+        limit = 12,
       } = req.query;
 
       // Build search query
@@ -55,7 +82,7 @@ router.get(
           { name: { $regex: q, $options: "i" } },
           { description: { $regex: q, $options: "i" } },
           { tags: { $regex: q, $options: "i" } },
-          { category: { $regex: q, $options: "i" } }
+          { category: { $regex: q, $options: "i" } },
         ];
       }
 
@@ -85,7 +112,7 @@ router.get(
 
       // Tags filter
       if (tags) {
-        const tagArray = tags.split(",").map(tag => tag.trim());
+        const tagArray = tags.split(",").map((tag) => tag.trim());
         searchQuery.tags = { $in: tagArray };
       }
 
@@ -126,8 +153,10 @@ router.get(
             localField: "sellerId",
             foreignField: "_id",
             as: "seller",
-            pipeline: [{ $project: { storeName: 1, rating: 1, isVerified: 1 } }]
-          }
+            pipeline: [
+              { $project: { storeName: 1, rating: 1, isVerified: 1 } },
+            ],
+          },
         },
         { $unwind: "$seller" },
         {
@@ -135,19 +164,39 @@ router.get(
             // Add calculated fields for better sorting/filtering
             discountPercentage: {
               $cond: {
-                if: { $and: [{ $gt: ["$originalPrice", 0] }, { $lt: ["$price", "$originalPrice"] }] },
-                then: { $multiply: [{ $divide: [{ $subtract: ["$originalPrice", "$price"] }, "$originalPrice"] }, 100] },
-                else: 0
-              }
+                if: {
+                  $and: [
+                    { $gt: ["$originalPrice", 0] },
+                    { $lt: ["$price", "$originalPrice"] },
+                  ],
+                },
+                then: {
+                  $multiply: [
+                    {
+                      $divide: [
+                        { $subtract: ["$originalPrice", "$price"] },
+                        "$originalPrice",
+                      ],
+                    },
+                    100,
+                  ],
+                },
+                else: 0,
+              },
             },
             isOnSale: {
               $cond: {
-                if: { $and: [{ $gt: ["$originalPrice", 0] }, { $lt: ["$price", "$originalPrice"] }] },
+                if: {
+                  $and: [
+                    { $gt: ["$originalPrice", 0] },
+                    { $lt: ["$price", "$originalPrice"] },
+                  ],
+                },
                 then: true,
-                else: false
-              }
-            }
-          }
+                else: false,
+              },
+            },
+          },
         },
         { $sort: sortOptions },
         {
@@ -173,9 +222,9 @@ router.get(
                   soldCount: 1,
                   isInStock: { $gt: ["$stock", 0] },
                   seller: 1,
-                  createdAt: 1
-                }
-              }
+                  createdAt: 1,
+                },
+              },
             ],
             totalCount: [{ $count: "count" }],
             facets: [
@@ -186,16 +235,18 @@ router.get(
                   priceRange: {
                     $push: {
                       min: { $min: "$price" },
-                      max: { $max: "$price" }
-                    }
+                      max: { $max: "$price" },
+                    },
                   },
-                  sellers: { $addToSet: { id: "$sellerId", name: "$seller.storeName" } },
-                  tags: { $addToSet: "$tags" }
-                }
-              }
-            ]
-          }
-        }
+                  sellers: {
+                    $addToSet: { id: "$sellerId", name: "$seller.storeName" },
+                  },
+                  tags: { $addToSet: "$tags" },
+                },
+              },
+            ],
+          },
+        },
       ];
 
       const results = await Product.aggregate(aggregationPipeline);
@@ -220,31 +271,34 @@ router.get(
             totalItems: totalCount,
             itemsPerPage: parseInt(limit),
             hasNextPage: page * limit < totalCount,
-            hasPrevPage: page > 1
+            hasPrevPage: page > 1,
           },
           filters: {
             categories: facets.categories || [],
             priceRange: {
-              min: Math.min(...(facets.priceRange || []).map(p => p.min)),
-              max: Math.max(...(facets.priceRange || []).map(p => p.max))
+              min: Math.min(...(facets.priceRange || []).map((p) => p.min)),
+              max: Math.max(...(facets.priceRange || []).map((p) => p.max)),
             },
             sellers: facets.sellers || [],
-            availableTags: [].concat(...(facets.tags || [])).filter((tag, index, arr) => arr.indexOf(tag) === index)
+            availableTags: []
+              .concat(...(facets.tags || []))
+              .filter((tag, index, arr) => arr.indexOf(tag) === index),
           },
           searchInfo: {
             query: q,
             appliedFilters: {
               category,
-              priceRange: minPrice || maxPrice ? { min: minPrice, max: maxPrice } : null,
+              priceRange:
+                minPrice || maxPrice ? { min: minPrice, max: maxPrice } : null,
               inStock,
               sellerId,
-              tags
+              tags,
             },
             sortBy,
             sortOrder,
-            suggestions
-          }
-        }
+            suggestions,
+          },
+        },
       });
     } catch (error) {
       console.error("Product search error:", error);
@@ -254,20 +308,41 @@ router.get(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Search sellers
 router.get(
   "/sellers",
   [
-    query("q").optional().isString().withMessage("Search query must be a string"),
-    query("location").optional().isString().withMessage("Location must be a string"),
-    query("verified").optional().isBoolean().withMessage("Verified must be boolean"),
-    query("minRating").optional().isNumeric().withMessage("Min rating must be a number"),
-    query("sortBy").optional().isIn(["name", "rating", "totalProducts", "totalSales"]).withMessage("Invalid sort field"),
-    query("page").optional().isInt({ min: 1 }).withMessage("Page must be a positive integer"),
-    query("limit").optional().isInt({ min: 1, max: 20 }).withMessage("Limit must be between 1 and 20"),
+    query("q")
+      .optional()
+      .isString()
+      .withMessage("Search query must be a string"),
+    query("location")
+      .optional()
+      .isString()
+      .withMessage("Location must be a string"),
+    query("verified")
+      .optional()
+      .isBoolean()
+      .withMessage("Verified must be boolean"),
+    query("minRating")
+      .optional()
+      .isNumeric()
+      .withMessage("Min rating must be a number"),
+    query("sortBy")
+      .optional()
+      .isIn(["name", "rating", "totalProducts", "totalSales"])
+      .withMessage("Invalid sort field"),
+    query("page")
+      .optional()
+      .isInt({ min: 1 })
+      .withMessage("Page must be a positive integer"),
+    query("limit")
+      .optional()
+      .isInt({ min: 1, max: 20 })
+      .withMessage("Limit must be between 1 and 20"),
   ],
   async (req, res) => {
     try {
@@ -287,7 +362,7 @@ router.get(
         minRating,
         sortBy = "rating",
         page = 1,
-        limit = 10
+        limit = 10,
       } = req.query;
 
       let searchQuery = { status: "active" };
@@ -296,7 +371,7 @@ router.get(
       if (q) {
         searchQuery.$or = [
           { storeName: { $regex: q, $options: "i" } },
-          { businessAddress: { $regex: q, $options: "i" } }
+          { businessAddress: { $regex: q, $options: "i" } },
         ];
       }
 
@@ -335,7 +410,9 @@ router.get(
       }
 
       const sellers = await Seller.find(searchQuery)
-        .select("storeName businessAddress rating reviewCount totalProducts totalRevenue isVerified createdAt")
+        .select(
+          "storeName businessAddress rating reviewCount totalProducts totalRevenue isVerified createdAt",
+        )
         .sort(sortOptions)
         .limit(limit * 1)
         .skip((page - 1) * limit);
@@ -351,9 +428,9 @@ router.get(
             currentPage: parseInt(page),
             totalPages: Math.ceil(totalCount / limit),
             totalItems: totalCount,
-            itemsPerPage: parseInt(limit)
-          }
-        }
+            itemsPerPage: parseInt(limit),
+          },
+        },
       });
     } catch (error) {
       console.error("Seller search error:", error);
@@ -363,7 +440,7 @@ router.get(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Get search suggestions
@@ -374,7 +451,7 @@ router.get("/suggestions", async (req, res) => {
     if (!q || q.length < 2) {
       return res.status(400).json({
         success: false,
-        message: "Query must be at least 2 characters long"
+        message: "Query must be at least 2 characters long",
       });
     }
 
@@ -385,8 +462,8 @@ router.get("/suggestions", async (req, res) => {
       message: "Suggestions retrieved successfully",
       data: {
         suggestions,
-        query: q
-      }
+        query: q,
+      },
     });
   } catch (error) {
     console.error("Search suggestions error:", error);
@@ -407,7 +484,7 @@ router.get("/popular", async (req, res) => {
       { $group: { _id: "$category", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 10 },
-      { $project: { term: "$_id", type: "category", count: 1 } }
+      { $project: { term: "$_id", type: "category", count: 1 } },
     ]);
 
     // Get popular tags
@@ -417,13 +494,13 @@ router.get("/popular", async (req, res) => {
       { $group: { _id: "$tags", count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 10 },
-      { $project: { term: "$_id", type: "tag", count: 1 } }
+      { $project: { term: "$_id", type: "tag", count: 1 } },
     ]);
 
     // Get trending products (most sold recently)
     const trendingProducts = await Product.find({
       status: "active",
-      soldCount: { $gt: 0 }
+      soldCount: { $gt: 0 },
     })
       .select("name soldCount")
       .sort({ soldCount: -1 })
@@ -435,8 +512,12 @@ router.get("/popular", async (req, res) => {
       data: {
         categories: popularCategories,
         tags: popularTags,
-        trending: trendingProducts.map(p => ({ term: p.name, type: "product", count: p.soldCount }))
-      }
+        trending: trendingProducts.map((p) => ({
+          term: p.name,
+          type: "product",
+          count: p.soldCount,
+        })),
+      },
     });
   } catch (error) {
     console.error("Popular search terms error:", error);
@@ -456,7 +537,7 @@ async function getSuggestions(query) {
     // Get product name suggestions
     const productSuggestions = await Product.find({
       status: "active",
-      name: { $regex: regex }
+      name: { $regex: regex },
     })
       .select("name")
       .limit(5);
@@ -464,19 +545,21 @@ async function getSuggestions(query) {
     // Get category suggestions
     const categorySuggestions = await Product.distinct("category", {
       status: "active",
-      category: { $regex: regex }
+      category: { $regex: regex },
     });
 
     // Get tag suggestions
     const tagSuggestions = await Product.distinct("tags", {
       status: "active",
-      tags: { $regex: regex }
+      tags: { $regex: regex },
     });
 
     return [
-      ...productSuggestions.map(p => ({ text: p.name, type: "product" })),
-      ...categorySuggestions.slice(0, 3).map(c => ({ text: c, type: "category" })),
-      ...tagSuggestions.slice(0, 3).map(t => ({ text: t, type: "tag" }))
+      ...productSuggestions.map((p) => ({ text: p.name, type: "product" })),
+      ...categorySuggestions
+        .slice(0, 3)
+        .map((c) => ({ text: c, type: "category" })),
+      ...tagSuggestions.slice(0, 3).map((t) => ({ text: t, type: "tag" })),
     ];
   } catch (error) {
     console.error("Get suggestions error:", error);

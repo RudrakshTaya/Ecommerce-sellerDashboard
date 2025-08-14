@@ -16,8 +16,8 @@ router.get("/cart", verifyAuth, async (req, res) => {
     const cart = await Cart.getOrCreateCart(customerId);
 
     // Filter out inactive products
-    cart.items = cart.items.filter(item => 
-      item.productId && item.productId.status === 'active'
+    cart.items = cart.items.filter(
+      (item) => item.productId && item.productId.status === "active",
     );
 
     await cart.save();
@@ -43,8 +43,13 @@ router.post(
   verifyAuth,
   [
     body("productId").isMongoId().withMessage("Valid product ID is required"),
-    body("quantity").isInt({ min: 1, max: 99 }).withMessage("Quantity must be between 1 and 99"),
-    body("selectedVariant").optional().isObject().withMessage("Selected variant must be an object"),
+    body("quantity")
+      .isInt({ min: 1, max: 99 })
+      .withMessage("Quantity must be between 1 and 99"),
+    body("selectedVariant")
+      .optional()
+      .isObject()
+      .withMessage("Selected variant must be an object"),
   ],
   async (req, res) => {
     try {
@@ -61,9 +66,9 @@ router.post(
       const customerId = req.user.id;
 
       // Verify product exists and is active
-      const product = await Product.findOne({ 
-        _id: productId, 
-        status: 'active' 
+      const product = await Product.findOne({
+        _id: productId,
+        status: "active",
       });
 
       if (!product) {
@@ -89,7 +94,7 @@ router.post(
       await cart.save();
 
       // Populate cart for response
-      await cart.populate('items.productId', 'name price image stock status');
+      await cart.populate("items.productId", "name price image stock status");
 
       res.status(200).json({
         success: true,
@@ -104,7 +109,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Update cart item quantity
@@ -113,8 +118,13 @@ router.put(
   verifyAuth,
   [
     body("productId").isMongoId().withMessage("Valid product ID is required"),
-    body("quantity").isInt({ min: 0, max: 99 }).withMessage("Quantity must be between 0 and 99"),
-    body("selectedVariant").optional().isObject().withMessage("Selected variant must be an object"),
+    body("quantity")
+      .isInt({ min: 0, max: 99 })
+      .withMessage("Quantity must be between 0 and 99"),
+    body("selectedVariant")
+      .optional()
+      .isObject()
+      .withMessage("Selected variant must be an object"),
   ],
   async (req, res) => {
     try {
@@ -139,7 +149,11 @@ router.put(
       }
 
       // Update item quantity
-      const updated = cart.updateItemQuantity(productId, quantity, selectedVariant);
+      const updated = cart.updateItemQuantity(
+        productId,
+        quantity,
+        selectedVariant,
+      );
       if (!updated) {
         return res.status(404).json({
           success: false,
@@ -148,11 +162,12 @@ router.put(
       }
 
       await cart.save();
-      await cart.populate('items.productId', 'name price image stock status');
+      await cart.populate("items.productId", "name price image stock status");
 
       res.status(200).json({
         success: true,
-        message: quantity > 0 ? "Cart updated successfully" : "Item removed from cart",
+        message:
+          quantity > 0 ? "Cart updated successfully" : "Item removed from cart",
         data: cart,
       });
     } catch (error) {
@@ -163,7 +178,7 @@ router.put(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Remove item from cart
@@ -172,7 +187,10 @@ router.delete(
   verifyAuth,
   [
     body("productId").isMongoId().withMessage("Valid product ID is required"),
-    body("selectedVariant").optional().isObject().withMessage("Selected variant must be an object"),
+    body("selectedVariant")
+      .optional()
+      .isObject()
+      .withMessage("Selected variant must be an object"),
   ],
   async (req, res) => {
     try {
@@ -205,7 +223,7 @@ router.delete(
       }
 
       await cart.save();
-      await cart.populate('items.productId', 'name price image stock status');
+      await cart.populate("items.productId", "name price image stock status");
 
       res.status(200).json({
         success: true,
@@ -220,7 +238,7 @@ router.delete(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Clear entire cart
@@ -263,8 +281,8 @@ router.get("/wishlist", verifyAuth, async (req, res) => {
     const wishlist = await Wishlist.getOrCreateWishlist(customerId);
 
     // Filter out inactive products
-    wishlist.items = wishlist.items.filter(item => 
-      item.productId && item.productId.status === 'active'
+    wishlist.items = wishlist.items.filter(
+      (item) => item.productId && item.productId.status === "active",
     );
 
     await wishlist.save();
@@ -290,8 +308,14 @@ router.post(
   verifyAuth,
   [
     body("productId").isMongoId().withMessage("Valid product ID is required"),
-    body("notifyOnSale").optional().isBoolean().withMessage("Notify on sale must be boolean"),
-    body("notifyOnRestock").optional().isBoolean().withMessage("Notify on restock must be boolean"),
+    body("notifyOnSale")
+      .optional()
+      .isBoolean()
+      .withMessage("Notify on sale must be boolean"),
+    body("notifyOnRestock")
+      .optional()
+      .isBoolean()
+      .withMessage("Notify on restock must be boolean"),
   ],
   async (req, res) => {
     try {
@@ -304,7 +328,11 @@ router.post(
         });
       }
 
-      const { productId, notifyOnSale = false, notifyOnRestock = false } = req.body;
+      const {
+        productId,
+        notifyOnSale = false,
+        notifyOnRestock = false,
+      } = req.body;
       const customerId = req.user.id;
 
       // Verify product exists
@@ -320,21 +348,29 @@ router.post(
       const wishlist = await Wishlist.getOrCreateWishlist(customerId);
 
       // Add item to wishlist
-      const added = wishlist.addItem(productId, product.price, notifyOnSale, notifyOnRestock);
+      const added = wishlist.addItem(
+        productId,
+        product.price,
+        notifyOnSale,
+        notifyOnRestock,
+      );
       await wishlist.save();
 
       await wishlist.populate({
-        path: 'items.productId',
-        select: 'name price originalPrice image stock status rating reviewCount sellerId',
+        path: "items.productId",
+        select:
+          "name price originalPrice image stock status rating reviewCount sellerId",
         populate: {
-          path: 'sellerId',
-          select: 'storeName'
-        }
+          path: "sellerId",
+          select: "storeName",
+        },
       });
 
       res.status(200).json({
         success: true,
-        message: added ? "Item added to wishlist successfully" : "Item already in wishlist, preferences updated",
+        message: added
+          ? "Item added to wishlist successfully"
+          : "Item already in wishlist, preferences updated",
         data: wishlist,
       });
     } catch (error) {
@@ -345,16 +381,14 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Remove item from wishlist
 router.delete(
   "/wishlist/remove",
   verifyAuth,
-  [
-    body("productId").isMongoId().withMessage("Valid product ID is required"),
-  ],
+  [body("productId").isMongoId().withMessage("Valid product ID is required")],
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -387,12 +421,13 @@ router.delete(
 
       await wishlist.save();
       await wishlist.populate({
-        path: 'items.productId',
-        select: 'name price originalPrice image stock status rating reviewCount sellerId',
+        path: "items.productId",
+        select:
+          "name price originalPrice image stock status rating reviewCount sellerId",
         populate: {
-          path: 'sellerId',
-          select: 'storeName'
-        }
+          path: "sellerId",
+          select: "storeName",
+        },
       });
 
       res.status(200).json({
@@ -408,7 +443,7 @@ router.delete(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Toggle item in wishlist
@@ -417,8 +452,14 @@ router.post(
   verifyAuth,
   [
     body("productId").isMongoId().withMessage("Valid product ID is required"),
-    body("notifyOnSale").optional().isBoolean().withMessage("Notify on sale must be boolean"),
-    body("notifyOnRestock").optional().isBoolean().withMessage("Notify on restock must be boolean"),
+    body("notifyOnSale")
+      .optional()
+      .isBoolean()
+      .withMessage("Notify on sale must be boolean"),
+    body("notifyOnRestock")
+      .optional()
+      .isBoolean()
+      .withMessage("Notify on restock must be boolean"),
   ],
   async (req, res) => {
     try {
@@ -431,7 +472,11 @@ router.post(
         });
       }
 
-      const { productId, notifyOnSale = false, notifyOnRestock = false } = req.body;
+      const {
+        productId,
+        notifyOnSale = false,
+        notifyOnRestock = false,
+      } = req.body;
       const customerId = req.user.id;
 
       // Verify product exists
@@ -447,25 +492,31 @@ router.post(
       const wishlist = await Wishlist.getOrCreateWishlist(customerId);
 
       // Toggle item in wishlist
-      const result = wishlist.toggleItem(productId, product.price, notifyOnSale, notifyOnRestock);
+      const result = wishlist.toggleItem(
+        productId,
+        product.price,
+        notifyOnSale,
+        notifyOnRestock,
+      );
       await wishlist.save();
 
       await wishlist.populate({
-        path: 'items.productId',
-        select: 'name price originalPrice image stock status rating reviewCount sellerId',
+        path: "items.productId",
+        select:
+          "name price originalPrice image stock status rating reviewCount sellerId",
         populate: {
-          path: 'sellerId',
-          select: 'storeName'
-        }
+          path: "sellerId",
+          select: "storeName",
+        },
       });
 
       res.status(200).json({
         success: true,
-        message: `Item ${result.action} ${result.action === 'added' ? 'to' : 'from'} wishlist successfully`,
+        message: `Item ${result.action} ${result.action === "added" ? "to" : "from"} wishlist successfully`,
         data: {
           wishlist,
           action: result.action,
-          inWishlist: result.inWishlist
+          inWishlist: result.inWishlist,
         },
       });
     } catch (error) {
@@ -476,7 +527,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 // Check if item is in wishlist
@@ -493,7 +544,7 @@ router.get("/wishlist/check/:productId", verifyAuth, async (req, res) => {
       message: "Wishlist status checked successfully",
       data: {
         productId,
-        inWishlist
+        inWishlist,
       },
     });
   } catch (error) {
@@ -543,7 +594,9 @@ router.post(
   verifyAuth,
   [
     body("productIds").isArray().withMessage("Product IDs must be an array"),
-    body("productIds.*").isMongoId().withMessage("Valid product IDs are required"),
+    body("productIds.*")
+      .isMongoId()
+      .withMessage("Valid product IDs are required"),
   ],
   async (req, res) => {
     try {
@@ -561,7 +614,7 @@ router.post(
 
       const [wishlist, cart] = await Promise.all([
         Wishlist.findOne({ customerId }),
-        Cart.getOrCreateCart(customerId)
+        Cart.getOrCreateCart(customerId),
       ]);
 
       if (!wishlist) {
@@ -575,24 +628,27 @@ router.post(
       const failed = [];
 
       for (const productId of productIds) {
-        const wishlistItem = wishlist.items.find(item => 
-          item.productId.toString() === productId
+        const wishlistItem = wishlist.items.find(
+          (item) => item.productId.toString() === productId,
         );
 
         if (wishlistItem) {
           // Get current product info
           const product = await Product.findById(productId);
-          if (product && product.status === 'active' && product.stock > 0) {
+          if (product && product.status === "active" && product.stock > 0) {
             // Add to cart
             cart.addItem(productId, 1, product.price);
             // Remove from wishlist
             wishlist.removeItem(productId);
             moved.push(productId);
           } else {
-            failed.push({ productId, reason: 'Product not available or out of stock' });
+            failed.push({
+              productId,
+              reason: "Product not available or out of stock",
+            });
           }
         } else {
-          failed.push({ productId, reason: 'Product not in wishlist' });
+          failed.push({ productId, reason: "Product not in wishlist" });
         }
       }
 
@@ -601,14 +657,15 @@ router.post(
       // Populate for response
       await Promise.all([
         wishlist.populate({
-          path: 'items.productId',
-          select: 'name price originalPrice image stock status rating reviewCount sellerId',
+          path: "items.productId",
+          select:
+            "name price originalPrice image stock status rating reviewCount sellerId",
           populate: {
-            path: 'sellerId',
-            select: 'storeName'
-          }
+            path: "sellerId",
+            select: "storeName",
+          },
         }),
-        cart.populate('items.productId', 'name price image stock status')
+        cart.populate("items.productId", "name price image stock status"),
       ]);
 
       res.status(200).json({
@@ -618,7 +675,7 @@ router.post(
           cart,
           wishlist,
           moved,
-          failed
+          failed,
         },
       });
     } catch (error) {
@@ -629,7 +686,7 @@ router.post(
         error: error.message,
       });
     }
-  }
+  },
 );
 
 export default router;

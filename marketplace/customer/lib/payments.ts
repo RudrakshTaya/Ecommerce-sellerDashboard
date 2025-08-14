@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 export interface PaymentOrder {
   orderId: string;
@@ -26,7 +26,7 @@ export interface Payment {
   amount: number;
   currency: string;
   paymentMethod: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+  status: "pending" | "processing" | "completed" | "failed" | "refunded";
   razorpayOrderId: string;
   razorpayPaymentId?: string;
   transactionId: string;
@@ -36,34 +36,45 @@ export interface Payment {
 
 class PaymentService {
   // Create payment order
-  async createPaymentOrder(orderId: string, amount: number, currency = 'INR'): Promise<PaymentOrder> {
+  async createPaymentOrder(
+    orderId: string,
+    amount: number,
+    currency = "INR",
+  ): Promise<PaymentOrder> {
     try {
-      const response = await api.post('/payments/create-order', {
+      const response = await api.post("/payments/create-order", {
         orderId,
         amount,
-        currency
+        currency,
       });
 
       return response.data.data;
     } catch (error: any) {
-      console.error('Create payment order error:', error);
-      throw new Error(error.response?.data?.message || 'Failed to create payment order');
+      console.error("Create payment order error:", error);
+      throw new Error(
+        error.response?.data?.message || "Failed to create payment order",
+      );
     }
   }
 
   // Verify payment
   async verifyPayment(paymentData: PaymentVerification): Promise<any> {
     try {
-      const response = await api.post('/payments/verify-payment', paymentData);
+      const response = await api.post("/payments/verify-payment", paymentData);
       return response.data;
     } catch (error: any) {
-      console.error('Payment verification error:', error);
-      throw new Error(error.response?.data?.message || 'Payment verification failed');
+      console.error("Payment verification error:", error);
+      throw new Error(
+        error.response?.data?.message || "Payment verification failed",
+      );
     }
   }
 
   // Get payment history
-  async getPaymentHistory(page = 1, limit = 10): Promise<{
+  async getPaymentHistory(
+    page = 1,
+    limit = 10,
+  ): Promise<{
     payments: Payment[];
     pagination: {
       currentPage: number;
@@ -73,17 +84,19 @@ class PaymentService {
     };
   }> {
     try {
-      const response = await api.get('/payments/history', {
-        params: { page, limit }
+      const response = await api.get("/payments/history", {
+        params: { page, limit },
       });
 
       return {
         payments: response.data.data,
-        pagination: response.data.pagination
+        pagination: response.data.pagination,
       };
     } catch (error: any) {
-      console.error('Get payment history error:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch payment history');
+      console.error("Get payment history error:", error);
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch payment history",
+      );
     }
   }
 
@@ -93,8 +106,10 @@ class PaymentService {
       const response = await api.get(`/payments/${paymentId}`);
       return response.data.data;
     } catch (error: any) {
-      console.error('Get payment error:', error);
-      throw new Error(error.response?.data?.message || 'Failed to fetch payment details');
+      console.error("Get payment error:", error);
+      throw new Error(
+        error.response?.data?.message || "Failed to fetch payment details",
+      );
     }
   }
 
@@ -121,20 +136,22 @@ class PaymentService {
     };
   }) {
     return new Promise((resolve, reject) => {
-      if (typeof window === 'undefined') {
-        reject(new Error('Razorpay can only be initialized in browser environment'));
+      if (typeof window === "undefined") {
+        reject(
+          new Error("Razorpay can only be initialized in browser environment"),
+        );
         return;
       }
 
       // Load Razorpay script if not already loaded
       if (!(window as any).Razorpay) {
-        const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
         script.onload = () => {
           this.createRazorpayInstance(options, resolve, reject);
         };
         script.onerror = () => {
-          reject(new Error('Failed to load Razorpay SDK'));
+          reject(new Error("Failed to load Razorpay SDK"));
         };
         document.head.appendChild(script);
       } else {
@@ -165,18 +182,18 @@ class PaymentService {
       // Create payment order
       const paymentOrder = await this.createPaymentOrder(
         orderDetails.orderId,
-        orderDetails.amount
+        orderDetails.amount,
       );
 
       // Prepare Razorpay options
       const razorpayOptions = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_demo_key',
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_demo_key",
         amount: paymentOrder.amount * 100, // Amount in paise
         currency: paymentOrder.currency,
         order_id: paymentOrder.orderId,
-        name: 'CraftMart',
-        description: 'Payment for your order',
-        image: '/logo.png',
+        name: "CraftMart",
+        description: "Payment for your order",
+        image: "/logo.png",
         handler: async (response: any) => {
           try {
             await this.verifyPayment({
@@ -186,7 +203,7 @@ class PaymentService {
             });
             return { success: true };
           } catch (error) {
-            console.error('Payment verification failed:', error);
+            console.error("Payment verification failed:", error);
             throw error;
           }
         },
@@ -196,11 +213,11 @@ class PaymentService {
           contact: orderDetails.customerContact,
         },
         theme: {
-          color: '#dd9658', // Craft theme color
+          color: "#dd9658", // Craft theme color
         },
         modal: {
           ondismiss: () => {
-            console.log('Payment modal dismissed');
+            console.log("Payment modal dismissed");
           },
         },
       };
@@ -210,8 +227,8 @@ class PaymentService {
 
       return { success: true, paymentOrder };
     } catch (error: any) {
-      console.error('Payment processing error:', error);
-      throw new Error(error.message || 'Payment processing failed');
+      console.error("Payment processing error:", error);
+      throw new Error(error.message || "Payment processing failed");
     }
   }
 }

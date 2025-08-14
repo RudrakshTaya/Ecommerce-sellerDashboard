@@ -16,7 +16,7 @@ import {
   mongoSanitize,
   enhancedCORS,
   securityLogger,
-  requestSizeLimit
+  requestSizeLimit,
 } from "./middleware/security.js";
 
 // Import routes
@@ -50,18 +50,24 @@ const app = express();
 const server = createServer(app);
 
 // Enhanced security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://checkout.razorpay.com"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'", "https://api.razorpay.com"],
-      frameSrc: ["https://api.razorpay.com"]
-    }
-  }
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://checkout.razorpay.com",
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+        connectSrc: ["'self'", "https://api.razorpay.com"],
+        frameSrc: ["https://api.razorpay.com"],
+      },
+    },
+  }),
+);
 
 // Enhanced CORS and security headers
 app.use(enhancedCORS);
@@ -70,7 +76,7 @@ app.use(enhancedCORS);
 app.use(securityLogger);
 
 // Request size limiting
-app.use(requestSizeLimit('10mb'));
+app.use(requestSizeLimit("10mb"));
 
 // Input sanitization
 app.use(sanitizeInput);
@@ -123,25 +129,25 @@ app.get("/health", (req, res) => {
 });
 
 // API routes
-app.use("/api/auth", authRoutes);                    // Seller authentication
-app.use("/api/products", productRoutes);             // Seller products management
-app.use("/api/orders", orderRoutes);                 // Seller orders management
-app.use("/api/analytics", analyticsRoutes);          // Seller analytics
-app.use("/api/upload", uploadRoutes);                // File uploads
-app.use("/api/test", testRoutes);                    // Testing endpoints
-app.use("/api/admin", adminRoutes);                  // Admin endpoints
-app.use("/api/public", publicRoutes);                // Public marketplace endpoints
-app.use("/api/mock", mockDataRoutes);                 // Mock data for testing
-app.use("/api/customer-auth", customerAuthRoutes);   // Customer authentication
+app.use("/api/auth", authRoutes); // Seller authentication
+app.use("/api/products", productRoutes); // Seller products management
+app.use("/api/orders", orderRoutes); // Seller orders management
+app.use("/api/analytics", analyticsRoutes); // Seller analytics
+app.use("/api/upload", uploadRoutes); // File uploads
+app.use("/api/test", testRoutes); // Testing endpoints
+app.use("/api/admin", adminRoutes); // Admin endpoints
+app.use("/api/public", publicRoutes); // Public marketplace endpoints
+app.use("/api/mock", mockDataRoutes); // Mock data for testing
+app.use("/api/customer-auth", customerAuthRoutes); // Customer authentication
 app.use("/api/customer-orders", customerOrderRoutes); // Customer orders
-app.use("/api/payments", paymentRoutes);              // Payment processing
-app.use("/api/inventory", inventoryRoutes);            // Inventory management
-app.use("/api/notifications", notificationRoutes);      // Notification system
+app.use("/api/payments", paymentRoutes); // Payment processing
+app.use("/api/inventory", inventoryRoutes); // Inventory management
+app.use("/api/notifications", notificationRoutes); // Notification system
 app.use("/api/advanced-analytics", advancedAnalyticsRoutes); // Advanced analytics
-app.use("/api/order-tracking", orderTrackingRoutes);        // Real-time order tracking
-app.use("/api/search", searchRoutes);                       // Advanced search functionality
-app.use("/api/reviews", reviewRoutes);                      // Review and rating system
-app.use("/api", cartWishlistRoutes);                        // Cart and wishlist functionality
+app.use("/api/order-tracking", orderTrackingRoutes); // Real-time order tracking
+app.use("/api/search", searchRoutes); // Advanced search functionality
+app.use("/api/reviews", reviewRoutes); // Review and rating system
+app.use("/api", cartWishlistRoutes); // Cart and wishlist functionality
 
 // 404 handler
 app.use("*", (req, res) => {
@@ -164,7 +170,9 @@ server.listen(PORT, () => {
     `🚀 Server running on port ${PORT} in ${process.env.NODE_ENV} mode`,
   );
   console.log(`📊 API Health Check: http://localhost:${PORT}/health`);
-  console.log(`🔗 Seller Dashboard: ${process.env.FRONTEND_URL || "http://localhost:8080"}`);
+  console.log(
+    `🔗 Seller Dashboard: ${process.env.FRONTEND_URL || "http://localhost:8080"}`,
+  );
   console.log(`🛍️ Customer Marketplace: http://localhost:3001`);
   console.log(`\n📋 Available API Endpoints:`);
   console.log(`   • Seller Auth: /api/auth/*`);
