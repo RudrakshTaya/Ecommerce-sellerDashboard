@@ -1,8 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Star, MapPin, ShoppingBag, Badge, Calendar } from 'lucide-react';
-import { Seller } from '../lib/types';
-import { format } from 'date-fns';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Star, MapPin, ShoppingBag, Badge, Calendar } from "lucide-react";
+import { Seller } from "../lib/types";
+import { format } from "date-fns";
 
 interface SellerCardProps {
   seller: Seller;
@@ -10,7 +10,7 @@ interface SellerCardProps {
 
 const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
   return (
-    <Link 
+    <Link
       to={`/sellers/${seller._id}`}
       className="group bg-white rounded-xl shadow-sm border border-warm-100 hover:shadow-lg transition-all duration-200 hover-lift block"
     >
@@ -26,7 +26,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-craft-300 to-earth-300" />
           )}
-          
+
           {/* Verified Badge */}
           {seller.isVerified && (
             <div className="absolute top-2 right-2 bg-green-500 text-white p-1 rounded-full">
@@ -39,8 +39,8 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
           <div className="w-16 h-16 rounded-full border-4 border-white bg-white overflow-hidden">
             <img
-              src={seller.avatar || '/placeholder.svg'}
-              alt={seller.name}
+              src={seller.avatar || seller.profileImage || "/placeholder.svg"}
+              alt={seller.name || seller.storeName}
               className="w-full h-full object-cover"
             />
           </div>
@@ -51,10 +51,10 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
       <div className="pt-10 p-6 text-center">
         {/* Name and Business Name */}
         <h3 className="font-semibold text-earth-900 mb-1 group-hover:text-craft-600 transition-colors">
-          {seller.businessName}
+          {seller.businessName || seller.storeName}
         </h3>
         <p className="text-sm text-earth-600 mb-3">
-          by {seller.name}
+          by {seller.name || seller.storeName}
         </p>
 
         {/* Rating */}
@@ -64,67 +64,84 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
               <Star
                 key={i}
                 className={`w-3 h-3 ${
-                  i < Math.floor(seller.rating)
-                    ? 'text-yellow-400 fill-current'
-                    : 'text-earth-300'
+                  i < Math.floor(seller.rating || 0)
+                    ? "text-yellow-400 fill-current"
+                    : "text-earth-300"
                 }`}
               />
             ))}
           </div>
           <span className="text-sm text-earth-600">
-            {seller.rating.toFixed(1)} ({seller.reviewCount})
+            {(seller.rating || 0).toFixed(1)} ({seller.reviewCount || 0})
           </span>
         </div>
 
         {/* Location */}
-        <div className="flex items-center justify-center space-x-1 text-earth-600 mb-3">
-          <MapPin className="w-4 h-4" />
-          <span className="text-sm">
-            {seller.location.city}, {seller.location.state}
-          </span>
-        </div>
-
-        {/* Description */}
-        <p className="text-sm text-earth-600 mb-4 line-clamp-2">
-          {seller.description}
-        </p>
-
-        {/* Specialties */}
-        {seller.specialties && seller.specialties.length > 0 && (
-          <div className="mb-4">
-            <div className="flex flex-wrap gap-1 justify-center">
-              {seller.specialties.slice(0, 3).map((specialty, index) => (
-                <span
-                  key={index}
-                  className="text-xs bg-craft-100 text-craft-700 px-2 py-1 rounded-full"
-                >
-                  {specialty}
-                </span>
-              ))}
-              {seller.specialties.length > 3 && (
-                <span className="text-xs text-earth-500">
-                  +{seller.specialties.length - 3} more
-                </span>
-              )}
-            </div>
+        {(seller.location?.city ||
+          seller.location?.state ||
+          seller.businessAddress) && (
+          <div className="flex items-center justify-center space-x-1 text-earth-600 mb-3">
+            <MapPin className="w-4 h-4" />
+            <span className="text-sm">
+              {seller.location?.city && seller.location?.state
+                ? `${seller.location.city}, ${seller.location.state}`
+                : seller.location?.city ||
+                  seller.location?.state ||
+                  seller.businessAddress ||
+                  "Location not specified"}
+            </span>
           </div>
         )}
+
+        {/* Description */}
+        {seller.description && (
+          <p className="text-sm text-earth-600 mb-4 line-clamp-2">
+            {seller.description}
+          </p>
+        )}
+
+        {/* Specialties */}
+        {seller.specialties &&
+          Array.isArray(seller.specialties) &&
+          seller.specialties.length > 0 && (
+            <div className="mb-4">
+              <div className="flex flex-wrap gap-1 justify-center">
+                {seller.specialties.slice(0, 3).map((specialty, index) => (
+                  <span
+                    key={index}
+                    className="text-xs bg-craft-100 text-craft-700 px-2 py-1 rounded-full"
+                  >
+                    {specialty}
+                  </span>
+                ))}
+                {seller.specialties.length > 3 && (
+                  <span className="text-xs text-earth-500">
+                    +{seller.specialties.length - 3} more
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 gap-4 pt-4 border-t border-warm-200">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-1 text-earth-600">
               <ShoppingBag className="w-4 h-4" />
-              <span className="text-sm font-medium">{seller.totalSales}</span>
+              <span className="text-sm font-medium">
+                {seller.totalSales || 0}
+              </span>
             </div>
             <span className="text-xs text-earth-500">Sales</span>
           </div>
-          
+
           <div className="text-center">
             <div className="flex items-center justify-center space-x-1 text-earth-600">
               <Calendar className="w-4 h-4" />
               <span className="text-sm font-medium">
-                {format(new Date(seller.joinedDate), 'MMM yyyy')}
+                {seller.joinedDate
+                  ? format(new Date(seller.joinedDate), "MMM yyyy")
+                  : "New"}
               </span>
             </div>
             <span className="text-xs text-earth-500">Joined</span>
