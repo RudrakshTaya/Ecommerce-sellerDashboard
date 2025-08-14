@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>()(
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
-  addItem: (product: Product, quantity?: number) => void;
+  addItem: (item: CartItem | (Product & { quantity?: number })) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
@@ -65,29 +65,40 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       isOpen: false,
-      addItem: (product: Product, quantity = 1) => {
+      addItem: (item: CartItem | (Product & { quantity?: number })) => {
         const items = get().items;
-        const existingItem = items.find(item => item.productId === product._id);
-        
+
+        // Handle both CartItem and Product types
+        let cartItem: CartItem;
+        if ('productId' in item) {
+          // It's already a CartItem
+          cartItem = item as CartItem;
+        } else {
+          // It's a Product, convert to CartItem
+          const product = item as Product & { quantity?: number };
+          cartItem = {
+            productId: product._id,
+            product: product,
+            quantity: product.quantity || 1,
+            selectedColor: undefined,
+            selectedSize: undefined,
+            addedAt: new Date().toISOString(),
+          };
+        }
+
+        const existingItem = items.find(item => item.productId === cartItem.productId);
+
         if (existingItem) {
           set({
             items: items.map(item =>
-              item.productId === product._id
-                ? { ...item, quantity: item.quantity + quantity }
+              item.productId === cartItem.productId
+                ? { ...item, quantity: item.quantity + cartItem.quantity }
                 : item
             ),
           });
         } else {
           set({
-            items: [
-              ...items,
-              {
-                productId: product._id,
-                product,
-                quantity,
-                addedAt: new Date().toISOString(),
-              },
-            ],
+            items: [...items, cartItem],
           });
         }
       },
