@@ -92,6 +92,7 @@ app.use("/api/public", publicRoutes);                // Public marketplace endpo
 app.use("/api/mock", mockDataRoutes);                 // Mock data for testing
 app.use("/api/customer-auth", customerAuthRoutes);   // Customer authentication
 app.use("/api/customer-orders", customerOrderRoutes); // Customer orders
+app.use("/api/payments", paymentRoutes);              // Payment processing
 
 // 404 handler
 app.use("*", (req, res) => {
