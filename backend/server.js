@@ -34,6 +34,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const server = createServer(app);
 
 // Security middleware
 app.use(helmet());
