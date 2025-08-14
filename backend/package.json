@@ -35,6 +35,7 @@
     "node-fetch": "^3.3.2",
     "nodemailer": "^7.0.5",
     "razorpay": "^2.9.6",
+    "socket.io": "^4.8.1",
     "twilio": "^5.8.0"
   },
   "devDependencies": {
