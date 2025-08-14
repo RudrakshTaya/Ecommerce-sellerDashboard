@@ -116,6 +116,7 @@ router.post(
         ordersBySeller[sellerId].subtotal += itemTotal;
         ordersBySeller[sellerId].items.push({
           product: product._id,
+          sellerId: product.sellerId._id,
           productSnapshot: {
             name: product.name,
             price: product.price,
