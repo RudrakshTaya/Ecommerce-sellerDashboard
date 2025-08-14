@@ -478,7 +478,7 @@ const OrderCard = ({
       <CardHeader className="pb-3 bg-gradient-to-r from-gray-50 to-blue-50">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-bold text-gray-900">
-            Order #{order.id}
+            Order #{order.orderNumber || order.id}
           </CardTitle>
           <Badge className={getStatusColor(order.status)}>
             {getStatusIcon(order.status)}
