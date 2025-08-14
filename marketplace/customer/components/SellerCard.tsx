@@ -39,8 +39,8 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
           <div className="w-16 h-16 rounded-full border-4 border-white bg-white overflow-hidden">
             <img
-              src={seller.avatar || '/placeholder.svg'}
-              alt={seller.name}
+              src={seller.avatar || seller.profileImage || '/placeholder.svg'}
+              alt={seller.name || seller.storeName}
               className="w-full h-full object-cover"
             />
           </div>
@@ -51,10 +51,10 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
       <div className="pt-10 p-6 text-center">
         {/* Name and Business Name */}
         <h3 className="font-semibold text-earth-900 mb-1 group-hover:text-craft-600 transition-colors">
-          {seller.businessName}
+          {seller.businessName || seller.storeName}
         </h3>
         <p className="text-sm text-earth-600 mb-3">
-          by {seller.name}
+          by {seller.name || seller.storeName}
         </p>
 
         {/* Rating */}
@@ -64,7 +64,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
               <Star
                 key={i}
                 className={`w-3 h-3 ${
-                  i < Math.floor(seller.rating)
+                  i < Math.floor(seller.rating || 0)
                     ? 'text-yellow-400 fill-current'
                     : 'text-earth-300'
                 }`}
@@ -72,30 +72,32 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
             ))}
           </div>
           <span className="text-sm text-earth-600">
-            {seller.rating.toFixed(1)} ({seller.reviewCount})
+            {(seller.rating || 0).toFixed(1)} ({seller.reviewCount || 0})
           </span>
         </div>
 
         {/* Location */}
-        {seller.location && (seller.location.city || seller.location.state) && (
+        {(seller.location?.city || seller.location?.state || seller.businessAddress) && (
           <div className="flex items-center justify-center space-x-1 text-earth-600 mb-3">
             <MapPin className="w-4 h-4" />
             <span className="text-sm">
-              {seller.location.city && seller.location.state
+              {seller.location?.city && seller.location?.state
                 ? `${seller.location.city}, ${seller.location.state}`
-                : seller.location.city || seller.location.state || 'Location not specified'
+                : seller.location?.city || seller.location?.state || seller.businessAddress || 'Location not specified'
               }
             </span>
           </div>
         )}
 
         {/* Description */}
-        <p className="text-sm text-earth-600 mb-4 line-clamp-2">
-          {seller.description}
-        </p>
+        {seller.description && (
+          <p className="text-sm text-earth-600 mb-4 line-clamp-2">
+            {seller.description}
+          </p>
+        )}
 
         {/* Specialties */}
-        {seller.specialties && seller.specialties.length > 0 && (
+        {seller.specialties && Array.isArray(seller.specialties) && seller.specialties.length > 0 && (
           <div className="mb-4">
             <div className="flex flex-wrap gap-1 justify-center">
               {seller.specialties.slice(0, 3).map((specialty, index) => (
@@ -120,7 +122,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
           <div className="text-center">
             <div className="flex items-center justify-center space-x-1 text-earth-600">
               <ShoppingBag className="w-4 h-4" />
-              <span className="text-sm font-medium">{seller.totalSales}</span>
+              <span className="text-sm font-medium">{seller.totalSales || 0}</span>
             </div>
             <span className="text-xs text-earth-500">Sales</span>
           </div>
@@ -129,7 +131,7 @@ const SellerCard: React.FC<SellerCardProps> = ({ seller }) => {
             <div className="flex items-center justify-center space-x-1 text-earth-600">
               <Calendar className="w-4 h-4" />
               <span className="text-sm font-medium">
-                {format(new Date(seller.joinedDate), 'MMM yyyy')}
+                {seller.joinedDate ? format(new Date(seller.joinedDate), 'MMM yyyy') : 'New'}
               </span>
             </div>
             <span className="text-xs text-earth-500">Joined</span>
