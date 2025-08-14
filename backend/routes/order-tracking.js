@@ -1,6 +1,6 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import { verifyAuth } from "../middleware/auth.js";
+import { protect as verifyAuth } from "../middleware/auth.js";
 import Order from "../models/Order.js";
 import { realTimeService } from "../services/realTimeService.js";
 import { notificationService } from "../services/notificationService.js";

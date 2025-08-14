@@ -1,6 +1,6 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import { verifyAuth } from "../middleware/auth.js";
+import { protect as verifyAuth } from "../middleware/auth.js";
 import Cart from "../models/Cart.js";
 import Wishlist from "../models/Wishlist.js";
 import Product from "../models/Product.js";
