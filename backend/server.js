@@ -28,6 +28,7 @@ import notificationRoutes from "./routes/notifications.js";
 import advancedAnalyticsRoutes from "./routes/advanced-analytics.js";
 import orderTrackingRoutes from "./routes/order-tracking.js";
 import searchRoutes from "./routes/search.js";
+import reviewRoutes from "./routes/reviews.js";
 
 // Load environment variables
 dotenv.config();
