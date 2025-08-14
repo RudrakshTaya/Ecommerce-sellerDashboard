@@ -273,7 +273,7 @@ router.patch(
       const validTransitions = {
         pending: ["confirmed", "cancelled"],
         confirmed: ["processing", "cancelled"],
-        processing: ["packed", "cancelled"],
+        processing: ["packed", "shipped", "cancelled"],
         packed: ["shipped", "cancelled"],
         shipped: ["out_for_delivery", "delivered"],
         out_for_delivery: ["delivered", "returned"],
