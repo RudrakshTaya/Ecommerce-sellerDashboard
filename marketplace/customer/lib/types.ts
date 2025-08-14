@@ -6,21 +6,34 @@ export interface Product {
   price: number;
   originalPrice?: number;
   images: string[];
+  image?: string;
   category: string;
   subcategory?: string;
-  tags: string[];
+  tags?: string[];
   stock: number;
-  seller: {
+  sellerId?: {
     _id: string;
-    name: string;
+    storeName: string;
+    name?: string;
     avatar?: string;
-    businessName?: string;
     rating?: number;
   };
-  rating: number;
-  reviewCount: number;
-  isHandmade: boolean;
-  materials: string[];
+  seller?: {
+    _id: string;
+    name?: string;
+    storeName?: string;
+    avatar?: string;
+    rating?: number;
+  };
+  rating?: number;
+  reviewCount?: number;
+  isHandmade?: boolean;
+  materials?: string[];
+  sku?: string;
+  deliveryDays?: number;
+  status?: string;
+  inStock?: boolean;
+  orders?: number;
   dimensions?: {
     length: number;
     width: number;
@@ -77,11 +90,16 @@ export interface Address {
 export interface Order {
   _id: string;
   orderNumber: string;
-  customer: {
+  customerId: string;
+  sellerId?: {
     _id: string;
-    firstName: string;
-    lastName: string;
+    storeName: string;
+    email?: string;
+  };
+  customerInfo?: {
+    name: string;
     email: string;
+    phone: string;
   };
   items: OrderItem[];
   subtotal: number;
@@ -94,36 +112,64 @@ export interface Order {
     | "processing"
     | "shipped"
     | "delivered"
-    | "cancelled";
+    | "cancelled"
+    | "returned";
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
-  shippingAddress: Address;
-  billingAddress?: Address;
+  paymentMethod: string;
+  shippingAddress: {
+    firstName: string;
+    lastName: string;
+    address: string;
+    city: string;
+    state: string;
+    pincode: string;
+    phone: string;
+  };
+  billingAddress?: {
+    firstName: string;
+    lastName: string;
+    address: string;
+    city: string;
+    state: string;
+    pincode: string;
+    phone: string;
+  };
   tracking?: {
     carrier: string;
     trackingNumber: string;
     url?: string;
   };
   notes?: string;
+  estimatedDelivery?: string;
+  actualDelivery?: string;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface OrderItem {
-  _id: string;
-  product: {
+  _id?: string;
+  product: string | {
     _id: string;
     name: string;
-    images: string[];
+    images?: string[];
+    image?: string;
     price: number;
+    sku?: string;
+    category?: string;
   };
-  seller: {
-    _id: string;
+  productSnapshot?: {
     name: string;
-    businessName?: string;
+    price: number;
+    image: string;
+    sku: string;
+    category: string;
   };
   quantity: number;
   price: number;
-  total: number;
+  selectedColor?: string;
+  selectedSize?: string;
+  customization?: any;
+  deliveryDays?: number;
 }
 
 // Cart types
@@ -131,6 +177,8 @@ export interface CartItem {
   productId: string;
   product: Product;
   quantity: number;
+  selectedColor?: string;
+  selectedSize?: string;
   addedAt: string;
 }
 
@@ -143,23 +191,35 @@ export interface Cart {
 // Seller types
 export interface Seller {
   _id: string;
-  name: string;
-  businessName: string;
+  name?: string;
+  storeName: string;
   email: string;
-  avatar?: string;
+  contactNumber?: string;
+  logo?: string;
   coverImage?: string;
   description: string;
-  location: {
+  businessAddress?: {
+    street?: string;
     city: string;
     state: string;
-    country: string;
+    pincode: string;
+    country?: string;
   };
-  specialties: string[];
-  rating: number;
-  reviewCount: number;
-  totalSales: number;
-  joinedDate: string;
-  isVerified: boolean;
+  specialties?: string[];
+  rating?: number;
+  reviewCount?: number;
+  totalSales?: number;
+  totalProducts?: number;
+  memberSince?: string;
+  joinedDate?: string;
+  isVerified?: boolean;
+  website?: string;
+  certifications?: string[];
+  policies?: {
+    returns?: string;
+    shipping?: string;
+    exchanges?: string;
+  };
   socialLinks?: {
     website?: string;
     instagram?: string;
