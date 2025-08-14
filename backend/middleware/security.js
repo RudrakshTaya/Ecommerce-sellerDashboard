@@ -1,5 +1,4 @@
 import rateLimit from "express-rate-limit";
-import MongoStore from "rate-limit-mongo";
 import { body, validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 

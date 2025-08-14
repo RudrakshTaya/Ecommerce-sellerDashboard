@@ -1,6 +1,6 @@
 import express from "express";
 import { body, validationResult } from "express-validator";
-import { verifyAuth } from "../middleware/auth.js";
+import { protect as verifyAuth } from "../middleware/auth.js";
 import Payment from "../models/Payment.js";
 import Order from "../models/Order.js";
 import Customer from "../models/Customer.js";
