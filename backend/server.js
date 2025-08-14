@@ -107,6 +107,7 @@ app.use("/api/notifications", notificationRoutes);      // Notification system
 app.use("/api/advanced-analytics", advancedAnalyticsRoutes); // Advanced analytics
 app.use("/api/order-tracking", orderTrackingRoutes);        // Real-time order tracking
 app.use("/api/search", searchRoutes);                       // Advanced search functionality
+app.use("/api/reviews", reviewRoutes);                      // Review and rating system
 
 // 404 handler
 app.use("*", (req, res) => {
