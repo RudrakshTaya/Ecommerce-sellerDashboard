@@ -214,8 +214,8 @@ const orderSchema = new mongoose.Schema(
       status: {
         type: String,
         enum: ["pending", "approved", "rejected", "processed"],
-        default: "pending"
-      }
+        default: "pending",
+      },
     },
     cancellationReason: String,
     refundAmount: {
