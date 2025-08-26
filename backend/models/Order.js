@@ -87,6 +87,11 @@ const addressSchema = new mongoose.Schema({
 
 const orderSchema = new mongoose.Schema(
   {
+    orderId: {
+      type: String,
+      unique: true,
+      required: true,
+    },
     orderNumber: {
       type: String,
       unique: true,
@@ -237,6 +242,7 @@ const orderSchema = new mongoose.Schema(
 );
 
 // Create indexes
+orderSchema.index({ orderId: 1 });
 orderSchema.index({ orderNumber: 1 });
 orderSchema.index({ sellerId: 1, status: 1 });
 orderSchema.index({ customerId: 1 });
@@ -270,7 +276,7 @@ orderSchema.virtual("daysSinceOrder").get(function () {
   return Math.floor((Date.now() - this.createdAt) / (1000 * 60 * 60 * 24));
 });
 
-// Pre-save middleware to generate order number
+// Pre-save middleware to generate order number and orderId
 orderSchema.pre("save", function (next) {
   if (!this.orderNumber) {
     // Generate order number: ORD + timestamp + random 4 digits
@@ -278,6 +284,14 @@ orderSchema.pre("save", function (next) {
     const random = Math.floor(1000 + Math.random() * 9000);
     this.orderNumber = `ORD${timestamp}${random}`;
   }
+
+  if (!this.orderId) {
+    // Generate unique orderId: ODR + timestamp + random string
+    const timestamp = Date.now().toString();
+    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+    this.orderId = `ODR${timestamp}${random}`;
+  }
+
   next();
 });
 
