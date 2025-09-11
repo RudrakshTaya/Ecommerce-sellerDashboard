@@ -147,11 +147,19 @@ const ProductPage: React.FC = () => {
             <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <ShoppingCart className="w-12 h-12 text-red-400" />
             </div>
-            <h1 className="text-3xl font-bold text-earth-900 mb-4">Product Not Found</h1>
-            <p className="text-lg text-earth-600 mb-8">Sorry, we couldn't find the product you're looking for.</p>
+            <h1 className="text-3xl font-bold text-earth-900 mb-4">
+              Product Not Found
+            </h1>
+            <p className="text-lg text-earth-600 mb-8">
+              Sorry, we couldn't find the product you're looking for.
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button onClick={() => navigate(-1)} className="btn-secondary">Go Back</button>
-              <Link to="/products" className="btn-primary">Browse Products</Link>
+              <button onClick={() => navigate(-1)} className="btn-secondary">
+                Go Back
+              </button>
+              <Link to="/products" className="btn-primary">
+                Browse Products
+              </Link>
             </div>
           </div>
         </div>
@@ -159,7 +167,8 @@ const ProductPage: React.FC = () => {
     );
   }
 
-  const images = product.images?.length > 0 ? product.images : ["/placeholder.svg"];
+  const images =
+    product.images?.length > 0 ? product.images : ["/placeholder.svg"];
   const currentImage = images[selectedImageIndex];
 
   return (
@@ -167,9 +176,13 @@ const ProductPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm text-earth-600 mb-8">
-          <Link to="/" className="hover:text-craft-600">Home</Link>
+          <Link to="/" className="hover:text-craft-600">
+            Home
+          </Link>
           <span>/</span>
-          <Link to="/products" className="hover:text-craft-600">Products</Link>
+          <Link to="/products" className="hover:text-craft-600">
+            Products
+          </Link>
           <span>/</span>
           <span className="text-earth-900">{product.name}</span>
         </nav>
@@ -179,7 +192,11 @@ const ProductPage: React.FC = () => {
           <div className="space-y-4">
             {/* Main Image */}
             <div className="relative bg-white rounded-xl overflow-hidden shadow-sm border border-warm-100">
-              <img src={currentImage} alt={product.name} className="w-full h-96 object-cover" />
+              <img
+                src={currentImage}
+                alt={product.name}
+                className="w-full h-96 object-cover"
+              />
 
               {/* Navigation Arrows */}
               {images.length > 1 && (
@@ -187,7 +204,9 @@ const ProductPage: React.FC = () => {
                   <button
                     onClick={() =>
                       setSelectedImageIndex(
-                        selectedImageIndex === 0 ? images.length - 1 : selectedImageIndex - 1,
+                        selectedImageIndex === 0
+                          ? images.length - 1
+                          : selectedImageIndex - 1,
                       )
                     }
                     className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-colors"
@@ -197,7 +216,9 @@ const ProductPage: React.FC = () => {
                   <button
                     onClick={() =>
                       setSelectedImageIndex(
-                        selectedImageIndex === images.length - 1 ? 0 : selectedImageIndex + 1,
+                        selectedImageIndex === images.length - 1
+                          ? 0
+                          : selectedImageIndex + 1,
                       )
                     }
                     className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-lg transition-colors"
@@ -210,11 +231,16 @@ const ProductPage: React.FC = () => {
               {/* Badges */}
               <div className="absolute top-4 left-4 space-y-2">
                 {product.isHandmade && (
-                  <span className="bg-craft-500 text-white text-xs font-medium px-3 py-1 rounded-full">Handmade</span>
+                  <span className="bg-craft-500 text-white text-xs font-medium px-3 py-1 rounded-full">
+                    Handmade
+                  </span>
                 )}
-                {product.originalPrice && product.originalPrice > product.price && (
-                  <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">Sale</span>
-                )}
+                {product.originalPrice &&
+                  product.originalPrice > product.price && (
+                    <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      Sale
+                    </span>
+                  )}
               </div>
             </div>
 
@@ -226,10 +252,16 @@ const ProductPage: React.FC = () => {
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
                     className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
-                      index === selectedImageIndex ? "border-craft-500" : "border-warm-200 hover:border-craft-300"
+                      index === selectedImageIndex
+                        ? "border-craft-500"
+                        : "border-warm-200 hover:border-craft-300"
                     }`}
                   >
-                    <img src={image} alt={`${product.name} ${index + 1}`} className="w-full h-full object-cover" />
+                    <img
+                      src={image}
+                      alt={`${product.name} ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
                   </button>
                 ))}
               </div>
@@ -241,8 +273,13 @@ const ProductPage: React.FC = () => {
             {/* Header */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h1 className="text-3xl font-bold text-earth-900">{product.name}</h1>
-                <button onClick={handleShare} className="p-2 text-earth-600 hover:text-craft-600 transition-colors">
+                <h1 className="text-3xl font-bold text-earth-900">
+                  {product.name}
+                </h1>
+                <button
+                  onClick={handleShare}
+                  className="p-2 text-earth-600 hover:text-craft-600 transition-colors"
+                >
                   <Share className="w-5 h-5" />
                 </button>
               </div>
@@ -250,11 +287,22 @@ const ProductPage: React.FC = () => {
               {/* Seller Info */}
               {product.seller && (
                 <div className="flex items-center space-x-3 mb-4">
-                  <img src={product.seller.avatar || "/placeholder.svg"} alt={product.seller.name || "Seller"} className="w-8 h-8 rounded-full object-cover" />
-                  <Link to={`/sellers/${product.seller._id}`} className="font-medium text-craft-600 hover:text-craft-700">
-                    {product.seller.businessName || product.seller.name || "Unknown Seller"}
+                  <img
+                    src={product.seller.avatar || "/placeholder.svg"}
+                    alt={product.seller.name || "Seller"}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                  <Link
+                    to={`/sellers/${product.seller._id}`}
+                    className="font-medium text-craft-600 hover:text-craft-700"
+                  >
+                    {product.seller.businessName ||
+                      product.seller.name ||
+                      "Unknown Seller"}
                   </Link>
-                  {product.seller.isVerified && <Badge className="w-4 h-4 text-green-500" />}
+                  {product.seller.isVerified && (
+                    <Badge className="w-4 h-4 text-green-500" />
+                  )}
                 </div>
               )}
 
@@ -268,34 +316,60 @@ const ProductPage: React.FC = () => {
                     />
                   ))}
                 </div>
-                <span className="text-sm text-earth-600">{(product.rating || 0).toFixed(1)} ({product.reviewCount || 0} reviews)</span>
+                <span className="text-sm text-earth-600">
+                  {(product.rating || 0).toFixed(1)} ({product.reviewCount || 0}{" "}
+                  reviews)
+                </span>
               </div>
 
               {/* Price */}
               <div className="flex items-center space-x-3 mb-6">
-                <span className="text-3xl font-bold text-craft-600">${product.price.toFixed(2)}</span>
-                {product.originalPrice && product.originalPrice > product.price && (
-                  <>
-                    <span className="text-xl text-earth-400 line-through">${product.originalPrice.toFixed(2)}</span>
-                    <span className="bg-red-100 text-red-800 text-sm font-medium px-2 py-1 rounded">{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% off</span>
-                  </>
-                )}
+                <span className="text-3xl font-bold text-craft-600">
+                  ${product.price.toFixed(2)}
+                </span>
+                {product.originalPrice &&
+                  product.originalPrice > product.price && (
+                    <>
+                      <span className="text-xl text-earth-400 line-through">
+                        ${product.originalPrice.toFixed(2)}
+                      </span>
+                      <span className="bg-red-100 text-red-800 text-sm font-medium px-2 py-1 rounded">
+                        {Math.round(
+                          ((product.originalPrice - product.price) /
+                            product.originalPrice) *
+                            100,
+                        )}
+                        % off
+                      </span>
+                    </>
+                  )}
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <h3 className="text-lg font-semibold text-earth-900 mb-3">Description</h3>
-              <p className="text-earth-700 leading-relaxed">{product.description}</p>
+              <h3 className="text-lg font-semibold text-earth-900 mb-3">
+                Description
+              </h3>
+              <p className="text-earth-700 leading-relaxed">
+                {product.description}
+              </p>
             </div>
 
             {/* Materials */}
             {product.materials && product.materials.length > 0 && (
               <div>
-                <h3 className="text-lg font-semibold text-earth-900 mb-3">Materials</h3>
+                <h3 className="text-lg font-semibold text-earth-900 mb-3">
+                  Materials
+                </h3>
                 <div className="flex flex-wrap gap-2">
                   {product.materials.map((material, index) => (
-                    <span key={index} className="bg-sage-100 text-sage-800 px-3 py-1 rounded-full text-sm font-medium">{material}</span>
+                    <span
+                      key={index}
+                      className="bg-sage-100 text-sage-800 px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                      {material}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -304,31 +378,41 @@ const ProductPage: React.FC = () => {
             {/* Dimensions */}
             {product.dimensions && (
               <div>
-                <h3 className="text-lg font-semibold text-earth-900 mb-3">Dimensions</h3>
+                <h3 className="text-lg font-semibold text-earth-900 mb-3">
+                  Dimensions
+                </h3>
                 <div className="bg-warm-50 p-4 rounded-lg">
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     {product.dimensions.length && (
                       <div>
                         <span className="text-earth-600">Length:</span>
-                        <span className="ml-2 font-medium">{product.dimensions.length} cm</span>
+                        <span className="ml-2 font-medium">
+                          {product.dimensions.length} cm
+                        </span>
                       </div>
                     )}
                     {product.dimensions.width && (
                       <div>
                         <span className="text-earth-600">Width:</span>
-                        <span className="ml-2 font-medium">{product.dimensions.width} cm</span>
+                        <span className="ml-2 font-medium">
+                          {product.dimensions.width} cm
+                        </span>
                       </div>
                     )}
                     {product.dimensions.height && (
                       <div>
                         <span className="text-earth-600">Height:</span>
-                        <span className="ml-2 font-medium">{product.dimensions.height} cm</span>
+                        <span className="ml-2 font-medium">
+                          {product.dimensions.height} cm
+                        </span>
                       </div>
                     )}
                     {product.dimensions.weight && (
                       <div>
                         <span className="text-earth-600">Weight:</span>
-                        <span className="ml-2 font-medium">{product.dimensions.weight} kg</span>
+                        <span className="ml-2 font-medium">
+                          {product.dimensions.weight} kg
+                        </span>
                       </div>
                     )}
                   </div>
@@ -338,8 +422,12 @@ const ProductPage: React.FC = () => {
 
             {/* Stock Status */}
             <div className="flex items-center space-x-4">
-              <div className={`px-3 py-1 rounded-full text-sm font-medium ${product.stock > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                {product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}
+              <div
+                className={`px-3 py-1 rounded-full text-sm font-medium ${product.stock > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
+              >
+                {product.stock > 0
+                  ? `${product.stock} in stock`
+                  : "Out of stock"}
               </div>
             </div>
 
@@ -347,13 +435,26 @@ const ProductPage: React.FC = () => {
             <div className="space-y-4">
               {/* Quantity Selector */}
               <div className="flex items-center space-x-4">
-                <label className="text-sm font-medium text-earth-900">Quantity:</label>
+                <label className="text-sm font-medium text-earth-900">
+                  Quantity:
+                </label>
                 <div className="flex items-center space-x-3 bg-warm-50 rounded-lg p-2">
-                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="p-1 hover:bg-warm-200 rounded-md transition-colors">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="p-1 hover:bg-warm-200 rounded-md transition-colors"
+                  >
                     <ChevronLeft className="w-4 h-4 text-earth-600" />
                   </button>
-                  <span className="font-medium text-earth-900 w-8 text-center">{quantity}</span>
-                  <button onClick={() => setQuantity(Math.min(product.stock, quantity + 1))} className="p-1 hover:bg-warm-200 rounded-md transition-colors" disabled={quantity >= product.stock}>
+                  <span className="font-medium text-earth-900 w-8 text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setQuantity(Math.min(product.stock, quantity + 1))
+                    }
+                    className="p-1 hover:bg-warm-200 rounded-md transition-colors"
+                    disabled={quantity >= product.stock}
+                  >
                     <ChevronRight className="w-4 h-4 text-earth-600" />
                   </button>
                 </div>
@@ -361,12 +462,21 @@ const ProductPage: React.FC = () => {
 
               {/* Action Buttons */}
               <div className="flex space-x-4">
-                <button onClick={handleAddToCart} disabled={product.stock === 0} className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2">
+                <button
+                  onClick={handleAddToCart}
+                  disabled={product.stock === 0}
+                  className="flex-1 btn-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                >
                   <ShoppingCart className="w-5 h-5" />
                   <span>Add to Cart</span>
                 </button>
-                <button onClick={handleToggleWishlist} className={`p-3 rounded-lg border transition-colors ${isWishlisted ? "bg-red-50 border-red-200 text-red-600" : "bg-white border-warm-200 text-earth-600 hover:border-red-300 hover:text-red-600"}`}>
-                  <Heart className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`} />
+                <button
+                  onClick={handleToggleWishlist}
+                  className={`p-3 rounded-lg border transition-colors ${isWishlisted ? "bg-red-50 border-red-200 text-red-600" : "bg-white border-warm-200 text-earth-600 hover:border-red-300 hover:text-red-600"}`}
+                >
+                  <Heart
+                    className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`}
+                  />
                 </button>
               </div>
             </div>
@@ -392,27 +502,48 @@ const ProductPage: React.FC = () => {
         {/* Reviews Section */}
         <div id="reviews" className="mt-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-earth-900">Customer Reviews</h2>
-            <Link to={`#reviews`} className="text-sm text-earth-600 hover:text-craft-600">See all</Link>
+            <h2 className="text-2xl font-semibold text-earth-900">
+              Customer Reviews
+            </h2>
+            <Link
+              to={`#reviews`}
+              className="text-sm text-earth-600 hover:text-craft-600"
+            >
+              See all
+            </Link>
           </div>
 
           {reviews && reviews.length > 0 ? (
             <div className="space-y-4">
               {reviews.slice(0, 3).map((r) => (
-                <div key={r._id} className="bg-white rounded-xl shadow-sm p-4 border border-input">
+                <div
+                  key={r._id}
+                  className="bg-white rounded-xl shadow-sm p-4 border border-input"
+                >
                   <div className="flex items-start space-x-4">
-                    <img src={r.customer.avatar || "/placeholder.svg"} alt={`${r.customer.firstName} ${r.customer.lastName}`} className="w-12 h-12 rounded-full object-cover" />
+                    <img
+                      src={r.customer.avatar || "/placeholder.svg"}
+                      alt={`${r.customer.firstName} ${r.customer.lastName}`}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
                     <div>
                       <div className="flex items-center space-x-2">
-                        <div className="font-medium text-earth-900">{r.customer.firstName} {r.customer.lastName}</div>
+                        <div className="font-medium text-earth-900">
+                          {r.customer.firstName} {r.customer.lastName}
+                        </div>
                         <div className="flex items-center text-yellow-400">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`w-4 h-4 ${i < r.rating ? "text-yellow-400 fill-current" : "text-earth-300"}`} />
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${i < r.rating ? "text-yellow-400 fill-current" : "text-earth-300"}`}
+                            />
                           ))}
                         </div>
                       </div>
                       <p className="text-earth-700 mt-2">{r.comment}</p>
-                      <div className="text-xs text-earth-500 mt-2">{new Date(r.createdAt).toLocaleDateString()}</div>
+                      <div className="text-xs text-earth-500 mt-2">
+                        {new Date(r.createdAt).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -420,7 +551,9 @@ const ProductPage: React.FC = () => {
             </div>
           ) : (
             <div className="bg-white rounded-xl shadow-sm p-6 border border-input text-center">
-              <p className="text-earth-600">No reviews yet. Be the first to review this product.</p>
+              <p className="text-earth-600">
+                No reviews yet. Be the first to review this product.
+              </p>
             </div>
           )}
         </div>
@@ -429,8 +562,15 @@ const ProductPage: React.FC = () => {
         {relatedProducts && relatedProducts.length > 0 && (
           <div className="mt-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-semibold text-earth-900">Related Products</h2>
-              <Link to={`/products?category=${encodeURIComponent(product.category)}`} className="text-sm text-earth-600 hover:text-craft-600">View all in category</Link>
+              <h2 className="text-2xl font-semibold text-earth-900">
+                Related Products
+              </h2>
+              <Link
+                to={`/products?category=${encodeURIComponent(product.category)}`}
+                className="text-sm text-earth-600 hover:text-craft-600"
+              >
+                View all in category
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
