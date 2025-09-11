@@ -14,8 +14,9 @@ import {
   Share,
   Badge,
 } from "lucide-react";
-import { productsAPI } from "../lib/api";
+import { productsAPI, reviewsAPI } from "../lib/api";
 import { useCartStore, useWishlistStore, useUIStore } from "../lib/store";
+import ProductCard from "../components/ProductCard";
 
 const ProductPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -39,6 +40,26 @@ const ProductPage: React.FC = () => {
     queryKey: ["product", id],
     queryFn: () => productsAPI.getProduct(id!),
     enabled: !!id,
+    retry: 1,
+  });
+
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["product-reviews", id],
+    queryFn: () => reviewsAPI.getProductReviews(id!),
+    enabled: !!id,
+    retry: 1,
+  });
+
+  const { data: relatedProducts = [] } = useQuery({
+    queryKey: ["related-products", product?.category],
+    queryFn: async () => {
+      if (!product?.category) return [];
+      const res = await productsAPI.getProductsByCategory(product.category, {
+        limit: 8,
+      });
+      return res.data.filter((p) => p._id !== product._id);
+    },
+    enabled: !!product?.category,
     retry: 1,
   });
 
@@ -72,7 +93,6 @@ const ProductPage: React.FC = () => {
           url: window.location.href,
         });
       } catch (error) {
-        // Fallback to copy URL
         navigator.clipboard.writeText(window.location.href);
         showNotification("Link copied to clipboard!", "success");
       }
@@ -292,16 +312,13 @@ const ProductPage: React.FC = () => {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${
-                        i < Math.floor(product.rating)
-                          ? "text-yellow-400 fill-current"
-                          : "text-earth-300"
-                      }`}
+                      className={`w-4 h-4 ${i < Math.floor(product.rating) ? "text-yellow-400 fill-current" : "text-earth-300"}`}
                     />
                   ))}
                 </div>
                 <span className="text-sm text-earth-600">
-                  {product.rating.toFixed(1)} ({product.reviewCount} reviews)
+                  {(product.rating || 0).toFixed(1)} ({product.reviewCount || 0}{" "}
+                  reviews)
                 </span>
               </div>
 
@@ -406,11 +423,7 @@ const ProductPage: React.FC = () => {
             {/* Stock Status */}
             <div className="flex items-center space-x-4">
               <div
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  product.stock > 0
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
-                }`}
+                className={`px-3 py-1 rounded-full text-sm font-medium ${product.stock > 0 ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}
               >
                 {product.stock > 0
                   ? `${product.stock} in stock`
@@ -459,11 +472,7 @@ const ProductPage: React.FC = () => {
                 </button>
                 <button
                   onClick={handleToggleWishlist}
-                  className={`p-3 rounded-lg border transition-colors ${
-                    isWishlisted
-                      ? "bg-red-50 border-red-200 text-red-600"
-                      : "bg-white border-warm-200 text-earth-600 hover:border-red-300 hover:text-red-600"
-                  }`}
+                  className={`p-3 rounded-lg border transition-colors ${isWishlisted ? "bg-red-50 border-red-200 text-red-600" : "bg-white border-warm-200 text-earth-600 hover:border-red-300 hover:text-red-600"}`}
                 >
                   <Heart
                     className={`w-5 h-5 ${isWishlisted ? "fill-current" : ""}`}
@@ -489,6 +498,88 @@ const ProductPage: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Reviews Section */}
+        <div id="reviews" className="mt-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-semibold text-earth-900">
+              Customer Reviews
+            </h2>
+            <Link
+              to={`#reviews`}
+              className="text-sm text-earth-600 hover:text-craft-600"
+            >
+              See all
+            </Link>
+          </div>
+
+          {reviews && reviews.length > 0 ? (
+            <div className="space-y-4">
+              {reviews.slice(0, 3).map((r) => (
+                <div
+                  key={r._id}
+                  className="bg-white rounded-xl shadow-sm p-4 border border-input"
+                >
+                  <div className="flex items-start space-x-4">
+                    <img
+                      src={r.customer.avatar || "/placeholder.svg"}
+                      alt={`${r.customer.firstName} ${r.customer.lastName}`}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <div className="font-medium text-earth-900">
+                          {r.customer.firstName} {r.customer.lastName}
+                        </div>
+                        <div className="flex items-center text-yellow-400">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${i < r.rating ? "text-yellow-400 fill-current" : "text-earth-300"}`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-earth-700 mt-2">{r.comment}</p>
+                      <div className="text-xs text-earth-500 mt-2">
+                        {new Date(r.createdAt).toLocaleDateString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl shadow-sm p-6 border border-input text-center">
+              <p className="text-earth-600">
+                No reviews yet. Be the first to review this product.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Related Products */}
+        {relatedProducts && relatedProducts.length > 0 && (
+          <div className="mt-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold text-earth-900">
+                Related Products
+              </h2>
+              <Link
+                to={`/products?category=${encodeURIComponent(product.category)}`}
+                className="text-sm text-earth-600 hover:text-craft-600"
+              >
+                View all in category
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((rp) => (
+                <ProductCard key={rp._id} product={rp} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
